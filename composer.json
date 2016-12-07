@@ -1,0 +1,21 @@
+{
+    "name": "modernkernel/yii2-billing",
+    "description": "Yii2 Billing",
+    "type": "yii2-extension",
+    "keywords": ["yii2","billing"],
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Harry Tang",
+            "email": "harry@modernkernel.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "~2.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "modernkernel\\billing\\": ""
+        }
+    }
+}
