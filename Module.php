@@ -13,6 +13,7 @@ class Module extends \yii\base\Module
      * @inheritdoc
      */
     public $controllerNamespace = 'modernkernel\billing\controllers';
+    public $defaultRoute='info';
 
     /**
      * @inheritdoc

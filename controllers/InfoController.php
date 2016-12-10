@@ -59,6 +59,7 @@ class InfoController extends Controller
                     'create',
                     'update',
                     'delete',
+                    'check'
                 ],
             ],
         ];

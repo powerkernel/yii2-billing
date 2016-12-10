@@ -8,10 +8,8 @@
 
 namespace modernkernel\billing\models;
 
-use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use modernkernel\billing\models\Invoice;
 
 /**
  * InvoiceSearch represents the model behind the search form about `modernkernel\billing\models\Invoice`.
@@ -20,6 +18,7 @@ class InvoiceSearch extends Invoice
 {
 
     public $fullname;
+    public $manage = false;
 
     /**
      * @inheritdoc
@@ -58,7 +57,7 @@ class InvoiceSearch extends Invoice
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort'=> ['defaultOrder' => ['created_at'=>SORT_DESC]]
+            'sort' => ['defaultOrder' => ['created_at' => SORT_DESC]]
         ]);
 
         $dataProvider->sort->attributes['fullname'] = [
@@ -67,6 +66,10 @@ class InvoiceSearch extends Invoice
             'asc' => ['{{%core_account}}.fullname' => SORT_ASC],
             'desc' => ['{{%core_account}}.fullname' => SORT_DESC],
         ];
+
+        if ($this->manage) {
+            $query->andWhere(['id_account' => \Yii::$app->user->id]);
+        }
 
         $this->load($params);
 
@@ -78,22 +81,22 @@ class InvoiceSearch extends Invoice
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id_account' => $this->id_account,
-            'subtotal' => $this->subtotal,
-            'discount' => $this->discount,
-            'tax' => $this->tax,
-            'total' => $this->total,
-            'status' => $this->status,
+            '{{%billing_invoice}}.id_account' => $this->id_account,
+            '{{%billing_invoice}}.subtotal' => $this->subtotal,
+            '{{%billing_invoice}}.discount' => $this->discount,
+            '{{%billing_invoice}}.tax' => $this->tax,
+            '{{%billing_invoice}}.total' => $this->total,
+            '{{%billing_invoice}}.status' => $this->status,
             //'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            '{{%billing_invoice}}.updated_at' => $this->updated_at,
         ]);
 
-        $query->andFilterWhere(['like', 'id', $this->id])
-            ->andFilterWhere(['like', 'currency', $this->currency])
+        $query->andFilterWhere(['like', '{{%billing_invoice}}.id', $this->id])
+            ->andFilterWhere(['like', '{{%billing_invoice}}.currency', $this->currency])
             ->andFilterWhere(['like', '{{%core_account}}.fullname', $this->fullname]);;
 
         $query->andFilterWhere([
-            'DATE(FROM_UNIXTIME(`created_at`))' => $this->created_at,
+            'DATE(FROM_UNIXTIME({{%billing_invoice}}.created_at))' => $this->created_at,
         ]);
 
         return $dataProvider;

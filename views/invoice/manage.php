@@ -34,7 +34,7 @@ $this->registerJs('$(document).on("pjax:send", function(){ $(".grid-view-overlay
 
                         'id',
                         //'account.fullname',
-                        ['attribute' => 'fullname', 'value' => 'account.fullname'],
+                        //['attribute' => 'fullname', 'value' => 'account.fullname'],
                         //['attribute' => 'subtotal', 'value' => function ($model){return Yii::$app->formatter->asCurrency($model->subtotal, $model->currency);}],
                         //['attribute' => 'discount', 'value' => function ($model){return Yii::$app->formatter->asCurrency($model->discount, $model->currency);}],
                         //['attribute' => 'tax', 'value' => function ($model){return Yii::$app->formatter->asCurrency($model->tax, $model->currency);}],
@@ -51,16 +51,21 @@ $this->registerJs('$(document).on("pjax:send", function(){ $(".grid-view-overlay
                         }, 'filter' => Invoice::getStatusOption(), 'format' => 'raw'],
                         [
                             'class' => 'yii\grid\ActionColumn',
-                            'template' => '{view} {update}'
+                            'template' => '{show}',
+                            'buttons' => [
+                                'show' => function ($url) {
+                                    $show = Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, [
+                                        'title' => Yii::t('yii', 'View'),
+                                        'data-pjax' => '0',
+                                    ]);
+                                    return $show;
+                                }
+                            ]
                         ],
                     ],
                 ]); ?>
             </div>
             <?php Pjax::end(); ?>
-            <p>
-                <?= Html::a(Yii::t('billing', 'Create Invoice'), ['create'], ['class' => 'btn btn-success']) ?>
-            </p>
-
         </div>
         <!-- Loading (remove the following to stop the loading)-->
         <div class="overlay grid-view-overlay hidden">

@@ -8,7 +8,6 @@
 namespace modernkernel\billing\models;
 
 use Yii;
-use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
 /**
