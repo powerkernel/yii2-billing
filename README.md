@@ -19,9 +19,11 @@ or add
 "modernkernel/yii2-billing": "*"
 ```
 
-to the require section of your `composer.json` file.
+to the require section of your `composer.json` file, then run
 
-
+```
+php yii migrate --interactive=0 --migrationPath=@vendor/modernkernel/yii2-billing/migrations/ --migrationTable={{%billing_migration}}
+```
 Usage
 -----
 
