@@ -7,6 +7,7 @@
 
 use common\models\Setting;
 use harrytang\hosting\models\search\Invoice;
+use modernkernel\billing\components\PaypalButton;
 use modernkernel\fontawesome\Icon;
 use yii\bootstrap\ButtonDropdown;
 use yii\helpers\Html;
@@ -150,11 +151,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?= Yii::$app->getModule('billing')->t('Online Methods:') ?>
                 </p>
                 <div class="text-muted" style="font-size: 2.0em;">
-                    <?= Icon::widget(['icon' => 'cc-paypal']) ?>
-                    <?= Icon::widget(['icon' => 'cc-visa']) ?>
-                    <?= Icon::widget(['icon' => 'cc-mastercard']) ?>
-                    <?= Icon::widget(['icon' => 'cc-amex']) ?>
-                    <?= Icon::widget(['icon' => 'cc-discover']) ?>
+                    <img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/cc-badges-ppppcmcvdam.png" alt="Pay with PayPal, PayPal Credit or any major credit card" />
+
                 </div>
                 <p class="lead" style="margin-bottom: 0">
                     <?= Yii::$app->getModule('billing')->t('Bank Transfer:') ?>
@@ -191,17 +189,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="text-center no-print">
                 <?php if (in_array($model->status, [Invoice::STATUS_PENDING])): ?>
                     <?=
-                    ButtonDropdown::widget([
-                        'containerOptions' => ['class' => ''],
-                        'options' => ['class' => 'btn btn-success'],
-                        'label' => Yii::$app->getModule('billing')->t('Pay Now'),
-                        'dropdown' => [
-                            'items' => [
-                                ['label' => 'Paypal / Credit Card', 'url' => '#paypal'],
-                                ['label' => 'Bank Wire', 'url' => '#bank'],
-                            ],
-                        ],
-                    ]);
+                    PaypalButton::widget();
                     ?>
                 <?php endif; ?>
                 </div>
