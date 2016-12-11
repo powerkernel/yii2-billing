@@ -7,7 +7,6 @@
 
 use common\models\Setting;
 use harrytang\hosting\models\search\Invoice;
-use modernkernel\billing\components\PaypalButton;
 use modernkernel\fontawesome\Icon;
 use yii\bootstrap\ButtonDropdown;
 use yii\helpers\Html;
@@ -104,9 +103,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div><b><?= $this->title ?></b></div>
                 <div><br/></div>
                 <div><b><?= Yii::$app->getModule('billing')->t('Account:') ?></b> <?= $model->account->id ?></div>
-                <div class="<?= empty($model->payment_method)?'hidden':'' ?>"><b><?= $model->getAttributeLabel('payment_method') ?>: </b> <?= $model->payment_method ?></div>
-                <div class="<?= empty($model->payment_date)?'hidden':'' ?>"><b><?= $model->getAttributeLabel('payment_date') ?>: </b> <?= Yii::$app->formatter->asDate($model->payment_date) ?></div>
-                <div class="<?= empty($model->transaction)?'hidden':'' ?>"><b><?= $model->getAttributeLabel('transaction') ?>: </b> <?= $model->transaction ?></div>
+                <div class="<?= empty($model->payment_method) ? 'hidden' : '' ?>">
+                    <b><?= $model->getAttributeLabel('payment_method') ?>: </b> <?= $model->payment_method ?></div>
+                <div class="<?= empty($model->payment_date) ? 'hidden' : '' ?>">
+                    <b><?= $model->getAttributeLabel('payment_date') ?>
+                        : </b> <?= Yii::$app->formatter->asDate($model->payment_date) ?></div>
+                <div class="<?= empty($model->transaction) ? 'hidden' : '' ?>">
+                    <b><?= $model->getAttributeLabel('transaction') ?>: </b> <?= $model->transaction ?></div>
                 <div class="no-print">
                     <b><?= Yii::$app->getModule('billing')->t('Status:') ?></b> <?= $model->statusText ?></div>
             </div>
@@ -148,13 +151,6 @@ $this->params['breadcrumbs'][] = $this->title;
             <!-- accepted payments column -->
             <div class="col-xs-6">
                 <p class="lead" style="margin-bottom: 0">
-                    <?= Yii::$app->getModule('billing')->t('Online Methods:') ?>
-                </p>
-                <div class="text-muted" style="font-size: 2.0em;">
-                    <img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/cc-badges-ppppcmcvdam.png" alt="Pay with PayPal, PayPal Credit or any major credit card" />
-
-                </div>
-                <p class="lead" style="margin-bottom: 0">
                     <?= Yii::$app->getModule('billing')->t('Bank Transfer:') ?>
                 </p>
                 <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
@@ -187,11 +183,23 @@ $this->params['breadcrumbs'][] = $this->title;
                     </table>
                 </div>
                 <div class="text-center no-print">
-                <?php if (in_array($model->status, [Invoice::STATUS_PENDING])): ?>
-                    <?=
-                    PaypalButton::widget();
-                    ?>
-                <?php endif; ?>
+                    <?php if (in_array($model->status, [Invoice::STATUS_PENDING])): ?>
+                        <div><?= Html::a(Yii::$app->getModule('billing')->t('Pay Now'), Yii::$app->urlManager->createUrl(['/billing/invoice/pay', 'id' => $model->id, 'method' => 'paypal']), ['class' => 'btn btn-success']) ?></div>
+                        <div style="font-size: 2.5em" class="text-muted">
+                            <?= Icon::widget(['icon' => 'cc-paypal']) ?>
+                            <?= Icon::widget(['icon' => 'cc-visa']) ?>
+                            <?= Icon::widget(['icon' => 'cc-mastercard']) ?>
+                            <?= Icon::widget(['icon' => 'cc-amex']) ?>
+                            <?= Icon::widget(['icon' => 'cc-discover']) ?>
+
+                        </div>
+                        <div>
+                            <img class="img-responsive hidden"
+                                 src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/cc-badges-ppppcmcvdam.png"
+                                 alt="Pay with PayPal, PayPal Credit or any major credit card"/>
+                        </div>
+
+                    <?php endif; ?>
                 </div>
             </div>
             <!-- /.col -->

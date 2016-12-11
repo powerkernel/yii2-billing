@@ -42,6 +42,10 @@ class InvoiceController extends Controller
                         'roles' => ['@'],
                         'allow' => true,
                     ],
+                    [
+                        'actions' => ['pay'],
+                        'allow' => true,
+                    ],
                 ],
             ],
             'backend' => [
@@ -178,13 +182,17 @@ class InvoiceController extends Controller
     /**
      * users view their invoices
      * @param $id
+     * @param null $cancel
      * @return string
      * @throws ForbiddenHttpException
      */
-    public function actionShow($id)
+    public function actionShow($id, $cancel=null)
     {
         $model=$this->findModel($id);
         if (Yii::$app->user->can('viewOwnItem', ['model' => $model])) {
+            if(!empty($cancel) && $cancel=='true'){
+                Yii::$app->session->setFlash('warning', Yii::$app->getModule('billing')->t('Payment cancelled.'));
+            }
             $info=$model->loadInfo();
             //$info=empty($model->info)?BillingInfo::getInfo($model->id_account):json_decode($model->info, true);
 
@@ -219,8 +227,8 @@ class InvoiceController extends Controller
                 $item=new Item();
                 $item->id_invoice=$model->id;
                 $item->name='This is item name '.rand(10,999);
-                $item->price=rand(10,99);
-                $item->quantity=rand(1,10);
+                $item->price=rand(1,5);
+                $item->quantity=rand(1,5);
                 $item->save();
                 unset($item);
             }
@@ -258,6 +266,26 @@ class InvoiceController extends Controller
         }
     }
 
+
+    /**
+     * user click pay button
+     * @param $id
+     * @param $method
+     * @return \yii\web\Response
+     */
+    public function actionPay($id, $method){
+        $model=$this->findModel($id);
+        if($model->status==Invoice::STATUS_PENDING){
+            if($method=='paypal'){
+                return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/paypal/create', 'id'=>$model->id]));
+            }
+            return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id'=>$id]));
+        }
+        else {
+            Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('We can not process your payment right now.'));
+            return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id'=>$id]));
+        }
+    }
 
 
     /**
