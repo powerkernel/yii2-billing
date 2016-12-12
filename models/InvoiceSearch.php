@@ -28,7 +28,7 @@ class InvoiceSearch extends Invoice
         return [
             [['id', 'currency', 'created_at', 'fullname'], 'safe'],
             [['id_account', 'status', 'updated_at'], 'integer'],
-            [['subtotal', 'discount', 'tax', 'total'], 'number'],
+            [['subtotal', 'shipping', 'tax', 'total'], 'number'],
         ];
     }
 
@@ -83,7 +83,7 @@ class InvoiceSearch extends Invoice
         $query->andFilterWhere([
             '{{%billing_invoice}}.id_account' => $this->id_account,
             '{{%billing_invoice}}.subtotal' => $this->subtotal,
-            '{{%billing_invoice}}.discount' => $this->discount,
+            '{{%billing_invoice}}.shipping' => $this->shipping,
             '{{%billing_invoice}}.tax' => $this->tax,
             '{{%billing_invoice}}.total' => $this->total,
             '{{%billing_invoice}}.status' => $this->status,

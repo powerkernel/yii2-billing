@@ -287,6 +287,28 @@ class InvoiceController extends Controller
         }
     }
 
+    /**
+     * add discount
+     * @param $id
+     * @return \yii\web\Response
+     */
+    public function actionDiscount($id){
+        $model=$this->findModel($id);
+        $amount=Yii::$app->request->post('discountAmount');
+        if(is_numeric($amount) && $amount > 0){
+            /* add discount item */
+            $item=new Item();
+            $item->name=Yii::$app->getModule('billing')->t('Discount');
+            $item->quantity=1;
+            $item->price=$amount*-1;
+            $item->id_invoice=$model->id;
+            $item->save();
+
+            Yii::$app->session->setFlash('success', Yii::$app->getModule('billing')->t('Discount amount added.'));
+        }
+        return $this->redirect(['view', 'id'=>$id]);
+    }
+
 
     /**
      * Finds the Invoice model based on its primary key value.

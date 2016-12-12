@@ -18,7 +18,7 @@ use yii\db\ActiveRecord;
  * @property string $id
  * @property integer $id_account
  * @property double $subtotal
- * @property double $discount
+ * @property double $shipping
  * @property double $tax
  * @property double $total
  * @property string $currency
@@ -96,7 +96,7 @@ class Invoice extends ActiveRecord
         return [
             //[['id', 'created_at', 'updated_at'], 'required'],
             [['id_account', 'payment_date', 'status', 'created_at', 'updated_at'], 'integer'],
-            [['subtotal', 'discount', 'tax', 'total'], 'number'],
+            [['subtotal', 'shipping', 'tax', 'total'], 'number', 'min'=>0],
             [['id'], 'string', 'max' => 23],
             [['currency'], 'string', 'max' => 3],
             [['payment_method', 'transaction'], 'string', 'max' => 50],
@@ -116,7 +116,7 @@ class Invoice extends ActiveRecord
             'id' => Yii::$app->getModule('billing')->t('ID'),
             'id_account' => Yii::$app->getModule('billing')->t('Account'),
             'subtotal' => Yii::$app->getModule('billing')->t('Subtotal'),
-            'discount' => Yii::$app->getModule('billing')->t('Discount'),
+            'shipping' => Yii::$app->getModule('billing')->t('Shipping'),
             'tax' => Yii::$app->getModule('billing')->t('Tax'),
             'total' => Yii::$app->getModule('billing')->t('Total'),
             'currency' => Yii::$app->getModule('billing')->t('Currency'),
@@ -165,7 +165,6 @@ class Invoice extends ActiveRecord
     {
         if ($insert) {
             $this->id = strtoupper(uniqid());
-
         } else {
             $this->calculate();
         }
@@ -186,35 +185,29 @@ class Invoice extends ActiveRecord
      */
     public function calculate()
     {
-        $this->updateSubtotal();
-        /* discount */
-        if ($this->discount < 1) {
-            $this->discount = $this->subtotal * $this->discount;
-        }
+        $this->subtotal=$this->getTotalItemAmount();
+
         /* tax */
         if ($this->tax < 1) {
-            $this->tax = ($this->subtotal - $this->discount) * $this->tax;
+            $this->tax = $this->subtotal * $this->tax;
         }
+
         /* total */
-        $this->total = $this->subtotal - $this->discount + $this->tax;
+        $this->total = $this->subtotal + $this->shipping + $this->tax;
         if ($this->total == 0) {
             $this->status = Invoice::STATUS_PAID;
         }
-
-        //$this->save(false);
     }
 
     /**
-     * update subtotal
+     * all items total amount
      */
-    protected function updateSubtotal()
-    {
+    protected function getTotalItemAmount(){
         $total = 0;
-        //$items=$this->getItems();
         foreach ($this->items as $item) {
             $total += $item->quantity * $item->price;
         }
-        $this->subtotal = $total;
+        return $total;
     }
 
     /**

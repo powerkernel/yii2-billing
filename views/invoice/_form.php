@@ -16,15 +16,13 @@ use yii\widgets\ActiveForm;
 ?>
 
 <div class="invoice-form">
-
     <?php $form = ActiveForm::begin(); ?>
-
     <div class="row">
         <div class="col-sm-6">
             <?= $form->field($model, 'id')->textInput(['disabled' => true]) ?>
             <?= $form->field($model, 'subtotal')->textInput(['maxlength' => true, 'disabled' => true]) ?>
             <?= $form->field($model, 'total')->textInput(['maxlength' => true, 'disabled' => true]) ?>
-            <?= $form->field($model, 'discount')->textInput(['maxlength' => true]) ?>
+            <?= $form->field($model, 'shipping')->textInput(['maxlength' => true]) ?>
             <?= $form->field($model, 'tax')->textInput(['maxlength' => true]) ?>
 
         </div>

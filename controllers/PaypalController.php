@@ -109,7 +109,8 @@ class PaypalController extends Controller
 
             /* invoice details */
             $details = new Details();
-            $details->setShipping(0)
+            $details
+                ->setShipping($invoice->shipping)
                 ->setTax($invoice->tax)
                 ->setSubtotal($invoice->subtotal);
 
@@ -147,7 +148,7 @@ class PaypalController extends Controller
 
         } else {
             Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('We can not process your payment right now.'));
-            return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id'=>$id]));
+            return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id' => $id]));
         }
     }
 
@@ -190,10 +191,9 @@ class PaypalController extends Controller
             } catch (Exception $ex) {
                 throw new HttpException(500, Yii::$app->getModule('billing')->t('Paypal API Error: {ERROR}', ['ERROR' => $ex->getMessage()]));
             }
-        }
-        else {
+        } else {
             Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('We can not process your payment right now.'));
-            return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id'=>$id]));
+            return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id' => $id]));
         }
 
     }

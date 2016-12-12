@@ -6,11 +6,9 @@
  */
 
 use common\models\Setting;
-use harrytang\hosting\models\search\Invoice;
+use harrytang\hosting\models\Invoice;
 use modernkernel\fontawesome\Icon;
-use yii\bootstrap\ButtonDropdown;
 use yii\helpers\Html;
-use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $info [] */
@@ -26,39 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
 //$this->registerCss($css);
 ?>
 <div class="invoice-view">
-    <div class="hidden box box-info">
-        <div class="box-body">
-            <div class="table-responsive">
-                <?= DetailView::widget([
-                    'model' => $model,
-                    'attributes' => [
-                        'id',
-                        'id_account',
-                        'subtotal',
-                        'discount',
-                        'tax',
-                        'total',
-                        'currency',
-                        'status',
-                        'created_at',
-                        'updated_at',
-                    ],
-                ]) ?>
-            </div>
-            <p>
-                <?= Html::a(Yii::t('billing', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-                <?= Html::a(Yii::t('billing', 'Delete'), ['delete', 'id' => $model->id], [
-                    'class' => 'btn btn-danger',
-                    'data' => [
-                        'confirm' => Yii::t('billing', 'Are you sure you want to delete this item?'),
-                        'method' => 'post',
-                    ],
-                ]) ?>
-            </p>
-        </div>
-    </div>
-
-    <section class="invoice">
+    <section class="invoice" style="margin: 0">
         <!-- title row -->
         <div class="row">
             <div class="col-xs-12">
@@ -147,6 +113,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <!-- /.row -->
 
+        <!-- payment row -->
         <div class="row">
             <!-- accepted payments column -->
             <div class="col-xs-6">
@@ -168,8 +135,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td><?= Yii::$app->formatter->asCurrency($model->subtotal, $model->currency) ?></td>
                         </tr>
                         <tr>
-                            <th><?= Yii::$app->getModule('billing')->t('Discount:') ?></th>
-                            <td><?= Yii::$app->formatter->asCurrency($model->discount, $model->currency) ?></td>
+                            <th><?= Yii::$app->getModule('billing')->t('Shipping:') ?></th>
+                            <td><?= Yii::$app->formatter->asCurrency($model->shipping, $model->currency) ?></td>
                         </tr>
                         <tr>
                             <th><?= Yii::$app->getModule('billing')->t('Tax:') ?></th>
@@ -206,6 +173,29 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <!-- /.row -->
 
+
+        <?php if(Yii::$app->user->can('admin') && $model->status==Invoice::STATUS_PENDING):?>
+            <!-- update row -->
+            <div><hr /></div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <?= Html::beginForm(Yii::$app->urlManager->createUrl(['/billing/invoice/discount', 'id'=>$model->id]), 'post', ['class'=>'form-inline']) ?>
+                    <div class="form-group">
+                        <label class="sr-only" for="discountAmount"><?= Yii::t('billing', 'Amount') ?></label>
+                        <div class="input-group">
+                            <div class="input-group-addon"><?= $model->currency ?></div>
+                            <input type="text" class="form-control" name="discountAmount" id="discountAmount" placeholder="<?= Yii::t('billing', 'Amount') ?>">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><?= Yii::t('billing', 'Add discount') ?></button>
+                    <?= Html::endForm() ?>
+                </div>
+                <div class="col-sm-6">
+                    <?= Html::a(Yii::t('billing', 'Update'), ['update', 'id'=>$model->id], ['class' => 'btn btn-primary pull-right']) ?>
+                </div>
+            </div>
+            <!-- /.row -->
+        <?php endif;?>
 
     </section>
 </div>
