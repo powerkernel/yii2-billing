@@ -38,12 +38,8 @@ class InvoiceController extends Controller
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['manage', 'show'],
+                        'actions' => ['manage', 'show', 'pay'],
                         'roles' => ['@'],
-                        'allow' => true,
-                    ],
-                    [
-                        'actions' => ['pay'],
                         'allow' => true,
                     ],
                 ],
@@ -55,9 +51,9 @@ class InvoiceController extends Controller
                     'view',
                     'create',
                     'update',
+                    'discount'
                 ],
             ],
-
         ];
     }
 
@@ -236,13 +232,6 @@ class InvoiceController extends Controller
 
         return $this->redirect(['index']);
 
-//        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-//            return $this->redirect(['view', 'id' => $model->id]);
-//        } else {
-//            return $this->render('create', [
-//                'model' => $model,
-//            ]);
-//        }
     }
 
     /**
@@ -272,19 +261,24 @@ class InvoiceController extends Controller
      * @param $id
      * @param $method
      * @return \yii\web\Response
+     * @throws ForbiddenHttpException
      */
     public function actionPay($id, $method){
         $model=$this->findModel($id);
-        if($model->status==Invoice::STATUS_PENDING){
-            if($method=='paypal'){
-                return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/paypal/create', 'id'=>$model->id]));
+        if (Yii::$app->user->can('viewOwnItem', ['model' => $model])) {
+            if($model->status==Invoice::STATUS_PENDING){
+                if($method=='paypal'){
+                    return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/paypal/create', 'id'=>$model->id]));
+                }
+                return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id'=>$id]));
             }
-            return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id'=>$id]));
+            else {
+                Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('We can not process your payment right now.'));
+                return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id'=>$id]));
+            }
         }
-        else {
-            Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('We can not process your payment right now.'));
-            return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id'=>$id]));
-        }
+        else throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
+
     }
 
     /**
