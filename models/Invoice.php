@@ -8,9 +8,11 @@
 namespace modernkernel\billing\models;
 
 use common\models\Account;
+use common\models\Setting;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\httpclient\Client;
 
 /**
  * This is the model class for table "{{%billing_invoice}}".
@@ -96,7 +98,7 @@ class Invoice extends ActiveRecord
         return [
             //[['id', 'created_at', 'updated_at'], 'required'],
             [['id_account', 'payment_date', 'status', 'created_at', 'updated_at'], 'integer'],
-            [['subtotal', 'shipping', 'tax', 'total'], 'number', 'min'=>0],
+            [['subtotal', 'shipping', 'tax', 'total'], 'number', 'min' => 0],
             [['id'], 'string', 'max' => 23],
             [['currency'], 'string', 'max' => 3],
             [['payment_method', 'transaction'], 'string', 'max' => 50],
@@ -185,7 +187,7 @@ class Invoice extends ActiveRecord
      */
     public function calculate()
     {
-        $this->subtotal=$this->getTotalItemAmount();
+        $this->subtotal = $this->getTotalItemAmount();
 
         /* tax */
         if ($this->tax < 1) {
@@ -202,7 +204,8 @@ class Invoice extends ActiveRecord
     /**
      * all items total amount
      */
-    protected function getTotalItemAmount(){
+    protected function getTotalItemAmount()
+    {
         $total = 0;
         foreach ($this->items as $item) {
             $total += $item->quantity * $item->price;
@@ -246,5 +249,60 @@ class Invoice extends ActiveRecord
             return '<span class="label label-warning">' . $this->statusText . '</span>';
         }
         return $this->statusText;
+    }
+
+    /**
+     * convert currency. Note: free api only support convert to USD
+     * @param $currency
+     * @return bool
+     */
+    public function convertCurrencyTo($currency)
+    {
+        $app=Setting::getValue('openExchangeRatesApp');
+        if ($this->currency != $currency && !empty($app)) {
+            $fromCurrency=$this->currency;
+
+            $rateUrl = 'https://openexchangerates.org/api/latest.json';
+            $client = new Client();
+
+            /* cache, save API */
+            $response = Yii::$app->cache->get('openexchangerates');
+            if ($response === false) {
+                $response = $client->createRequest()
+                    ->setMethod('get')
+                    ->setUrl($rateUrl)
+                    ->setData(['app_id' => $app, 'base'=>$currency])
+                    ->send();
+                Yii::$app->cache->set('openexchangerates', $response, 43200); // 12 hours
+            }
+
+
+            if ($response->isOk && !empty($response->data['rates'])) {
+                $rate = $response->data['rates'][$fromCurrency];
+                if (!empty($rate)) {
+                    $this->currency = $currency;
+                    //$this->subtotal=$this->subtotal/$rate;
+                    $this->shipping = $this->shipping == 0 ? 0 : $this->shipping / $rate;
+                    $this->tax = $this->tax == 0 ? 0 : $this->tax / $rate;
+                    //$this->total=$this->total/$rate;
+                    if ($this->save()) {
+                        /* item */
+                        foreach ($this->items as $i => $item) {
+                            $item->price = $item->price == 0 ? 0 : $item->price / $rate;
+                            if (!$item->save()) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                return false;
+            }
+            return false;
+        }
+        return false;
     }
 }

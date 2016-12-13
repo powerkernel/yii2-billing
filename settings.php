@@ -23,5 +23,9 @@ $s = [
     ['key' => 'paypalSecret', 'value' => '', 'title' => 'Paypal Secret', 'description' => 'Live secret string', 'group' => 'Billing', 'type' => 'textInput', 'data' => '[]', 'default' => '', 'rules' => json_encode(['string' => []])],
     ['key' => 'paypalSandboxClientID', 'value' => '', 'title' => 'Paypal Sandbox Client ID', 'description' => 'Sandbox client ID', 'group' => 'Billing', 'type' => 'textInput', 'data' => '[]', 'default' => '', 'rules' => json_encode(['string' => []])],
     ['key' => 'paypalSandboxSecret', 'value' => '', 'title' => 'Paypal Sandbox Secret', 'description' => 'Sandbox secret string', 'group' => 'Billing', 'type' => 'textInput', 'data' => '[]', 'default' => '', 'rules' => json_encode(['string' => []])],
+
+    ['key' => 'openExchangeRatesApp', 'value' => '', 'title' => 'Open Exchange Rates App', 'description' => 'App ID for currency conversion', 'group' => 'Billing', 'type' => 'textInput', 'data' => '[]', 'default' => '', 'rules' => json_encode(['string' => []])],
+
+
 ];
 return $s;

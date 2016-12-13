@@ -25,6 +25,7 @@ use PayPal\Auth\OAuthTokenCredential;
 use PayPal\Rest\ApiContext;
 use Yii;
 use yii\base\InvalidConfigException;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\HttpException;
 
@@ -35,6 +36,26 @@ use yii\web\HttpException;
 class PaypalController extends Controller
 {
     protected $apiContext = null;
+
+    /**
+     * @inheritdoc
+     * @return array
+     */
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'roles' => ['@'],
+                        'allow' => true,
+                    ],
+                ],
+            ],
+
+        ];
+    }
 
     /**
      * @inheritdoc
@@ -99,7 +120,7 @@ class PaypalController extends Controller
                 $items[$i]->setName($item->name)
                     ->setCurrency($invoice->currency)
                     ->setQuantity($item->quantity)
-                    ->setSku($item->id)// Similar to `item_number` in Classic API
+                    //->setSku($item->id)// Similar to `item_number` in Classic API
                     ->setPrice($item->price);
             }
 
@@ -197,6 +218,7 @@ class PaypalController extends Controller
         }
 
     }
+
 }
 
 

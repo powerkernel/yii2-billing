@@ -159,20 +159,16 @@ $generator=new \Picqer\Barcode\BarcodeGeneratorSVG();
                 <div class="text-center no-print">
                     <?php if (in_array($model->status, [Invoice::STATUS_PENDING])): ?>
                         <div><?= Html::a(Yii::$app->getModule('billing')->t('Pay Now'), Yii::$app->urlManager->createUrl(['/billing/invoice/pay', 'id' => $model->id, 'method' => 'paypal']), ['class' => 'btn btn-success']) ?></div>
+                        <?php if($model->currency!='USD'):?>
+                        <div class="text-center text-muted"><?= Yii::$app->getModule('billing')->t('We will convert total amount into US Dollars (USD).') ?></div>
+                        <?php endif;?>
                         <div style="font-size: 2.5em" class="text-muted">
                             <?= Icon::widget(['icon' => 'cc-paypal']) ?>
                             <?= Icon::widget(['icon' => 'cc-visa']) ?>
                             <?= Icon::widget(['icon' => 'cc-mastercard']) ?>
                             <?= Icon::widget(['icon' => 'cc-amex']) ?>
                             <?= Icon::widget(['icon' => 'cc-discover']) ?>
-
                         </div>
-                        <div>
-                            <img class="img-responsive hidden"
-                                 src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/cc-badges-ppppcmcvdam.png"
-                                 alt="Pay with PayPal, PayPal Credit or any major credit card"/>
-                        </div>
-
                     <?php endif; ?>
                 </div>
             </div>
@@ -181,7 +177,7 @@ $generator=new \Picqer\Barcode\BarcodeGeneratorSVG();
         <!-- /.row -->
 
 
-        <?php if(Yii::$app->user->can('admin') && $model->status==Invoice::STATUS_PENDING):?>
+        <?php if(Yii::$app->id=='app-backend' && Yii::$app->user->can('admin') && $model->status==Invoice::STATUS_PENDING):?>
             <!-- update row -->
             <div><hr /></div>
             <div class="row">

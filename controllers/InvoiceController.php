@@ -23,6 +23,7 @@ use yii\web\NotFoundHttpException;
 class InvoiceController extends Controller
 {
 
+    public $defaultAction = 'manage';
 
     /**
      * @inheritdoc
@@ -79,9 +80,9 @@ class InvoiceController extends Controller
      */
     public function actionManage()
     {
-        $this->layout = Yii::$app->view->theme->basePath.'/account.php';
+        $this->layout = Yii::$app->view->theme->basePath . '/account.php';
         $this->view->title = Yii::t('billing', 'My Invoices');
-        $searchModel = new InvoiceSearch(['manage'=>true]);
+        $searchModel = new InvoiceSearch(['manage' => true]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('manage', [
@@ -97,13 +98,13 @@ class InvoiceController extends Controller
      */
     public function actionView($id)
     {
-        $model=$this->findModel($id);
-        $info=$model->loadInfo();
+        $model = $this->findModel($id);
+        $info = $model->loadInfo();
         //$info=empty($model->info)?BillingInfo::getInfo($model->id_account):json_decode($model->info, true);
 
         /* metaData */
         //$title=$model->title;
-        $this->view->title = Yii::$app->getModule('billing')->t('Invoice #{ID}', ['ID'=>$id]);
+        $this->view->title = Yii::$app->getModule('billing')->t('Invoice #{ID}', ['ID' => $id]);
         //$keywords = $model->tags;
         //$description = $model->desc;
         //$metaTags[]=['name'=>'keywords', 'content'=>$keywords];
@@ -171,7 +172,7 @@ class InvoiceController extends Controller
 
         return $this->render('view', [
             'model' => $model,
-            'info'=>$info
+            'info' => $info
         ]);
     }
 
@@ -182,27 +183,26 @@ class InvoiceController extends Controller
      * @return string
      * @throws ForbiddenHttpException
      */
-    public function actionShow($id, $cancel=null)
+    public function actionShow($id, $cancel = null)
     {
-        $model=$this->findModel($id);
+        $model = $this->findModel($id);
         if (Yii::$app->user->can('viewOwnItem', ['model' => $model])) {
-            if(!empty($cancel) && $cancel=='true'){
+            if (!empty($cancel) && $cancel == 'true') {
                 Yii::$app->session->setFlash('warning', Yii::$app->getModule('billing')->t('Payment cancelled.'));
             }
-            $info=$model->loadInfo();
+            $info = $model->loadInfo();
             //$info=empty($model->info)?BillingInfo::getInfo($model->id_account):json_decode($model->info, true);
 
             /* metaData */
             //$title=$model->title;
             $this->layout = Yii::$app->view->theme->basePath . '/account.php';
-            $this->view->title = Yii::$app->getModule('billing')->t('Invoice #{ID}', ['ID'=>$id]);
+            $this->view->title = Yii::$app->getModule('billing')->t('Invoice #{ID}', ['ID' => $id]);
 
             return $this->render('view', [
                 'model' => $model,
-                'info'=>$info
+                'info' => $info
             ]);
-        }
-        else throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
+        } else throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
 
     }
 
@@ -215,16 +215,17 @@ class InvoiceController extends Controller
     {
         $this->view->title = Yii::t('billing', 'Create Invoice');
         $model = new Invoice();
+        $model->currency = 'USD';
 
         /* auto */
-        if($model->save()){
-            $rand=rand(1,9);
-            for($i=0; $i<$rand; $i++){
-                $item=new Item();
-                $item->id_invoice=$model->id;
-                $item->name='This is item name '.rand(10,999);
-                $item->price=rand(1,5);
-                $item->quantity=rand(1,5);
+        if ($model->save()) {
+            $rand = rand(1, 9);
+            for ($i = 0; $i < $rand; $i++) {
+                $item = new Item();
+                $item->id_invoice = $model->id;
+                $item->name = 'This is item name ' . rand(10, 999);
+                $item->price = rand(10, 50) * 1;
+                $item->quantity = rand(1, 5);
                 $item->save();
                 unset($item);
             }
@@ -263,21 +264,27 @@ class InvoiceController extends Controller
      * @return \yii\web\Response
      * @throws ForbiddenHttpException
      */
-    public function actionPay($id, $method){
-        $model=$this->findModel($id);
+    public function actionPay($id, $method)
+    {
+        $model = $this->findModel($id);
         if (Yii::$app->user->can('viewOwnItem', ['model' => $model])) {
-            if($model->status==Invoice::STATUS_PENDING){
-                if($method=='paypal'){
-                    return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/paypal/create', 'id'=>$model->id]));
+            if ($model->status == Invoice::STATUS_PENDING) {
+                if ($method == 'paypal') {
+                    /* convert */
+                    if ($model->currency != 'USD') {
+                        if (!$model->convertCurrencyTo('USD')) {
+                            Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('Only accept payments in USD'));
+                            return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id' => $id]));
+                        }
+                    }
+                    return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/paypal/create', 'id' => $model->id]));
                 }
-                return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id'=>$id]));
-            }
-            else {
+                return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id' => $id]));
+            } else {
                 Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('We can not process your payment right now.'));
-                return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id'=>$id]));
+                return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id' => $id]));
             }
-        }
-        else throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
+        } else throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
 
     }
 
@@ -286,21 +293,22 @@ class InvoiceController extends Controller
      * @param $id
      * @return \yii\web\Response
      */
-    public function actionDiscount($id){
-        $model=$this->findModel($id);
-        $amount=Yii::$app->request->post('discountAmount');
-        if(is_numeric($amount) && $amount > 0){
+    public function actionDiscount($id)
+    {
+        $model = $this->findModel($id);
+        $amount = Yii::$app->request->post('discountAmount');
+        if (is_numeric($amount) && $amount > 0) {
             /* add discount item */
-            $item=new Item();
-            $item->name=Yii::$app->getModule('billing')->t('Discount');
-            $item->quantity=1;
-            $item->price=$amount*-1;
-            $item->id_invoice=$model->id;
+            $item = new Item();
+            $item->name = Yii::$app->getModule('billing')->t('Discount');
+            $item->quantity = 1;
+            $item->price = $amount * -1;
+            $item->id_invoice = $model->id;
             $item->save();
 
             Yii::$app->session->setFlash('success', Yii::$app->getModule('billing')->t('Discount amount added.'));
         }
-        return $this->redirect(['view', 'id'=>$id]);
+        return $this->redirect(['view', 'id' => $id]);
     }
 
 
@@ -319,4 +327,5 @@ class InvoiceController extends Controller
             throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
         }
     }
+
 }

@@ -23,10 +23,10 @@ class m161207_071322_init extends Migration
             'id' => $this->string(23)->notNull(),
             'id_account' => $this->integer()->null(),
 
-            'subtotal' => $this->money()->notNull()->defaultValue(0),
-            'discount' => $this->money()->notNull()->defaultValue(0),
-            'tax' => $this->money()->notNull()->defaultValue(0),
-            'total' => $this->money()->notNull()->defaultValue(0),
+            'subtotal' => $this->money(19,2)->notNull()->defaultValue(0),
+            'discount' => $this->money(19,2)->notNull()->defaultValue(0),
+            'tax' => $this->money(19,2)->notNull()->defaultValue(0),
+            'total' => $this->money(19,2)->notNull()->defaultValue(0),
             'currency' => $this->string(3)->notNull()->defaultValue('USD'),
 
             'status' => $this->smallInteger()->notNull()->defaultValue(10),
@@ -42,7 +42,7 @@ class m161207_071322_init extends Migration
             'id_invoice' => $this->string(23)->notNull(),
             'name' => $this->string()->notNull(),
             'quantity' => $this->integer()->notNull()->defaultValue(0),
-            'price' => $this->money()->notNull()->defaultValue(0),
+            'price' => $this->money(19,2)->notNull()->defaultValue(0),
             'details' => $this->text()->null(),
         ], $tableOptions);
         $this->addForeignKey('fk_billing_item-billing_invoice', '{{%billing_item}}', 'id_invoice', '{{%billing_invoice}}', 'id');
