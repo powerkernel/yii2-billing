@@ -22,6 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
 //$this->registerJs($js);
 //$css=file_get_contents(__DIR__.'/index.css');
 //$this->registerCss($css);
+$generator=new \Picqer\Barcode\BarcodeGeneratorSVG();
 ?>
 <div class="invoice-view">
     <section class="invoice" style="margin: 0">
@@ -32,11 +33,16 @@ $this->params['breadcrumbs'][] = $this->title;
                     <img src="/images/logo-mini.svg" class="img-responsive"
                          style="max-height: 24px; vertical-align: bottom; display: inline-block"
                          alt="<?= Yii::$app->name ?>"/> <?= Yii::$app->name ?>
-                    <small class="pull-right"><?= Yii::$app->getModule('billing')->t('Date: {DATE}', ['DATE' => Yii::$app->formatter->asDate($model->created_at)]) ?></small>
+                    <span class="pull-right" style="max-height: 24px; vertical-align: bottom; display: block">
+                        <?= $generator->getBarcode($model->id, $generator::TYPE_CODE_128, 1.5, 24) ?>
+                    </span>
                 </h2>
+
             </div>
+
             <!-- /.col -->
         </div>
+
         <!-- info row -->
         <div class="row invoice-info">
             <div class="col-sm-4 invoice-col">
@@ -66,9 +72,10 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <!-- /.col -->
             <div class="col-sm-4 invoice-col">
-                <div><b><?= $this->title ?></b></div>
-                <div><br/></div>
-                <div><b><?= Yii::$app->getModule('billing')->t('Account:') ?></b> <?= $model->account->id ?></div>
+                <div class="">
+                    <b><?= Yii::$app->getModule('billing')->t('Invoice #:') ?></b> <?= $model->id ?></div>
+                <div class="">
+                    <b><?= Yii::$app->getModule('billing')->t('Date:') ?></b> <?= Yii::$app->formatter->asDate($model->created_at) ?></div>
                 <div class="<?= empty($model->payment_method) ? 'hidden' : '' ?>">
                     <b><?= $model->getAttributeLabel('payment_method') ?>: </b> <?= $model->payment_method ?></div>
                 <div class="<?= empty($model->payment_date) ? 'hidden' : '' ?>">
