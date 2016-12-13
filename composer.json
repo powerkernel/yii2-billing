@@ -12,6 +12,7 @@
     ],
     "require": {
         "yiisoft/yii2": "~2.0.0",
+        "picqer/php-barcode-generator": "*",
         "paypal/rest-api-sdk-php": "*"
     },
     "autoload": {
