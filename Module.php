@@ -32,7 +32,8 @@ class Module extends \yii\base\Module
     public function registerMailer()
     {
         Yii::$app->mailer->setViewPath($this->basePath . '/mail');
-        Yii::$app->mailer->htmlLayout = '@common/mail/layouts/html';
+        Yii::$app->mailer->htmlLayout='@common/mail/layouts/html';
+        Yii::$app->mailer->textLayout='@common/mail/layouts/text';
     }
 
     /**

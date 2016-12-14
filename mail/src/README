@@ -1,0 +1,1 @@
+grunt --dist=../vendor/modernkernel/yii2-billing/mail

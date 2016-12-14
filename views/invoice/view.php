@@ -199,6 +199,5 @@ $generator=new \Picqer\Barcode\BarcodeGeneratorSVG();
             </div>
             <!-- /.row -->
         <?php endif;?>
-
     </section>
 </div>

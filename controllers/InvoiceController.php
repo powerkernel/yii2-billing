@@ -229,6 +229,9 @@ class InvoiceController extends Controller
                 $item->save();
                 unset($item);
             }
+            /* send */
+            $i=Invoice::findOne($model->id);
+            $i->sendMail();
         }
 
         return $this->redirect(['index']);

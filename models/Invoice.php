@@ -196,6 +196,7 @@ class Invoice extends ActiveRecord
 
         /* total */
         $this->total = $this->subtotal + $this->shipping + $this->tax;
+
         if ($this->total == 0) {
             $this->status = Invoice::STATUS_PAID;
         }
@@ -304,5 +305,37 @@ class Invoice extends ActiveRecord
             return false;
         }
         return false;
+    }
+
+    /**
+     * get invoice url
+     * @param bool $absolute
+     */
+    public function getInvoiceUrl($absolute=false){
+        $act='createUrl';
+        if($absolute){
+            $act='createAbsoluteUrl';
+        }
+        return Yii::$app->urlManagerFrontend->$act(['/billing/invoice/show', 'id'=>$this->id]);
+    }
+
+    /**
+     * sending new invoice email
+     * @return bool
+     */
+    public function sendMail(){
+        $subject=Yii::$app->getModule('billing')->t('{APP}: You\'ve got a new invoice', ['APP'=>Yii::$app->name]);
+        return Yii::$app->mailer
+            ->compose(
+                [
+                    'html' => 'new-invoice-html',
+                    'text' => 'new-invoice-text'
+                ],
+                ['title'=>$subject, 'model' => $this]
+            )
+            ->setFrom([Setting::getValue('outgoingMail') => Yii::$app->name])
+            ->setTo($this->account->email)
+            ->setSubject($subject)
+            ->send();
     }
 }
