@@ -6,7 +6,7 @@
  */
 
 use common\models\Setting;
-use harrytang\hosting\models\Invoice;
+use modernkernel\billing\models\Invoice;
 use modernkernel\fontawesome\Icon;
 use yii\helpers\Html;
 
@@ -46,7 +46,7 @@ $generator=new \Picqer\Barcode\BarcodeGeneratorSVG();
         <!-- info row -->
         <div class="row invoice-info">
             <div class="col-sm-4 invoice-col">
-                <?= Yii::$app->getModule('billing')->t('From') ?>
+                <em><?= Yii::$app->getModule('billing')->t('From') ?></em>
                 <address>
                     <div><strong><?= Setting::getValue('merchantName') ?></strong></div>
                     <div><?= Setting::getValue('merchantAddress') ?></div>
@@ -57,7 +57,7 @@ $generator=new \Picqer\Barcode\BarcodeGeneratorSVG();
             </div>
             <!-- /.col -->
             <div class="col-sm-4 invoice-col">
-                <?= Yii::$app->getModule('billing')->t('To') ?>
+                <em><?= Yii::$app->getModule('billing')->t('To') ?></em>
                 <address>
                     <div><strong><?= $info['f_name'] ?> <?= $info['l_name'] ?></strong></div>
                     <?php if (!empty($info['address'])): ?>
@@ -66,7 +66,9 @@ $generator=new \Picqer\Barcode\BarcodeGeneratorSVG();
                         <div><?= $info['address2'] ?></div><?php endif; ?>
                     <?php if (!empty($info['city'])): ?>
                         <div><?= $info['city'] ?><?= !empty($info['state']) ? ', ' . $info['state'] : '' ?><?= !empty($info['zip']) ? ', ' . $info['zip'] : '' ?><?= !empty($info['country']) ? ', ' . $info['country'] : '' ?></div><?php endif; ?>
+                    <?php if (!empty($info['phone'])): ?>
                     <div><?= Yii::$app->getModule('billing')->t('Phone:') ?> <?= $info['phone'] ?></div>
+                    <?php endif;?>
                     <div><?= Yii::$app->getModule('billing')->t('Email:') ?> <?= $info['email'] ?></div>
                 </address>
             </div>
@@ -124,12 +126,14 @@ $generator=new \Picqer\Barcode\BarcodeGeneratorSVG();
         <div class="row">
             <!-- accepted payments column -->
             <div class="col-xs-6">
+                <?php if($model->status==Invoice::STATUS_PENDING):?>
                 <p class="lead" style="margin-bottom: 0">
                     <?= Yii::$app->getModule('billing')->t('Bank Transfer:') ?>
                 </p>
                 <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
                     <?= nl2br(Setting::getValue('merchantBank')) ?>
                 </p>
+                <?php endif;?>
             </div>
             <!-- /.col -->
             <div class="col-xs-6">
