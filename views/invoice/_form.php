@@ -29,7 +29,7 @@ use yii\widgets\ActiveForm;
         <div class="col-sm-6">
             <?= $form->field($model, 'currency')->textInput(['maxlength' => true, 'disabled' => true]) ?>
             <?= $form->field($model, 'transaction')->textInput(['maxlength' => true]) ?>
-            <?= $form->field($model, 'payment_method')->textInput(['maxlength' => true]) ?>
+            <?= $form->field($model, 'payment_method')->dropDownList(Invoice::getPaymentMethodOption(), ['prompt'=>'']) ?>
             <?= $form->field($model, 'payment_date')->hiddenInput()->label(false) ?>
             <?= $form->field($model, 'payment_date_picker')->widget(DatePicker::classname(), [
                 'options' => ['class' => 'form-control'],

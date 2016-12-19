@@ -338,4 +338,17 @@ class Invoice extends ActiveRecord
             ->setSubject($subject)
             ->send();
     }
+
+    /**
+     * @return array
+     */
+    public static function getPaymentMethodOption(){
+        $option = [
+            'Paypal'=> Yii::$app->getModule('billing')->t('Paypal'),
+            'Credit/Debit Card' => Yii::$app->getModule('billing')->t('Credit/Debit Card'),
+            'Bank Wire' => Yii::$app->getModule('billing')->t('Bank Wire'),
+            'Cash' => Yii::$app->getModule('billing')->t('Cash'),
+        ];
+        return $option;
+    }
 }
