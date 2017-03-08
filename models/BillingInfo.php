@@ -17,6 +17,7 @@ use yii\db\ActiveRecord;
  *
  * @property integer $id_account
  * @property string $company
+ * @property string $tax_id
  * @property string $f_name
  * @property string $l_name
  * @property string $address
@@ -86,7 +87,7 @@ class BillingInfo extends ActiveRecord
         return [
             [['f_name', 'l_name', 'address', 'city', 'country', 'phone'], 'required'],
             [['id_account', 'status', 'created_at', 'updated_at'], 'integer'],
-            [['company', 'f_name', 'l_name', 'address', 'address2', 'city', 'state', 'zip', 'country', 'phone'], 'string', 'max' => 255],
+            [['company', 'tax_id', 'f_name', 'l_name', 'address', 'address2', 'city', 'state', 'zip', 'country', 'phone'], 'string', 'max' => 255],
         ];
     }
 
@@ -98,6 +99,7 @@ class BillingInfo extends ActiveRecord
         return [
             'id_account' => Yii::$app->getModule('billing')->t('Account'),
             'company' => Yii::$app->getModule('billing')->t('Company'),
+            'tax_id' => Yii::$app->getModule('billing')->t('Tax ID'),
             'f_name' => Yii::$app->getModule('billing')->t('First Name'),
             'l_name' => Yii::$app->getModule('billing')->t('Last Name'),
             'address' => Yii::$app->getModule('billing')->t('Address'),
@@ -145,6 +147,7 @@ class BillingInfo extends ActiveRecord
     {
         $info = [
             'company' => '',
+            'tax_id' => '',
             'f_name' => '',
             'l_name' => '',
             'address' => '',

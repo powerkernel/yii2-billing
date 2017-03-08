@@ -6,6 +6,7 @@
  */
 
 use common\models\Setting;
+use modernkernel\billing\components\CurrencyLayer;
 use modernkernel\billing\models\Invoice;
 use modernkernel\fontawesome\Icon;
 use yii\helpers\Html;
@@ -59,7 +60,12 @@ $generator=new \Picqer\Barcode\BarcodeGeneratorSVG();
             <div class="col-sm-4 invoice-col">
                 <em><?= Yii::$app->getModule('billing')->t('To') ?></em>
                 <address>
-                    <div><strong><?= $info['f_name'] ?> <?= $info['l_name'] ?></strong></div>
+                    <?php if(!empty($info['company'])):?>
+                        <div><strong><?= $info['company'] ?></strong></div>
+                    <?php else:?>
+                        <div><strong><?= $info['f_name'] ?> <?= $info['l_name'] ?></strong></div>
+                    <?php endif;?>
+
                     <?php if (!empty($info['address'])): ?>
                         <div><?= $info['address'] ?></div><?php endif; ?>
                     <?php if (!empty($info['address2'])): ?>
@@ -70,6 +76,9 @@ $generator=new \Picqer\Barcode\BarcodeGeneratorSVG();
                     <div><?= Yii::$app->getModule('billing')->t('Phone:') ?> <?= $info['phone'] ?></div>
                     <?php endif;?>
                     <div><?= Yii::$app->getModule('billing')->t('Email:') ?> <?= $info['email'] ?></div>
+                    <?php if(!empty($info['tax_id'])):?>
+                        <div><?= Yii::$app->getModule('billing')->t('Tax:') ?> <?= $info['tax_id'] ?></div>
+                    <?php endif;?>
                 </address>
             </div>
             <!-- /.col -->
@@ -127,12 +136,18 @@ $generator=new \Picqer\Barcode\BarcodeGeneratorSVG();
             <!-- accepted payments column -->
             <div class="col-xs-6">
                 <?php if($model->status==Invoice::STATUS_PENDING):?>
-                <p class="lead" style="margin-bottom: 0">
-                    <?= Yii::$app->getModule('billing')->t('Bank Transfer:') ?>
-                </p>
-                <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
-                    <?= nl2br(Setting::getValue('merchantBank')) ?>
-                </p>
+                    <?php foreach($model->getBankInfo() as $i=>$bank): ?>
+                    <?php if($i==0):?>
+                        <p class="lead" style="margin-bottom: 0">
+                            <?= Yii::$app->getModule('billing')->t('Bank Transfer:') ?>
+                        </p>
+                    <?php endif;?>
+                    <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
+                        <?= nl2br($bank['info']) ?><br />
+                        <strong><?= Yii::$app->getModule('billing')->t('Amount: {AMOUNT}', ['AMOUNT'=>Yii::$app->formatter->asCurrency($bank['total'], $bank['currency'])]) ?></strong><br />
+                        <em><?= Yii::$app->getModule('billing')->t('(Please transfer the amount in {CURRENCY} as shown above)', ['CURRENCY'=>$bank['currency']])?></em>
+                    </p>
+                    <?php endforeach;?>
                 <?php endif;?>
             </div>
             <!-- /.col -->
@@ -155,7 +170,13 @@ $generator=new \Picqer\Barcode\BarcodeGeneratorSVG();
                         </tr>
                         <tr>
                             <th><?= Yii::$app->getModule('billing')->t('Total:') ?></th>
-                            <td><?= Yii::$app->formatter->asCurrency($model->total, $model->currency) ?></td>
+                            <td>
+                                <?= Yii::$app->formatter->asCurrency($model->total, $model->currency) ?>
+                                <?php if($model->currency!='USD') :?>
+                                    <br />
+                                    <strong>(<?= Yii::$app->formatter->asCurrency((new CurrencyLayer())->convertToUSD($model->currency, $model->total), 'USD') ?>)</strong>
+                                <?php endif; ?>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
@@ -194,7 +215,7 @@ $generator=new \Picqer\Barcode\BarcodeGeneratorSVG();
                             <input type="text" class="form-control" name="discountAmount" id="discountAmount" placeholder="<?= Yii::t('billing', 'Amount') ?>">
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary"><?= Yii::t('billing', 'Add discount') ?></button>
+                    <button type="submit" class="btn btn-primary" data-confirm="<?= Yii::t('billing', 'Are you sure you want to perform this action?') ?>"><?= Yii::t('billing', 'Add discount') ?></button>
                     <?= Html::endForm() ?>
                 </div>
                 <div class="col-sm-6">

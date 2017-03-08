@@ -23,6 +23,8 @@ use yii\widgets\ActiveForm;
         <div class="col-sm-6">
             <?= $form->field($model, 'company')->textInput(['maxlength' => true]) ?>
 
+            <?= $form->field($model, 'tax_id')->textInput(['maxlength' => true]) ?>
+
             <?= $form->field($model, 'f_name')->textInput(['maxlength' => true]) ?>
 
             <?= $form->field($model, 'l_name')->textInput(['maxlength' => true]) ?>

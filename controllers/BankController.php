@@ -8,23 +8,19 @@
 namespace modernkernel\billing\controllers;
 
 use common\components\BackendFilter;
-use common\models\Account;
 use Yii;
-use modernkernel\billing\models\BillingInfo;
-use modernkernel\billing\models\BillingInfoSearch;
+use modernkernel\billing\models\Bank;
+use modernkernel\billing\models\BankSearch;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * InfoController implements the CRUD actions for BillingInfo model.
+ * BankController implements the CRUD actions for Bank model.
  */
-class InfoController extends Controller
+class BankController extends Controller
 {
-
-    public $defaultAction = 'manage';
-
     /**
      * @inheritdoc
      */
@@ -44,11 +40,6 @@ class InfoController extends Controller
                         'roles' => ['admin'],
                         'allow' => true,
                     ],
-                    [
-                        'actions' => ['manage'],
-                        'roles' => ['@'],
-                        'allow' => true,
-                    ],
                 ],
             ],
             'backend' => [
@@ -58,21 +49,20 @@ class InfoController extends Controller
                     'view',
                     'create',
                     'update',
-                    'delete',
-                    'check'
+                    'delete'
                 ],
             ],
         ];
     }
 
     /**
-     * Lists all BillingInfo models.
+     * Lists all Bank models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $this->view->title = Yii::t('billing', 'Customers');
-        $searchModel = new BillingInfoSearch();
+        $this->view->title = Yii::t('billing', 'Bank');
+        $searchModel = new BankSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -82,41 +72,17 @@ class InfoController extends Controller
     }
 
     /**
-     * user update billing info
-     * @return string
-     */
-    public function actionManage()
-    {
-        $this->layout = Yii::$app->view->theme->basePath . '/account.php';
-        $this->view->title = Yii::t('billing', 'My Information');
-        //$this->title=Yii::$app->getModule('billing')->t('My Information');
-        $model = BillingInfo::findOne(Yii::$app->user->id);
-        if (!$model) {
-            $model = new BillingInfo();
-        }
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            Yii::$app->session->setFlash('success', Yii::$app->getModule('billing')->t('Your billing information has been updated.'));
-            if(!empty(Yii::$app->session['billingReturn'])){
-                Yii::$app->session['billingReturn']=null;
-                return $this->redirect(Yii::$app->user->returnUrl);
-            }
-        }
-        return $this->render('manage', ['model' => $model]);
-    }
-
-    /**
-     * Displays a single BillingInfo model.
+     * Displays a single Bank model.
      * @param integer $id
      * @return mixed
      */
     public function actionView($id)
     {
-        $model = $this->findModel($id);
+        $model=$this->findModel($id);
 
         /* metaData */
         //$title=$model->title;
-        $this->view->title = Yii::t('billing', '{FNAME} {LNAME} - Billing Information', ['FNAME'=>$model->f_name, 'LNAME'=>$model->l_name]);
+        $this->view->title = $model->title;
         //$keywords = $model->tags;
         //$description = $model->desc;
         //$metaTags[]=['name'=>'keywords', 'content'=>$keywords];
@@ -188,46 +154,37 @@ class InfoController extends Controller
     }
 
     /**
-     * Creates a new BillingInfo model.
+     * Creates a new Bank model.
      * If creation is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
      * @return mixed
      */
-    public function actionCreate($id)
+    public function actionCreate()
     {
-        $this->view->title = Yii::t('billing', 'Create Billing Information');
-        $model = new BillingInfo();
-
-        /* admin create billing info for user */
-        $account = Account::findOne($id);
-        if ($account) {
-            $model->id_account = $id;
-        }
-
+        $this->view->title = Yii::t('billing', 'Create Bank');
+        $model = new Bank();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id_account]);
+            return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
                 'model' => $model,
-                'account'=>$account
             ]);
         }
     }
 
     /**
-     * Updates an existing BillingInfo model.
+     * Updates an existing Bank model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
      */
     public function actionUpdate($id)
     {
-        $this->view->title = Yii::t('billing', 'Update Billing Information');
+        $this->view->title = Yii::t('billing', 'Update Bank');
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id_account]);
+            return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -236,7 +193,7 @@ class InfoController extends Controller
     }
 
     /**
-     * Deletes an existing BillingInfo model.
+     * Deletes an existing Bank model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -249,34 +206,18 @@ class InfoController extends Controller
     }
 
     /**
-     * check if billing info exist
-     * @param $id
-     * @return \yii\web\Response
-     */
-    public function actionCheck($id)
-    {
-        $model = BillingInfo::findOne($id);
-        if ($model) {
-            return $this->redirect(['view', 'id' => $id]);
-        }
-        return $this->redirect(['create', 'id' => $id]);
-    }
-
-    /**
-     * Finds the BillingInfo model based on its primary key value.
+     * Finds the Bank model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return BillingInfo the loaded model
+     * @return Bank the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = BillingInfo::findOne($id)) !== null) {
+        if (($model = Bank::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
         }
     }
-
-
 }

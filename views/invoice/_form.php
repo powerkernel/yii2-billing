@@ -23,7 +23,9 @@ use yii\widgets\ActiveForm;
             <?= $form->field($model, 'subtotal')->textInput(['maxlength' => true, 'disabled' => true]) ?>
             <?= $form->field($model, 'total')->textInput(['maxlength' => true, 'disabled' => true]) ?>
             <?= $form->field($model, 'shipping')->textInput(['maxlength' => true]) ?>
+            <?php $info=json_decode($model->info, true); if(empty($info['tax_id'])):?>
             <?= $form->field($model, 'tax')->textInput(['maxlength' => true]) ?>
+            <?php endif;?>
 
         </div>
         <div class="col-sm-6">
