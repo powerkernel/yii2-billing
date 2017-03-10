@@ -172,7 +172,7 @@ $generator=new \Picqer\Barcode\BarcodeGeneratorSVG();
                             <th><?= Yii::$app->getModule('billing')->t('Total:') ?></th>
                             <td>
                                 <?= Yii::$app->formatter->asCurrency($model->total, $model->currency) ?>
-                                <?php if($model->currency!='USD') :?>
+                                <?php if($model->currency!='USD' && $model->status==Invoice::STATUS_PENDING) :?>
                                     <br />
                                     <strong>(<?= Yii::$app->formatter->asCurrency((new CurrencyLayer())->convertToUSD($model->currency, $model->total), 'USD') ?>)</strong>
                                 <?php endif; ?>
