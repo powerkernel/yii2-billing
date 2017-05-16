@@ -8,6 +8,9 @@
 namespace modernkernel\billing\controllers;
 
 use common\components\BackendFilter;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
+use modernkernel\billing\models\Invoice;
 use Yii;
 use modernkernel\billing\models\BitcoinAddress;
 use modernkernel\billing\models\BitcoinAddressSearch;
@@ -159,15 +162,31 @@ class BitcoinController extends Controller
 
 
     public function actionPayment($invoice){
+
         $this->layout = Yii::$app->view->theme->basePath . '/account.php';
         $this->view->title=Yii::$app->getModule('billing')->t('Pay with Bitcoin');
+        $invoice=Invoice::findOne($invoice);
         /* validate invoice, convert invoice amt to BTC */
 
         /* check if this invoice have address assign, not older then 7 days  */
 
         /* get new address */
         $address=BitcoinAddress::find()->where(['status'=>BitcoinAddress::STATUS_NEW])->one();
-        return $this->render('payment', ['address'=>$address->address]);
+        $bitcoin['amount']=0.000168;
+        $bitcoin['address']=$address->address;
+        $bitcoin['url']='bitcoin:'.$bitcoin['address'].'?amount='.$bitcoin['amount'];
+        /* QR Code */
+        $qrCode = new QrCode($bitcoin['url']); //format=>bitcoin:15AotgE3CPm3yuekKVeErbSj7YxnmifbY9?amount=0.006124
+        $qrCode->setSize(500);
+        $pngWriter = new PngWriter($qrCode);
+        $bitcoin['base64QR']=base64_encode($pngWriter->writeString());
+
+
+
+        return $this->render('payment', [
+            'bitcoin'=>$bitcoin,
+            'invoice'=>$invoice
+        ]);
     }
 
     /**
