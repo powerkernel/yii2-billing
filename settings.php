@@ -17,12 +17,17 @@ $s = [
     ['key' => 'merchantPhone', 'value' => '', 'title' => 'Merchant Phone', 'description' => 'Merchant phone', 'group' => 'Billing', 'type' => 'textInput', 'data' => '[]', 'default' => '', 'rules' => json_encode(['required' => [], 'string' => []])],
     ['key' => 'merchantEmail', 'value' => '', 'title' => 'Merchant Email', 'description' => 'Merchant email', 'group' => 'Billing', 'type' => 'textInput', 'data' => '[]', 'default' => '', 'rules' => json_encode(['required' => [], 'email' => []])],
 
+    /* Paypal */
     ['key' => 'paypalSandbox', 'value' => '', 'title' => 'Paypal Sandbox Mode', 'description' => 'Set yes to enable sandbox', 'group' => 'Billing', 'type' => 'dropDownList', 'data' => json_encode(Core::getYesNoOption()), 'default' => '1', 'rules' => json_encode(['required' => [], 'boolean' => []])],
     ['key' => 'paypalClientID', 'value' => '', 'title' => 'Paypal Client ID', 'description' => 'Live client ID', 'group' => 'Billing', 'type' => 'textInput', 'data' => '[]', 'default' => '', 'rules' => json_encode(['string' => []])],
     ['key' => 'paypalSecret', 'value' => '', 'title' => 'Paypal Secret', 'description' => 'Live secret string', 'group' => 'Billing', 'type' => 'textInput', 'data' => '[]', 'default' => '', 'rules' => json_encode(['string' => []])],
     ['key' => 'paypalSandboxClientID', 'value' => '', 'title' => 'Paypal Sandbox Client ID', 'description' => 'Sandbox client ID', 'group' => 'Billing', 'type' => 'textInput', 'data' => '[]', 'default' => '', 'rules' => json_encode(['string' => []])],
     ['key' => 'paypalSandboxSecret', 'value' => '', 'title' => 'Paypal Sandbox Secret', 'description' => 'Sandbox secret string', 'group' => 'Billing', 'type' => 'textInput', 'data' => '[]', 'default' => '', 'rules' => json_encode(['string' => []])],
 
+    /* Bitcoin */
+    ['key' => 'btcWalletXPub', 'value' => '', 'title' => 'BTC Wallet xPub', 'description' => 'Wallet extended public key', 'group' => 'Billing', 'type' => 'textInput', 'data' => '[]', 'default' => '', 'rules' => json_encode(['string' => []])],
+
+    /* order API */
     ['key' => 'currencyLayerAPI', 'value' => '', 'title' => 'Currency Layer API', 'description' => 'Access API key for currency conversion', 'group' => 'Billing', 'type' => 'textInput', 'data' => '[]', 'default' => '', 'rules' => json_encode(['string' => []])],
 
 

@@ -183,16 +183,24 @@ $generator=new \Picqer\Barcode\BarcodeGeneratorSVG();
                 </div>
                 <div class="text-center no-print">
                     <?php if (in_array($model->status, [Invoice::STATUS_PENDING])): ?>
-                        <div><?= Html::a(Yii::$app->getModule('billing')->t('Pay Now'), Yii::$app->urlManager->createUrl(['/billing/invoice/pay', 'id' => $model->id, 'method' => 'paypal']), ['class' => 'btn btn-success']) ?></div>
+                        <div>
+                            <?= Html::a(Icon::widget(['icon' => 'paypal']).' '.Yii::$app->getModule('billing')->t('Pay'), Yii::$app->urlManager->createUrl(['/billing/invoice/pay', 'id' => $model->id, 'method' => 'paypal']), ['class' => 'btn btn-primary']) ?>
+                            <?= Html::a(Icon::widget(['icon' => 'btc']).' '.Yii::$app->getModule('billing')->t('Pay with Bitcoin'), Yii::$app->urlManager->createUrl(['/billing/invoice/pay', 'id' => $model->id, 'method' => 'bitcoin']), ['class' => 'btn btn-warning']) ?>
+                        </div>
+
+
                         <?php if($model->currency!='USD'):?>
                         <div class="text-center text-muted"><?= Yii::$app->getModule('billing')->t('We will convert total amount into US Dollars (USD).') ?></div>
                         <?php endif;?>
+
+
                         <div style="font-size: 2.5em" class="text-muted">
                             <?= Icon::widget(['icon' => 'cc-paypal']) ?>
                             <?= Icon::widget(['icon' => 'cc-visa']) ?>
                             <?= Icon::widget(['icon' => 'cc-mastercard']) ?>
                             <?= Icon::widget(['icon' => 'cc-amex']) ?>
                             <?= Icon::widget(['icon' => 'cc-discover']) ?>
+                            <?= Icon::widget(['icon' => 'btc']) ?>
                         </div>
                     <?php endif; ?>
                 </div>

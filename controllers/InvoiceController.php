@@ -8,6 +8,7 @@
 namespace modernkernel\billing\controllers;
 
 use common\components\BackendFilter;
+use modernkernel\billing\models\BitcoinAddress;
 use modernkernel\billing\models\Item;
 use Yii;
 use modernkernel\billing\models\Invoice;
@@ -282,6 +283,12 @@ class InvoiceController extends Controller
                     }
                     return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/paypal/create', 'id' => $model->id]));
                 }
+                if ($method == 'bitcoin') {
+                    /* generate make sure always have new addresses */
+                    BitcoinAddress::generate();
+                    return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/bitcoin/payment', 'invoice' => $model->id]));
+                }
+                /* return view if no payment method*/
                 return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id' => $id]));
             } else {
                 Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('We can not process your payment right now.'));
