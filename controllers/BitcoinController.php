@@ -11,10 +11,13 @@ use common\components\BackendFilter;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use modernkernel\billing\models\Invoice;
+use modernkernel\fontawesome\Icon;
 use Yii;
 use modernkernel\billing\models\BitcoinAddress;
 use modernkernel\billing\models\BitcoinAddressSearch;
 use yii\filters\AccessControl;
+use yii\helpers\Html;
+use yii\httpclient\Client;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
@@ -44,7 +47,7 @@ class BitcoinController extends Controller
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['payment'],
+                        'actions' => ['payment', 'check-payment'],
                         'roles' => ['@'],
                         'allow' => true,
                     ],
@@ -160,7 +163,33 @@ class BitcoinController extends Controller
         return $this->redirect(['index']);
     }
 
+    /**
+     * check payment
+     * @param $address
+     */
+    public function actionCheckPayment($address){
+        $client = new Client(['baseUrl' => 'https://blockexplorer.com/api/']);
+        $response = $client->get('addr/'.$address.'/balance')->send();
+        $balance=$response->getContent();
+        if($balance==0){
+            echo Icon::widget(['icon'=>'refresh fa-spin']).' '.Yii::$app->getModule('billing')->t('Waiting payment...');
+        } else {
+            echo Html::beginTag('div', ['class'=>'alert alert-success']);
+                echo Html::beginTag('h4');
+                    echo Icon::widget(['icon'=>'check']);
+                    echo '&nbsp;';
+                    echo Yii::$app->getModule('billing')->t('Payment received!');
+                echo Html::endTag('h4');
+            echo Html::endTag('div');
+        }
 
+    }
+
+    /**
+     * bitcoin payment
+     * @param $invoice
+     * @return string
+     */
     public function actionPayment($invoice){
 
         $this->layout = Yii::$app->view->theme->basePath . '/account.php';
