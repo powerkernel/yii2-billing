@@ -13,13 +13,16 @@ use common\models\Setting;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\httpclient\Client;
 
 /**
  * This is the model class for table "{{%billing_bitcoin_payments}}".
  *
+ * @property integer $id
  * @property string $address
  * @property string $id_invoice
  * @property integer $id_account
+ * @property string $request_balance
  * @property string $total_received
  * @property string $final_balance
  * @property string $tx_id
@@ -29,6 +32,8 @@ use yii\db\ActiveRecord;
  * @property integer $status
  * @property integer $created_at
  * @property integer $updated_at
+ *
+ * @property Invoice $invoice
  */
 class BitcoinAddress extends ActiveRecord
 {
@@ -108,8 +113,8 @@ class BitcoinAddress extends ActiveRecord
     {
         return [
             [['address'], 'required'],
-            [['id_account', 'tx_date', 'tx_confirmed', 'tx_check_date', 'status', 'created_at', 'updated_at'], 'integer'],
-            [['total_received', 'final_balance'], 'number'],
+            [['id', 'id_account', 'tx_date', 'tx_confirmed', 'tx_check_date', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['request_balance', 'total_received', 'final_balance'], 'number'],
             [['address'], 'string', 'max' => 35],
             [['id_invoice'], 'string', 'max' => 23],
             [['tx_id'], 'string', 'max' => 64],
@@ -122,9 +127,11 @@ class BitcoinAddress extends ActiveRecord
     public function attributeLabels()
     {
         return [
+            'id' => Yii::$app->getModule('billing')->t('ID'),
             'address' => Yii::$app->getModule('billing')->t('Address'),
             'id_invoice' => Yii::$app->getModule('billing')->t('Invoice'),
             'id_account' => Yii::$app->getModule('billing')->t('Account'),
+            'request_balance' => Yii::$app->getModule('billing')->t('Request Balance'),
             'total_received' => Yii::$app->getModule('billing')->t('Total Received'),
             'final_balance' => Yii::$app->getModule('billing')->t('Final Balance'),
             'tx_id' => Yii::$app->getModule('billing')->t('TX ID'),
@@ -145,6 +152,14 @@ class BitcoinAddress extends ActiveRecord
         return [
             TimestampBehavior::className(),
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getInvoice()
+    {
+        return $this->hasOne(Invoice::className(), ['id' => 'id_invoice']);
     }
 
     /**
@@ -169,6 +184,95 @@ class BitcoinAddress extends ActiveRecord
                 }
             }
 
+        }
+    }
+
+
+    /**
+     * check payment
+     * @return string|null
+     */
+    public function checkPayment(){
+        $addr=$this->address;
+        $btc=$this->request_balance;
+
+        $client = new Client(['baseUrl' => 'https://blockexplorer.com/api']);
+        $response = $client->get('txs', ['address'=>$addr])->send();
+
+        $r=$response->getContent();
+        $tx=json_decode($r, true);
+        //var_dump($tx);
+
+        $txid=null;
+        $txConfirmations=null;
+        $txDate=null;
+        $found=false;
+
+        if(!empty($tx['txs'])){
+            foreach($tx['txs'] as $transaction){
+                $txid=$transaction['txid'];
+                $txConfirmations=$transaction['confirmations'];
+                $txDate=$transaction['time'];
+                foreach($transaction['vout'] as $out){
+                    if($out['value']==$btc){
+                        if(in_array($addr, $out['scriptPubKey']['addresses'])){
+                            $found=true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+        }
+
+        /* payment received */
+        if(!empty($txid) && $found){
+            /* check balance */
+            $client = new Client(['baseUrl' => 'https://blockexplorer.com/api/']);
+            $balance['totalReceived'] = $client->get('addr/'.$this->address.'/totalReceived')->send()->getContent();
+            $balance['balance']=$client->get('addr/'.$this->address.'/balance')->send()->getContent();
+            $this->total_received=$balance['totalReceived']==0?0:$balance['totalReceived']/100000000;
+            $this->final_balance=$balance['balance']==0?0:$balance['balance']/100000000;
+
+
+            $this->tx_id=$txid;
+            $this->tx_check_date=time();
+            $this->tx_date=$txDate;
+            $this->tx_confirmed=$txConfirmations;
+            $this->save();
+            return json_encode(['payment_received'=>true]);
+        }
+//        else {
+//            $this->tx_id=null;
+//            $this->tx_check_date=time();
+//            $this->tx_date=null;
+//            $this->tx_confirmed=$txConfirmations;
+//            $this->save();
+//        }
+        return json_encode(['payment_received'=>false]);
+
+    }
+
+    /**
+     * @inheritdoc
+     * @param bool $insert
+     * @param array $changedAttributes
+     */
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes); // TODO: Change the autogenerated stub
+        if(!empty($this->tx_id)){
+            /* paid but unconfirmed tx */
+            if($this->tx_confirmed<2){
+                $this->invoice->status=Invoice::STATUS_PAID_UNCONFIRMED;
+            }
+            else {
+                $this->invoice->status=Invoice::STATUS_PAID;
+            }
+            $this->invoice->payment_method='Bitcoin';
+            //$this->invoice->transaction=$this->id;
+
+            $this->invoice->save();
         }
     }
 }

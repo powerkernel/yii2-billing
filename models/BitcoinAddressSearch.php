@@ -8,10 +8,8 @@
 
 namespace modernkernel\billing\models;
 
-use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use modernkernel\billing\models\BitcoinAddress;
 
 /**
  * BitcoinAddressSearch represents the model behind the search form about `modernkernel\billing\models\BitcoinAddress`.
@@ -25,8 +23,8 @@ class BitcoinAddressSearch extends BitcoinAddress
     {
         return [
             [['address', 'id_invoice', 'tx_id'], 'safe'],
-            [['id_account', 'tx_date', 'tx_confirmed', 'tx_check_date', 'status', 'created_at', 'updated_at'], 'integer'],
-            [['total_received', 'final_balance'], 'number'],
+            [['id', 'id_account', 'tx_date', 'tx_confirmed', 'tx_check_date', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['request_balance', 'total_received', 'final_balance'], 'number'],
         ];
     }
 
@@ -68,7 +66,9 @@ class BitcoinAddressSearch extends BitcoinAddress
 
         // grid filtering conditions
         $query->andFilterWhere([
+            'id' => $this->id,
             'id_account' => $this->id_account,
+            'request_balance' => $this->request_balance,
             'total_received' => $this->total_received,
             'final_balance' => $this->final_balance,
             'tx_date' => $this->tx_date,

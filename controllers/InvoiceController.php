@@ -286,7 +286,19 @@ class InvoiceController extends Controller
                 if ($method == 'bitcoin') {
                     /* generate make sure always have new addresses */
                     BitcoinAddress::generate();
-                    return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/bitcoin/payment', 'invoice' => $model->id]));
+                    /* if an btc address assigned to this invoice, use that address (assigned address no payment with x days will be released by cronjob */
+                    $address=BitcoinAddress::find()->where(['id_invoice'=>$model->id, 'tx_id'=>null])->one();
+                    if(empty($address)){
+                        $address=BitcoinAddress::find()->where(['status'=>BitcoinAddress::STATUS_NEW])->orderBy(['id'=>SORT_ASC])->one();
+                        $address->id_invoice=$model->id;
+                        $address->id_account=Yii::$app->user->id;
+                        $address->status=BitcoinAddress::STATUS_USED;
+                        $address->save();
+                    }
+                    /* session */
+                    $s=md5(time());
+                    Yii::$app->session[$s]=['invoice'=>$id, 'address'=>$address->id];
+                    return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/bitcoin/payment', 's' => $s]));
                 }
                 /* return view if no payment method*/
                 return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id' => $id]));

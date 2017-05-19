@@ -19,13 +19,16 @@ class m170515_042041_tbl_payment extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
         $this->createTable('{{%billing_bitcoin_payments}}', [
-            'address'=>$this->string(35)->notNull(), // PK
+            'id'=>$this->primaryKey(),
+            'address'=>$this->string(35)->notNull()->unique(),
 
             'id_invoice'=>$this->string(23)->null()->defaultValue(null),
             'id_account'=>$this->integer()->null()->defaultValue(null),
 
+            'request_balance'=> $this->decimal(20,8)->notNull()->defaultValue(0.00000000),
             'total_received'=> $this->decimal(20,8)->notNull()->defaultValue(0.00000000),
             'final_balance'=> $this->decimal(20,8)->notNull()->defaultValue(0.00000000),
+
 
 
             'tx_id'=> $this->string(64)->null()->defaultValue(null),
@@ -38,7 +41,7 @@ class m170515_042041_tbl_payment extends Migration
             'updated_at' => $this->integer()->notNull(),
 
         ], $tableOptions);
-        $this->addPrimaryKey('pk', '{{%billing_bitcoin_payments}}', ['address']);
+        $this->addForeignKey('fk_bitcoin_payments_id_invoice-invoice_id', '{{%billing_bitcoin_payments}}', 'id_invoice', '{{%billing_invoice}}', 'id');
     }
 
     /**
@@ -46,6 +49,7 @@ class m170515_042041_tbl_payment extends Migration
      */
     public function down()
     {
+        $this->dropForeignKey('fk_bitcoin_payments_id_invoice-invoice_id', '{{%billing_bitcoin_payments}}');
         $this->dropTable('{{%billing_bitcoin_payments}}');
     }
 

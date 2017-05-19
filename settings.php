@@ -25,6 +25,7 @@ $s = [
     ['key' => 'paypalSandboxSecret', 'value' => '', 'title' => 'Paypal Sandbox Secret', 'description' => 'Sandbox secret string', 'group' => 'Billing', 'type' => 'textInput', 'data' => '[]', 'default' => '', 'rules' => json_encode(['string' => []])],
 
     /* Bitcoin */
+    ['key' => 'btcPaymentTime', 'value' => '', 'title' => 'BTC Payment Timeout', 'description' => 'Payment timeout in seconds', 'group' => 'Billing', 'type' => 'textInput', 'data' => '[]', 'default' => '900', 'rules' => json_encode(['integer' => ['min'=>300, 'max'=>3600]])],
     ['key' => 'btcWalletXPub', 'value' => '', 'title' => 'BTC Wallet xPub', 'description' => 'Wallet extended public key', 'group' => 'Billing', 'type' => 'textInput', 'data' => '[]', 'default' => '', 'rules' => json_encode(['string' => []])],
 
     /* order API */

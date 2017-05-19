@@ -44,8 +44,11 @@ class Invoice extends ActiveRecord
 
     const STATUS_PENDING = 10;
     const STATUS_PAID = 20;
+
     const STATUS_CANCELED = 30;
     const STATUS_REFUNDED = 40;
+
+    const STATUS_PAID_UNCONFIRMED = 50;
 
     public $payment_date_picker;
 
@@ -61,6 +64,8 @@ class Invoice extends ActiveRecord
             self::STATUS_PAID => Yii::$app->getModule('billing')->t('Paid'),
             self::STATUS_CANCELED => Yii::$app->getModule('billing')->t('Canceled'),
             self::STATUS_REFUNDED => Yii::$app->getModule('billing')->t('Refunded'),
+            self::STATUS_PAID_UNCONFIRMED => Yii::$app->getModule('billing')->t('Paid (unconfirmed)'),
+
         ];
         if (is_array($e))
             foreach ($e as $i)

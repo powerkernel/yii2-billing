@@ -34,13 +34,14 @@ $this->registerJs('$(document).on("pjax:send", function(){ $(".grid-view-overlay
                     'dataProvider' => $dataProvider,
                     'filterModel' => $searchModel,
                     'columns' => [
-                        ['class' => 'yii\grid\SerialColumn'],
-
-                        ['attribute' => 'address', 'value' => function ($model){return Html::a($model->address, Yii::$app->urlManager->createUrl(['/billing/bitcoin/view', 'id'=>$model->address]), ['title'=>Yii::$app->getModule('billing')->t('View BTC Address'), 'data-pjax'=>0]) ;}, 'format'=>'raw'],
+                        //['class' => 'yii\grid\SerialColumn'],
+                        'id',
+                        ['attribute' => 'address', 'value' => function ($model){return Html::a($model->address, Yii::$app->urlManager->createUrl(['/billing/bitcoin/view', 'id'=>$model->id]), ['title'=>Yii::$app->getModule('billing')->t('View BTC Address'), 'data-pjax'=>0]) ;}, 'format'=>'raw'],
                         'id_invoice',
-                        'id_account',
+                        //'id_account',
+
+                        'request_balance',
                         'total_received',
-                        'final_balance',
                         // 'tx_id',
                         // 'tx_date',
                         // 'tx_confirmed',

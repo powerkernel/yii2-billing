@@ -30,6 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'address',
             'id_invoice',
             'id_account',
+            'request_balance',
             'total_received',
             'final_balance',
             'tx_id',

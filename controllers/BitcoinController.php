@@ -8,11 +8,13 @@
 namespace modernkernel\billing\controllers;
 
 use common\components\BackendFilter;
+use common\models\Setting;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use modernkernel\billing\models\Invoice;
 use modernkernel\fontawesome\Icon;
 use Yii;
+use modernkernel\billing\components\CurrencyLayer;
 use modernkernel\billing\models\BitcoinAddress;
 use modernkernel\billing\models\BitcoinAddressSearch;
 use yii\filters\AccessControl;
@@ -163,54 +165,67 @@ class BitcoinController extends Controller
         return $this->redirect(['index']);
     }
 
+
     /**
-     * check payment
      * @param $address
+     * @return bool
      */
     public function actionCheckPayment($address){
-        $client = new Client(['baseUrl' => 'https://blockexplorer.com/api/']);
-        $response = $client->get('addr/'.$address.'/balance')->send();
-        $balance=$response->getContent();
-        if($balance==0){
-            echo Icon::widget(['icon'=>'refresh fa-spin']).' '.Yii::$app->getModule('billing')->t('Waiting payment...');
-        } else {
-            echo Html::beginTag('div', ['class'=>'alert alert-success']);
-                echo Html::beginTag('h4');
-                    echo Icon::widget(['icon'=>'check']);
-                    echo '&nbsp;';
-                    echo Yii::$app->getModule('billing')->t('Payment received!');
-                echo Html::endTag('h4');
-            echo Html::endTag('div');
+        $btcAddr=BitcoinAddress::find()->where(['address'=>$address])->one();
+        if($btcAddr){
+            return $btcAddr->checkPayment();
         }
-
     }
 
     /**
      * bitcoin payment
-     * @param $invoice
+     * @param $s string
      * @return string
+     * @throws NotFoundHttpException
      */
-    public function actionPayment($invoice){
+    public function actionPayment($s){
 
         $this->layout = Yii::$app->view->theme->basePath . '/account.php';
         $this->view->title=Yii::$app->getModule('billing')->t('Pay with Bitcoin');
-        $invoice=Invoice::findOne($invoice);
-        /* validate invoice, convert invoice amt to BTC */
+        $session=Yii::$app->session[$s];
+        $invoice=Invoice::findOne($session['invoice']);
+        $address=BitcoinAddress::findOne($session['address']);
+        if(!$invoice or !$address) {
+            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+        }
+        /* load btc from saved address or convert invoice amount to BTC if > 15min */
+        if($address->request_balance==0 or (time()-$address->updated_at)>(integer)Setting::getValue('btcPaymentTime')){
+            if($invoice->currency!='USD'){
+                $usd=(new CurrencyLayer())->convertToUSD($invoice->currency, $invoice->total);
+            }
+            else {
+                $usd=$invoice->total;
+            }
+            $client = new Client(['baseUrl' => 'https://blockchain.info']);
+            $response = $client->get('tobtc', ['currency'=>'USD', 'value'=>round($usd,2)])->send();
+            $btc=$response->getContent();
+            if(empty($btc)){
+                return $this->redirect($invoice->getInvoiceUrl());
+            }
+            $address->request_balance=$btc;
+            $address->save();
 
-        /* check if this invoice have address assign, not older then 7 days  */
+        }
+        else {
+            $btc=$address->request_balance;
+        }
 
-        /* get new address */
-        $address=BitcoinAddress::find()->where(['status'=>BitcoinAddress::STATUS_NEW])->one();
-        $bitcoin['amount']=0.000168;
+        /* set btc info */
+        //$btc=0.095; // manual BTC amount
+        $bitcoin['amount']=$btc;
         $bitcoin['address']=$address->address;
+        $bitcoin['date']=$address->updated_at;
         $bitcoin['url']='bitcoin:'.$bitcoin['address'].'?amount='.$bitcoin['amount'];
         /* QR Code */
-        $qrCode = new QrCode($bitcoin['url']); //format=>bitcoin:15AotgE3CPm3yuekKVeErbSj7YxnmifbY9?amount=0.006124
+        $qrCode = new QrCode($bitcoin['url']);
         $qrCode->setSize(500);
         $pngWriter = new PngWriter($qrCode);
         $bitcoin['base64QR']=base64_encode($pngWriter->writeString());
-
-
 
         return $this->render('payment', [
             'bitcoin'=>$bitcoin,

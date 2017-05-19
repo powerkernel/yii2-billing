@@ -21,7 +21,7 @@
                 <div><hr /></div>
                 <div>
                     <div class="text-muted"><?= Yii::$app->getModule('billing')->t('ADDRESS') ?></div>
-                    <div class="bg-gray color-palette text-bold btn btn-default" id="btc-address" data-copied="<?= Yii::$app->getModule('billing')->t('Address copied') ?>" data-addr="<?= $bitcoin['address'] ?>"><?= $bitcoin['address'] ?></div>
+                    <div class="bg-gray color-palette text-bold btn btn-default" id="btc-address" data-date="<?= $bitcoin['date'] ?>" data-copied="<?= Yii::$app->getModule('billing')->t('Address copied') ?>" data-addr="<?= $bitcoin['address'] ?>"><?= $bitcoin['address'] ?></div>
 
                 </div>
             </div>
