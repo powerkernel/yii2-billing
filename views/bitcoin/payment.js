@@ -44,7 +44,7 @@ $("#copy-tab").on("click", "#btc-address", function () {
 /**
  * check payment every 5s
  */
-setInterval(checkPayment, 5000);
+setInterval(checkPayment, 10000);
 
 /**
  * count down

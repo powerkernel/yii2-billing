@@ -11,11 +11,11 @@ $time = $local ? '* * * * *' : '0 23 * * *';
 
 $schedule->call(function (\yii\console\Application $app) {
 
-    /* get used addresses, but no tx with in 3 days  */
+    /* get used addresses, but no tx > 3 days  */
     $now=time();
     $days=3*24*3600;
     $point=$now-$days;
-    $addresses=BitcoinAddress::find()->where('status=:status AND updated_at>=:point AND tx_id IS NULL', [
+    $addresses=BitcoinAddress::find()->where('status=:status AND updated_at<=:point AND tx_id IS NULL', [
         ':status'=>BitcoinAddress::STATUS_USED,
         ':point'=>$point
     ])->all();
