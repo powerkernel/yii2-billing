@@ -72,7 +72,7 @@ setInterval(function () {
 
     // show how many hours, minutes and seconds are left
     if (moment.duration(duration).asSeconds() >= 0) {
-        if (moment.duration(duration).asSeconds() < 60) {
+        if (moment.duration(duration).asSeconds() < 120) {
             $("#count-down").addClass("text-danger");
         }
         $m.text(m);

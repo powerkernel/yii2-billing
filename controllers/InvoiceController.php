@@ -8,12 +8,14 @@
 namespace modernkernel\billing\controllers;
 
 use common\components\BackendFilter;
+use modernkernel\billing\components\CurrencyLayer;
 use modernkernel\billing\models\BitcoinAddress;
 use modernkernel\billing\models\Item;
 use Yii;
 use modernkernel\billing\models\Invoice;
 use modernkernel\billing\models\InvoiceSearch;
 use yii\filters\AccessControl;
+use yii\httpclient\Client;
 use yii\web\Controller;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
@@ -293,11 +295,26 @@ class InvoiceController extends Controller
                         $address->id_invoice=$model->id;
                         $address->id_account=Yii::$app->user->id;
                         $address->status=BitcoinAddress::STATUS_USED;
-                        $address->save();
                     }
+                    /* set btc amount */
+                    if($model->currency!='USD'){
+                        $usd=(new CurrencyLayer())->convertToUSD($model->currency, $model->total);
+                    }
+                    else {
+                        $usd=$model->total;
+                    }
+                    $client = new Client(['baseUrl' => 'https://blockchain.info']);
+                    $response = $client->get('tobtc', ['currency'=>'USD', 'value'=>round($usd,2)])->send();
+                    $btc=$response->getContent();
+                    if(empty($btc)){
+                        return $this->redirect($model->getInvoiceUrl());
+                    }
+                    $address->request_balance=$btc;
+                    $address->save();
                     /* session */
-                    $s=md5(time());
-                    Yii::$app->session[$s]=['invoice'=>$id, 'address'=>$address->id];
+                    $time=time();
+                    $s=md5($time);
+                    Yii::$app->session[$s]=['invoice'=>$id, 'address'=>$address->id, 'time'=>$time];
                     return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/bitcoin/payment', 's' => $s]));
                 }
                 /* return view if no payment method*/

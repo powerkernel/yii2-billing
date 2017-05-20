@@ -12,14 +12,10 @@ use common\models\Setting;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use modernkernel\billing\models\Invoice;
-use modernkernel\fontawesome\Icon;
 use Yii;
-use modernkernel\billing\components\CurrencyLayer;
 use modernkernel\billing\models\BitcoinAddress;
 use modernkernel\billing\models\BitcoinAddressSearch;
 use yii\filters\AccessControl;
-use yii\helpers\Html;
-use yii\httpclient\Client;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
@@ -171,10 +167,15 @@ class BitcoinController extends Controller
      * @return bool
      */
     public function actionCheckPayment($address){
-        $btcAddr=BitcoinAddress::find()->where(['address'=>$address])->one();
+        $btcAddr=BitcoinAddress::find()->where([
+            'address'=>$address,
+            'id_account'=>Yii::$app->user->id,
+            'status'=>BitcoinAddress::STATUS_USED
+        ])->one();
         if($btcAddr){
             return $btcAddr->checkPayment();
         }
+        return false;
     }
 
     /**
@@ -190,34 +191,25 @@ class BitcoinController extends Controller
         $session=Yii::$app->session[$s];
         $invoice=Invoice::findOne($session['invoice']);
         $address=BitcoinAddress::findOne($session['address']);
-        if(!$invoice or !$address) {
+        $time=$session['time'];
+        if(empty($invoice) or empty($address) or empty($time)) {
             throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
         }
-        /* load btc from saved address or convert invoice amount to BTC if > 15min */
-        if($address->request_balance==0 or (time()-$address->updated_at)>(integer)Setting::getValue('btcPaymentTime')){
-            if($invoice->currency!='USD'){
-                $usd=(new CurrencyLayer())->convertToUSD($invoice->currency, $invoice->total);
-            }
-            else {
-                $usd=$invoice->total;
-            }
-            $client = new Client(['baseUrl' => 'https://blockchain.info']);
-            $response = $client->get('tobtc', ['currency'=>'USD', 'value'=>round($usd,2)])->send();
-            $btc=$response->getContent();
-            if(empty($btc)){
-                return $this->redirect($invoice->getInvoiceUrl());
-            }
-            $address->request_balance=$btc;
-            $address->save();
-
+        /* if expired, return */
+        $now=time();
+        $point=$now-(integer)Setting::getValue('btcPaymentTime');
+        if($time<$point){
+            return $this->redirect($invoice->getInvoiceUrl());
         }
-        else {
-            $btc=$address->request_balance;
+
+        /* if invoice paid, return */
+        if($invoice->status!=Invoice::STATUS_PENDING){
+            return $this->redirect($invoice->getInvoiceUrl());
         }
 
         /* set btc info */
         //$btc=0.095; // manual BTC amount
-        $bitcoin['amount']=$btc;
+        $bitcoin['amount']=$address->request_balance;;
         $bitcoin['address']=$address->address;
         $bitcoin['date']=$address->updated_at;
         $bitcoin['url']='bitcoin:'.$bitcoin['address'].'?amount='.$bitcoin['amount'];

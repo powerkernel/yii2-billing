@@ -1,9 +1,9 @@
 <?php
 /**
-* @author Harry Tang <harry@modernkernel.com>
-* @link https://modernkernel.com
-* @copyright Copyright (c) 2017 Modern Kernel
-*/
+ * @author Harry Tang <harry@modernkernel.com>
+ * @link https://modernkernel.com
+ * @copyright Copyright (c) 2017 Modern Kernel
+ */
 
 namespace modernkernel\billing\models;
 
@@ -41,6 +41,8 @@ class BitcoinAddress extends ActiveRecord
 
     const STATUS_NEW = 10;
     const STATUS_USED = 20;
+    const STATUS_DONE = 30;
+    const STATUS_UNCONFIRMED = 40;
 
 
     /**
@@ -51,8 +53,10 @@ class BitcoinAddress extends ActiveRecord
     public static function getStatusOption($e = null)
     {
         $option = [
-         self::STATUS_NEW => Yii::$app->getModule('billing')->t('New'),
-         self::STATUS_USED => Yii::$app->getModule('billing')->t('Used'),
+            self::STATUS_NEW => Yii::$app->getModule('billing')->t('New'),
+            self::STATUS_USED => Yii::$app->getModule('billing')->t('Used'),
+            self::STATUS_DONE => Yii::$app->getModule('billing')->t('Done'),
+            self::STATUS_UNCONFIRMED => Yii::$app->getModule('billing')->t('Unconfirmed'),
         ];
         if (is_array($e))
             foreach ($e as $i)
@@ -66,9 +70,9 @@ class BitcoinAddress extends ActiveRecord
      */
     public function getStatusText()
     {
-        $status=$this->status;
-        $list=self::getStatusOption();
-        if(!empty($status) && in_array($status, array_keys($list))){
+        $status = $this->status;
+        $list = self::getStatusOption();
+        if (!empty($status) && in_array($status, array_keys($list))) {
             return $list[$status];
         }
         return Yii::$app->getModule('billing')->t('Unknown');
@@ -78,24 +82,30 @@ class BitcoinAddress extends ActiveRecord
      * get status color text
      * @return string
      */
-    public function getStatusColorText(){
+    public function getStatusColorText()
+    {
         $status = $this->status;
         $list = self::getStatusOption();
 
-        $color='default';
-        if($status==self::STATUS_NEW){
-            $color='primary';
+        $color = 'default';
+        if ($status == self::STATUS_NEW) {
+            $color = 'info';
         }
-        if($status==self::STATUS_USED){
-            $color='default';
+        if ($status == self::STATUS_USED) {
+            $color = 'default';
+        }
+        if ($status == self::STATUS_DONE) {
+            $color = 'primary';
+        }
+        if ($status == self::STATUS_UNCONFIRMED) {
+            $color = 'warning';
         }
 
         if (!empty($status) && in_array($status, array_keys($list))) {
-            return '<span class="label label-'.$color.'">'.$list[$status].'</span>';
+            return '<span class="label label-' . $color . '">' . $list[$status] . '</span>';
         }
-        return '<span class="label label-'.$color.'">'.Yii::$app->getModule('ticket')->t('Unknown').'</span>';
+        return '<span class="label label-' . $color . '">' . Yii::$app->getModule('ticket')->t('Unknown') . '</span>';
     }
-
 
 
     /**
@@ -165,21 +175,22 @@ class BitcoinAddress extends ActiveRecord
     /**
      * generate btc address
      */
-    public static function generate(){
-        $xpub=Setting::getValue('btcWalletXPub');
-        if(!empty($xpub)){
+    public static function generate()
+    {
+        $xpub = Setting::getValue('btcWalletXPub');
+        if (!empty($xpub)) {
             $network = Bitcoin::getNetwork();
             $hk = HierarchicalKeyFactory::fromExtended($xpub, $network);
             /* count total new address*/
-            $new=BitcoinAddress::find()->where(['status'=>self::STATUS_NEW])->count();
+            $new = BitcoinAddress::find()->where(['status' => self::STATUS_NEW])->count();
             /* only generate more address if < 20*/
-            if($new<20){
-                $child=BitcoinAddress::find()->count();
-                $n=20-$new;
+            if ($new < 20) {
+                $child = BitcoinAddress::find()->count();
+                $n = 20 - $new;
                 for ($i = 0; $i < $n; $i++) {
                     $address = $hk->deriveChild($child + $i)->getPublicKey()->getAddress();
-                    $addr= new BitcoinAddress();
-                    $addr->address=$address->getAddress();
+                    $addr = new BitcoinAddress();
+                    $addr->address = $address->getAddress();
                     $addr->save();
                 }
             }
@@ -192,31 +203,31 @@ class BitcoinAddress extends ActiveRecord
      * check payment
      * @return string|null
      */
-    public function checkPayment(){
-        $addr=$this->address;
-        $btc=$this->request_balance;
+    public function checkPayment()
+    {
+        $addr = $this->address;
+        $btc = $this->request_balance;
 
         $client = new Client(['baseUrl' => 'https://blockexplorer.com/api']);
-        $response = $client->get('txs', ['address'=>$addr])->send();
+        $response = $client->get('txs', ['address' => $addr])->send();
 
-        $r=$response->getContent();
-        $tx=json_decode($r, true);
-        //var_dump($tx);
+        $r = $response->getContent();
+        $tx = json_decode($r, true);
 
-        $txid=null;
-        $txConfirmations=null;
-        $txDate=null;
-        $found=false;
+        $txid = null;
+        $txConfirmations = null;
+        $txDate = null;
+        $found = false;
 
-        if(!empty($tx['txs'])){
-            foreach($tx['txs'] as $transaction){
-                $txid=$transaction['txid'];
-                $txConfirmations=$transaction['confirmations'];
-                $txDate=$transaction['time'];
-                foreach($transaction['vout'] as $out){
-                    if($out['value']==$btc){
-                        if(in_array($addr, $out['scriptPubKey']['addresses'])){
-                            $found=true;
+        if (!empty($tx['txs'])) {
+            foreach ($tx['txs'] as $transaction) {
+                $txid = $transaction['txid'];
+                $txConfirmations = $transaction['confirmations'];
+                $txDate = $transaction['time'];
+                foreach ($transaction['vout'] as $out) {
+                    if ($out['value'] == $btc) {
+                        if (in_array($addr, $out['scriptPubKey']['addresses'])) {
+                            $found = true;
                             break;
                         }
                     }
@@ -225,31 +236,28 @@ class BitcoinAddress extends ActiveRecord
 
         }
 
-        /* payment received */
-        if(!empty($txid) && $found){
+        /* payment received? */
+        if (!empty($txid) && $found) {
             /* check balance */
             $client = new Client(['baseUrl' => 'https://blockexplorer.com/api/']);
-            $balance['totalReceived'] = $client->get('addr/'.$this->address.'/totalReceived')->send()->getContent();
-            $balance['balance']=$client->get('addr/'.$this->address.'/balance')->send()->getContent();
-            $this->total_received=$balance['totalReceived']==0?0:$balance['totalReceived']/100000000;
-            $this->final_balance=$balance['balance']==0?0:$balance['balance']/100000000;
+            $balance['totalReceived'] = $client->get('addr/' . $this->address . '/totalReceived')->send()->getContent();
+            $balance['balance'] = $client->get('addr/' . $this->address . '/balance')->send()->getContent();
+            $this->total_received = $balance['totalReceived'] == 0 ? 0 : $balance['totalReceived'] / 100000000;
+            $this->final_balance = $balance['balance'] == 0 ? 0 : $balance['balance'] / 100000000;
 
-
-            $this->tx_id=$txid;
-            $this->tx_check_date=time();
-            $this->tx_date=$txDate;
-            $this->tx_confirmed=$txConfirmations;
+            $this->tx_id = $txid;
+            $this->tx_check_date = time();
+            $this->tx_date = $txDate;
+            $this->tx_confirmed = $txConfirmations;
+            $this->status=BitcoinAddress::STATUS_UNCONFIRMED;
+            if($txConfirmations>2){
+                $this->status=BitcoinAddress::STATUS_DONE;
+            }
             $this->save();
-            return json_encode(['payment_received'=>true]);
+            return json_encode(['payment_received' => true]);
         }
-//        else {
-//            $this->tx_id=null;
-//            $this->tx_check_date=time();
-//            $this->tx_date=null;
-//            $this->tx_confirmed=$txConfirmations;
-//            $this->save();
-//        }
-        return json_encode(['payment_received'=>false]);
+
+        return json_encode(['payment_received' => false]);
 
     }
 
@@ -261,18 +269,34 @@ class BitcoinAddress extends ActiveRecord
     public function afterSave($insert, $changedAttributes)
     {
         parent::afterSave($insert, $changedAttributes); // TODO: Change the autogenerated stub
-        if(!empty($this->tx_id)){
+        if (!empty($this->tx_id)) {
             /* paid but unconfirmed tx */
-            if($this->tx_confirmed<2){
-                $this->invoice->status=Invoice::STATUS_PAID_UNCONFIRMED;
+            if ($this->tx_confirmed < 3) {
+                $this->invoice->status = Invoice::STATUS_PAID_UNCONFIRMED;
+            } else {
+                $this->invoice->status = Invoice::STATUS_PAID;
             }
-            else {
-                $this->invoice->status=Invoice::STATUS_PAID;
-            }
-            $this->invoice->payment_method='Bitcoin';
-            //$this->invoice->transaction=$this->id;
-
+            $this->invoice->payment_method = 'Bitcoin';
             $this->invoice->save();
         }
+    }
+
+    /**
+     * release address
+     */
+    public function release()
+    {
+        $this->id_invoice = null;
+        $this->id_account = null;
+        $this->request_balance = 0.00000000;
+        $this->total_received = 0.00000000;
+        $this->final_balance = 0.00000000;
+
+        $this->tx_id = null;
+        $this->tx_confirmed = 0;
+        $this->tx_date = null;
+        $this->tx_check_date = null;
+        $this->status = self::STATUS_NEW;
+        $this->save();
     }
 }
