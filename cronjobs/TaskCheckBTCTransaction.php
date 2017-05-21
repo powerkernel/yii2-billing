@@ -36,5 +36,11 @@ $schedule->call(function (\yii\console\Application $app) {
     $log->result = $output;
     $log->save();
 
-    //echo $app->getModule('billing')->t(basename(__FILE__, '.php') . ': ' . $output . "\n\n");
+    /* delete old logs never bad */
+    $period = 24 * 60 * 60; // 1 day
+    $point = time() - $period;
+    \common\models\TaskLog::deleteAll('task=:task AND created_at<=:point', [
+        ':task' => basename(__FILE__, '.php'),
+        ':point' => $point
+    ]);
 })->cron($time);

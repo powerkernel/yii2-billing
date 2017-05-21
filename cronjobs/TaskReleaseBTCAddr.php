@@ -7,7 +7,7 @@ use common\Core;
 use modernkernel\billing\models\BitcoinAddress;
 
 $local = Core::isLocalhost();
-$time = $local ? '* * * * *' : '0 23 * * *';
+$time = $local ? '* * * * *' : '6 6 * * *';
 
 $schedule->call(function (\yii\console\Application $app) {
 
@@ -33,5 +33,18 @@ $schedule->call(function (\yii\console\Application $app) {
     if (empty($output)) {
         $output = $app->getModule('billing')->t('No BTC address need to release.');
     }
-    echo $app->getModule('billing')->t(basename(__FILE__, '.php') . ': ' . $output . "\n\n");
+
+    $log = new \common\models\TaskLog();
+    $log->task = basename(__FILE__, '.php');
+    $log->result = $output;
+    $log->save();
+    /* delete old logs never bad */
+    $period = 7 * 24 * 60 * 60; // 7 days
+    $point = time() - $period;
+    \common\models\TaskLog::deleteAll('task=:task AND created_at<=:point', [
+        ':task' => basename(__FILE__, '.php'),
+        ':point' => $point
+    ]);
+
+
 })->cron($time);

@@ -247,7 +247,7 @@ class BitcoinAddress extends ActiveRecord
 
             $this->tx_id = $txid;
             $this->tx_check_date = time();
-            $this->tx_date = $txDate;
+            $this->tx_date = empty($this->tx_date)?$txDate:$this->tx_date;
             $this->tx_confirmed = $txConfirmations;
             $this->status=BitcoinAddress::STATUS_UNCONFIRMED;
             if($txConfirmations>2){
