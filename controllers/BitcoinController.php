@@ -81,7 +81,7 @@ class BitcoinController extends Controller
 
         /* metaData */
         //$title=$model->title;
-        $this->view->title = Yii::t('billing', 'BitcoinAddress');
+        $this->view->title = Yii::t('billing', 'Bitcoin Address');
         //$keywords = $model->tags;
         //$description = $model->desc;
         //$metaTags[]=['name'=>'keywords', 'content'=>$keywords];
