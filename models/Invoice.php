@@ -64,7 +64,7 @@ class Invoice extends ActiveRecord
             self::STATUS_PAID => Yii::$app->getModule('billing')->t('Paid'),
             self::STATUS_CANCELED => Yii::$app->getModule('billing')->t('Canceled'),
             self::STATUS_REFUNDED => Yii::$app->getModule('billing')->t('Refunded'),
-            self::STATUS_PAID_UNCONFIRMED => Yii::$app->getModule('billing')->t('Paid (unconfirmed)'),
+            self::STATUS_PAID_UNCONFIRMED => Yii::$app->getModule('billing')->t('Receiving'),
 
         ];
         if (is_array($e))
@@ -261,6 +261,9 @@ class Invoice extends ActiveRecord
         }
         if ($status == self::STATUS_CANCELED) {
             return '<span class="label label-warning">' . $this->statusText . '</span>';
+        }
+        if ($status == self::STATUS_PAID_UNCONFIRMED) {
+            return '<span class="label label-info">' . $this->statusText . '</span>';
         }
         return $this->statusText;
     }
