@@ -95,9 +95,14 @@ class InvoiceSearch extends Invoice
             ->andFilterWhere(['like', '{{%billing_invoice}}.currency', $this->currency])
             ->andFilterWhere(['like', '{{%core_account}}.fullname', $this->fullname]);;
 
-        $query->andFilterWhere([
-            'DATE(FROM_UNIXTIME({{%billing_invoice}}.created_at))' => $this->created_at,
-        ]);
+        if(!empty($this->created_at)){
+            $query->andFilterWhere([
+                'DATE(CONVERT_TZ(FROM_UNIXTIME({{%billing_invoice}}.created_at), :UTC, :ATZ))' => $this->created_at,
+            ])->params([
+                ':UTC'=>'+00:00',
+                ':ATZ'=>date('P')
+            ]);
+        }
 
         return $dataProvider;
     }
