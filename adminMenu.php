@@ -8,11 +8,18 @@
 
 
 use common\Core;
+use common\widgets\SideMenu;
 
-return [
-    ['label' => Yii::$app->getModule('billing')->t('Billing')],
-    ['icon' => 'vcard', 'label' => Yii::$app->getModule('billing')->t('Customers'), 'url' => ['/billing/info/index'], 'active' => Core::checkMCA('billing', 'info', '*')],
-    ['icon' => 'money', 'label' => Yii::$app->getModule('billing')->t('Invoices'), 'url' => ['/billing/invoice/index'], 'active' => Core::checkMCA('billing', 'invoice', '*')],
-    ['icon' => 'university', 'label' => Yii::$app->getModule('billing')->t('Banks'), 'url' => ['/billing/bank/index'], 'active' => Core::checkMCA('billing', 'bank', '*')],
-    ['icon' => 'btc', 'label' => Yii::$app->getModule('billing')->t('Bitcoin'), 'url' => ['/billing/bitcoin/index'], 'active' => Core::checkMCA('billing', 'bitcoin', '*')],
+
+$menu=[
+    'title'=>Yii::$app->getModule('billing')->t('Billing'),
+    'icon'=> 'btc',
+    'items'=>[
+        ['icon' => 'vcard', 'label' => Yii::$app->getModule('billing')->t('Customers'), 'url' => ['/billing/info/index'], 'active' => Core::checkMCA('billing', 'info', '*')],
+        ['icon' => 'money', 'label' => Yii::$app->getModule('billing')->t('Invoices'), 'url' => ['/billing/invoice/index'], 'active' => Core::checkMCA('billing', 'invoice', '*')],
+        ['icon' => 'university', 'label' => Yii::$app->getModule('billing')->t('Banks'), 'url' => ['/billing/bank/index'], 'active' => Core::checkMCA('billing', 'bank', '*')],
+        ['icon' => 'btc', 'label' => Yii::$app->getModule('billing')->t('Bitcoin'), 'url' => ['/billing/bitcoin/index'], 'active' => Core::checkMCA('billing', 'bitcoin', '*')],
+    ],
 ];
+$menu['active']=SideMenu::isActive($menu['items']);
+return [$menu];
