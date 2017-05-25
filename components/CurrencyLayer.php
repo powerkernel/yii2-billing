@@ -62,13 +62,15 @@ class CurrencyLayer
      */
     public function convert($from, $to, $amount)
     {
-        //if($amount==0) return $amount;
-
         if($from!='USD'){
             $amount=$this->convertToUSD($from, $amount);
         }
         if (!empty($this->quotes['USD' . $to])) {
-            return $amount*$this->quotes['USD' . $to];
+            $result=$amount*$this->quotes['USD' . $to];
+            if($to=='VND'){
+                $result=ceil($result/1000)*1000; // round up
+            }
+            return $result;
         }
         return false;
     }
