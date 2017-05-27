@@ -43,8 +43,9 @@ $this->registerJs('$(document).on("pjax:send", function(){ $(".grid-view-overlay
                         // 'city',
                         // 'state',
                         // 'zip',
+                        'phone',
                         'country',
-                        // 'phone',
+
                         // 'status',
                         // 'created_at',
                         // 'updated_at',

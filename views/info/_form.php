@@ -7,8 +7,9 @@
 
 use common\Core;
 use conquer\select2\Select2Widget;
+use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model modernkernel\billing\models\BillingInfo */
@@ -48,7 +49,7 @@ use yii\widgets\ActiveForm;
                 'options' => ['prompt' => Yii::$app->getModule('billing')->t('Select Country')]
             ]) ?>
 
-            <?= $form->field($model, 'phone')->textInput(['maxlength' => true]) ?>
+            <?= $form->field($model, 'phone')->textInput(['maxlength' => true])->hint(Yii::$app->getModule('billing')->t('Add the ‘+’ prefix and the country code before the number. Like <strong>+84</strong>123123123'), ['class'=>'hint-block text-muted']) ?>
         </div>
     </div>
 

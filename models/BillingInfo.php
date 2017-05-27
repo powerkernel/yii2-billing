@@ -87,7 +87,10 @@ class BillingInfo extends ActiveRecord
         return [
             [['f_name', 'l_name', 'address', 'city', 'country', 'phone'], 'required'],
             [['id_account', 'status', 'created_at', 'updated_at'], 'integer'],
-            [['company', 'tax_id', 'f_name', 'l_name', 'address', 'address2', 'city', 'state', 'zip', 'country', 'phone'], 'string', 'max' => 255],
+            [['company', 'tax_id', 'f_name', 'l_name', 'address', 'address2', 'city', 'state', 'zip', 'country'], 'string', 'max' => 255],
+
+            [['phone'], 'string', 'max' => 14],
+            [['phone'], 'match', 'pattern'=>'/^\+[1-9][0-9]{9,12}$/'],
         ];
     }
 
