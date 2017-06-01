@@ -9,11 +9,13 @@ use common\models\Setting;
 use modernkernel\billing\components\CurrencyLayer;
 use modernkernel\billing\models\Invoice;
 use modernkernel\fontawesome\Icon;
+use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $info [] */
 /* @var $model modernkernel\billing\models\Invoice */
+/* @var $coupon modernkernel\billing\models\CouponForm */
 
 $this->params['breadcrumbs'][] = ['label' => Yii::t('billing', 'Invoices'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
@@ -181,9 +183,24 @@ $generator=new \Picqer\Barcode\BarcodeGeneratorSVG();
                         </tbody>
                     </table>
                 </div>
-                <div class="text-center no-print">
+                <div class="no-print">
                     <?php if (in_array($model->status, [Invoice::STATUS_PENDING])): ?>
-                        <div>
+                        <?php if(!empty($coupon)):?>
+                        <?php $form = ActiveForm::begin(['layout' => 'default']); ?>
+                        <div class="row">
+                            <div class="col-sm-9">
+                                <?= $form->field($coupon, 'coupon')->textInput(['maxlength' => true, 'placeholder'=>$coupon->getAttributeLabel('coupon')])->label(false) ?>
+                            </div>
+                            <div class="col-sm-3">
+                                <?= Html::submitButton(Yii::t('billing', 'Apply'), ['class' => 'btn btn-success']) ?>
+                            </div>
+                        </div>
+                        <?php ActiveForm::end(); ?>
+                        <div><hr /></div>
+                        <?php endif;?>
+
+
+                        <div class="text-center">
                             <?= Html::a(Icon::widget(['icon' => 'paypal']).' '.Yii::$app->getModule('billing')->t('Pay'), Yii::$app->urlManager->createUrl(['/billing/invoice/pay', 'id' => $model->id, 'method' => 'paypal']), ['class' => 'btn btn-primary']) ?>
                             <?= Html::a(Icon::widget(['icon' => 'btc']).' '.Yii::$app->getModule('billing')->t('Pay with Bitcoin'), Yii::$app->urlManager->createUrl(['/billing/invoice/pay', 'id' => $model->id, 'method' => 'bitcoin']), ['class' => 'btn btn-warning']) ?>
                         </div>
@@ -194,7 +211,7 @@ $generator=new \Picqer\Barcode\BarcodeGeneratorSVG();
                         <?php endif;?>
 
 
-                        <div style="font-size: 2.5em" class="text-muted">
+                        <div style="font-size: 2.5em" class="text-muted text-center">
                             <?= Icon::widget(['icon' => 'cc-paypal']) ?>
                             <?= Icon::widget(['icon' => 'cc-visa']) ?>
                             <?= Icon::widget(['icon' => 'cc-mastercard']) ?>

@@ -60,6 +60,7 @@ class Item extends ActiveRecord
             'name' => Yii::$app->getModule('billing')->t('Name'),
             'quantity' => Yii::$app->getModule('billing')->t('Quantity'),
             'price' => Yii::$app->getModule('billing')->t('Price'),
+            //'original_price' => Yii::$app->getModule('billing')->t('Original Price'),
             'details' => Yii::$app->getModule('billing')->t('Details'),
         ];
     }

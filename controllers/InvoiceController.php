@@ -10,6 +10,7 @@ namespace modernkernel\billing\controllers;
 use common\components\BackendFilter;
 use modernkernel\billing\components\CurrencyLayer;
 use modernkernel\billing\models\BitcoinAddress;
+use modernkernel\billing\models\CouponForm;
 use modernkernel\billing\models\Item;
 use Yii;
 use modernkernel\billing\models\Invoice;
@@ -201,9 +202,24 @@ class InvoiceController extends Controller
             $this->layout = Yii::$app->view->theme->basePath . '/account.php';
             $this->view->title = Yii::$app->getModule('billing')->t('Invoice #{ID}', ['ID' => $id]);
 
+            /* coupon */
+            $coupon=null;
+            if(empty($model->coupon)){
+                $coupon=new CouponForm();
+                $coupon->invoice=$model;
+                if ($coupon->load(Yii::$app->request->post()) && $coupon->validate()) {
+                    if($model->applyCoupon($coupon->coupon)){
+                        Yii::$app->session->setFlash('success', Yii::$app->getModule('billing')->t('Promotion has been applied!'));
+                        return $this->refresh();
+                    }
+                }
+            }
+
+
             return $this->render('view', [
                 'model' => $model,
-                'info' => $info
+                'info' => $info,
+                'coupon'=>$coupon
             ]);
         } else throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
 

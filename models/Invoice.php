@@ -20,6 +20,7 @@ use yii\db\ActiveRecord;
  *
  * @property string $id
  * @property integer $id_account
+ * @property string $coupon
  * @property double $subtotal
  * @property double $shipping
  * @property double $tax
@@ -123,6 +124,7 @@ class Invoice extends ActiveRecord
         return [
             'id' => Yii::$app->getModule('billing')->t('ID'),
             'id_account' => Yii::$app->getModule('billing')->t('Account'),
+            'coupon' => Yii::$app->getModule('billing')->t('Coupon'),
             'subtotal' => Yii::$app->getModule('billing')->t('Subtotal'),
             'shipping' => Yii::$app->getModule('billing')->t('Shipping'),
             'tax' => Yii::$app->getModule('billing')->t('Tax'),
@@ -371,5 +373,45 @@ class Invoice extends ActiveRecord
 
 
         return $bankInfo;
+    }
+
+    /**
+     * apply coupon
+     * @param $code
+     * @return bool
+     */
+    public function applyCoupon($code){
+        $coupon=Coupon::findOne($code);
+        if($coupon){
+            /* percent */
+            if($coupon->discount_type==Coupon::DISCOUNT_TYPE_PERCENT){
+                $discount=new Item();
+                $discount->id_invoice=$this->id;
+                $discount->name=Yii::$app->getModule('billing')->t('Coupon {CODE}', ['CODE'=>$coupon->code]);
+                $discount->quantity=1;
+                $discount->price=($this->total*$coupon->discount/100)*-1;
+                $discount->save();
+            }
+            /* value */
+            if($coupon->discount_type==Coupon::DISCOUNT_TYPE_VALUE){
+                /* value > invoice total */
+                $value=$coupon->discount;
+                if($value>$this->total){
+                    $value=$this->total;
+                }
+                $discount=new Item();
+                $discount->id_invoice=$this->id;
+                $discount->name=Yii::$app->getModule('billing')->t('Coupon {CODE}', ['CODE'=>$coupon->code]);
+                $discount->quantity=1;
+                $discount->price=$value*-1;
+                $discount->save();
+            }
+
+            /* save */
+            $this->coupon=$code;
+            $this->save();
+            return true;
+        }
+        return false;
     }
 }
