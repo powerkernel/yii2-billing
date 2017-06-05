@@ -6,7 +6,7 @@
 ?>
 <div itemscope="" itemtype="http://schema.org/EmailMessage">
     <div itemprop="potentialAction" itemscope="" itemtype="http://schema.org/ViewAction">
-        <link itemprop="target" href="<?= $model->getInvoiceUrl() ?>">
+        <link itemprop="target" href="<?= $model->getInvoiceUrl(true) ?>">
         <meta itemprop="name" content="<?= Yii::$app->getModule('billing')->t('View Invoice') ?>">
     </div>
     <meta itemprop="description" content="<?= Yii::$app->getModule('billing')->t('You\'ve received an invoice (#{ID}) from {APP}', ['ID'=>$model->id, 'APP'=>Yii::$app->name]) ?>">

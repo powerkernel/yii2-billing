@@ -366,6 +366,17 @@ class InvoiceController extends Controller
         return $this->redirect(['view', 'id' => $id]);
     }
 
+    /**
+     * cancel invoice
+     * @param $id
+     * @return string
+     */
+    public function actionCancel($id){
+        $model=$this->findModel($id);
+        $model->cancel();
+        Yii::$app->session->setFlash('success', Yii::$app->getModule('billing')->t('Invoice has been canceled.'));
+        return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/view', 'id'=>$model->id]));
+    }
 
     /**
      * Finds the Invoice model based on its primary key value.

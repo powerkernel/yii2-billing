@@ -389,15 +389,15 @@ class Invoice extends ActiveRecord
                 $discount->id_invoice=$this->id;
                 $discount->name=Yii::$app->getModule('billing')->t('Coupon {CODE}', ['CODE'=>$coupon->code]);
                 $discount->quantity=1;
-                $discount->price=($this->total*$coupon->discount/100)*-1;
+                $discount->price=($this->subtotal*$coupon->discount/100)*-1;
                 $discount->save();
             }
             /* value */
             if($coupon->discount_type==Coupon::DISCOUNT_TYPE_VALUE){
                 /* value > invoice total */
                 $value=$coupon->discount;
-                if($value>$this->total){
-                    $value=$this->total;
+                if($value>$this->subtotal){
+                    $value=$this->subtotal;
                 }
                 $discount=new Item();
                 $discount->id_invoice=$this->id;
@@ -410,6 +410,32 @@ class Invoice extends ActiveRecord
             /* save */
             $this->coupon=$code;
             $this->save();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * cancel invoice
+     * @return bool
+     */
+    public function cancel(){
+        $this->status=Invoice::STATUS_CANCELED;
+        if($this->save()){
+            /* send email */
+            $subject = Yii::$app->getModule('billing')->t('{APP}: Your invoice has been canceled', ['APP' => Yii::$app->name]);
+            Yii::$app->mailer
+                ->compose(
+                    [
+                        'html' => 'cancel-invoice-html',
+                        'text' => 'cancel-invoice-text'
+                    ],
+                    ['title' => $subject, 'model' => $this]
+                )
+                ->setFrom([Setting::getValue('outgoingMail') => Yii::$app->name])
+                ->setTo($this->account->email)
+                ->setSubject($subject)
+                ->send();
             return true;
         }
         return false;

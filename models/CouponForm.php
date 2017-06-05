@@ -64,7 +64,12 @@ class CouponForm extends Model
         if($code->quantity!=-1){
             $used=Invoice::find()->where([
                 'coupon'=>$code,
-                'status'=>[Invoice::STATUS_PAID, Invoice::STATUS_PAID_UNCONFIRMED, Invoice::STATUS_REFUNDED]
+                'status'=>[
+                    Invoice::STATUS_PENDING,
+                    Invoice::STATUS_PAID,
+                    Invoice::STATUS_PAID_UNCONFIRMED,
+                    Invoice::STATUS_REFUNDED
+                ]
             ])->count();
             if($code->quantity<=$used){
                 $this->addError($attribute, Yii::$app->getModule('billing')->t('The code you entered is ended.'));
@@ -76,7 +81,12 @@ class CouponForm extends Model
         if(!$code->reuse){
             $reused=Invoice::find()->where([
                 'coupon'=>$code,
-                'status'=>[Invoice::STATUS_PAID, Invoice::STATUS_PAID_UNCONFIRMED, Invoice::STATUS_REFUNDED],
+                'status'=>[
+                    Invoice::STATUS_PENDING,
+                    Invoice::STATUS_PAID,
+                    Invoice::STATUS_PAID_UNCONFIRMED,
+                    Invoice::STATUS_REFUNDED
+                ],
                 'id_account'=>Yii::$app->user->id
             ])->count();
             if($reused){
