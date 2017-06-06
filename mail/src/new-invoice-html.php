@@ -9,7 +9,7 @@
         <link itemprop="target" href="<?= $model->getInvoiceUrl(true) ?>"/>
         <meta itemprop="name" content="<?= Yii::$app->getModule('billing')->t('View Invoice') ?>"/>
     </div>
-    <meta itemprop="description" content="<?= Yii::$app->getModule('billing')->t('You\'ve received an invoice (#{ID}) from {APP}', ['ID'=>$model->id, 'APP'=>Yii::$app->name]) ?>"/>
+    <meta itemprop="description" content="<?= Yii::$app->getModule('billing')->t('{APP}: New invoice #{ID} placed', ['ID'=>$model->id, 'APP'=>Yii::$app->name]) ?>"/>
 </div>
 
 <table class="body-wrap">
@@ -29,7 +29,7 @@
                                 </tr>
                                 <tr>
                                     <td class="content-block">
-                                        <?= Yii::$app->getModule('billing')->t('We appreciate your business and thank you for choosing {APP}. Below is your invoice:', ['APP'=>Yii::$app->name]) ?>
+                                        <?= Yii::$app->getModule('billing')->t('A new order has just been placed') ?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -38,36 +38,11 @@
                                             <tr>
                                                 <td>
                                                     <?= Yii::$app->getModule('billing')->t('Invoice #{ID}', ['ID'=>$model->id]) ?><br>
-                                                    <?= Yii::$app->formatter->asDate($model->created_at) ?>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>
                                                     <table class="invoice-items" cellpadding="0" cellspacing="0">
-                                                        <?php foreach($model->items as $item):?>
-                                                        <tr>
-                                                            <td><?= $item->name ?></td>
-                                                            <td class="alignright"><?= Yii::$app->formatter->asCurrency($item->price*$item->quantity, $model->currency) ?></td>
-                                                        </tr>
-                                                        <?php endforeach;?>
-                                                        <tr class="no-total">
-                                                            <td class="alignright" width="80%">
-                                                                <?= $model->getAttributeLabel('shipping') ?><br>
-                                                                <?= $model->getAttributeLabel('tax') ?>
-                                                            </td>
-                                                            <td class="alignright">
-                                                                <?= Yii::$app->formatter->asCurrency($model->shipping, $model->currency) ?><br>
-                                                                <?= Yii::$app->formatter->asCurrency($model->tax, $model->currency) ?>
-                                                            </td>
-                                                        </tr>
-                                                        <tr class="total">
-                                                            <td class="alignright" width="80%">
-                                                                <?= $model->getAttributeLabel('total') ?>
-                                                            </td>
-                                                            <td class="alignright">
-                                                                <?= Yii::$app->formatter->asCurrency($model->total, $model->currency) ?>
-                                                            </td>
-                                                        </tr>
                                                         <tr>
                                                             <td class="content-block aligncenter" colspan="2">
                                                                 <a href="<?= $model->getInvoiceUrl(true) ?>" class="btn-primary"><?= Yii::$app->getModule('billing')->t('View Invoice') ?></a>
