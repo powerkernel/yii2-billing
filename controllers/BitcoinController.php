@@ -216,8 +216,8 @@ class BitcoinController extends Controller
         /* QR Code */
         $qrCode = new QrCode($bitcoin['url']);
         $qrCode->setSize(500);
-        $pngWriter = new PngWriter($qrCode);
-        $bitcoin['base64QR']=base64_encode($pngWriter->writeString());
+        $pngWriter = new PngWriter();
+        $bitcoin['base64QR']=base64_encode($pngWriter->writeString($qrCode));
 
         return $this->render('payment', [
             'bitcoin'=>$bitcoin,

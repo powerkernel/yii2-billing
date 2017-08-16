@@ -12,9 +12,9 @@
     ],
     "require": {
         "yiisoft/yii2": "~2.0.0",
-        "picqer/php-barcode-generator": "*",
-        "paypal/rest-api-sdk-php": "*",
-        "endroid/qrcode": "*",
+        "picqer/php-barcode-generator": "~0.2.0",
+        "paypal/rest-api-sdk-php": "~1.0.0",
+        "endroid/qrcode": "~2.2.0",
         "bitwasp/bitcoin": "*"
     },
     "autoload": {
