@@ -51,7 +51,8 @@ $this->registerJs('$(document).on("pjax:send", function(){ $(".grid-view-overlay
                         }, 'filter' => Invoice::getStatusOption(), 'format' => 'raw'],
                         [
                             'class' => 'yii\grid\ActionColumn',
-                            'template' => '{view} {update}'
+                            'template' => '{view} {update}',
+                            'contentOptions'=>['style'=>'min-width: 50px']
                         ],
                     ],
                 ]); ?>
