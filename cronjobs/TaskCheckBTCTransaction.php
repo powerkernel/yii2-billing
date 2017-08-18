@@ -7,16 +7,12 @@ use common\Core;
 use modernkernel\billing\models\BitcoinAddress;
 
 $local = Core::isLocalhost();
-$time = $local ? '* * * * *' : '30 * * * *';
+$time = $local ? '* * * * *' : '*/15 * * * *';
 
 $schedule->call(function (\yii\console\Application $app) {
 
     /* update confirmations */
-    $addresses = BitcoinAddress::find()
-        ->where('status=:unconfirmed AND tx_confirmed<3',
-            [
-                ':unconfirmed' => BitcoinAddress::STATUS_UNCONFIRMED,
-            ])->all();
+    $addresses = BitcoinAddress::find()->where(['status'=>BitcoinAddress::STATUS_UNCONFIRMED])->all();
 
     if ($addresses) {
         $obj = [];
