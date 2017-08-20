@@ -6,7 +6,7 @@
 ?>
 <div itemscope itemtype="http://schema.org/EmailMessage">
     <div itemprop="potentialAction" itemscope itemtype="http://schema.org/ViewAction">
-        <link itemprop="target" href="<?= $model->getInvoiceUrl(true) ?>"/>
+        <link itemprop="target" href="<?= $model->getAdminInvoiceUrl(true) ?>"/>
         <meta itemprop="name" content="<?= Yii::$app->getModule('billing')->t('View Invoice') ?>"/>
     </div>
     <meta itemprop="description" content="<?= Yii::$app->getModule('billing')->t('{APP}: New invoice #{ID} placed', ['ID'=>$model->id, 'APP'=>Yii::$app->name]) ?>"/>
@@ -45,7 +45,7 @@
                                                     <table class="invoice-items" cellpadding="0" cellspacing="0">
                                                         <tr>
                                                             <td class="content-block aligncenter" colspan="2">
-                                                                <a href="<?= $model->getInvoiceUrl(true) ?>" class="btn-primary"><?= Yii::$app->getModule('billing')->t('View Invoice') ?></a>
+                                                                <a href="<?= $model->getAdminInvoiceUrl(true) ?>" class="btn-primary"><?= Yii::$app->getModule('billing')->t('View Invoice') ?></a>
                                                             </td>
                                                         </tr>
                                                     </table>

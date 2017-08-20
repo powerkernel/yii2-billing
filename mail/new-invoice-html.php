@@ -6,7 +6,7 @@
 ?>
 <div itemscope="" itemtype="http://schema.org/EmailMessage">
     <div itemprop="potentialAction" itemscope="" itemtype="http://schema.org/ViewAction">
-        <link itemprop="target" href="<?= $model->getInvoiceUrl(true) ?>">
+        <link itemprop="target" href="<?= $model->getAdminInvoiceUrl(true) ?>">
         <meta itemprop="name" content="<?= Yii::$app->getModule('billing')->t('View Invoice') ?>">
     </div>
     <meta itemprop="description" content="<?= Yii::$app->getModule('billing')->t('{APP}: New invoice #{ID} placed', ['ID'=>$model->id, 'APP'=>Yii::$app->name]) ?>">
@@ -45,7 +45,7 @@
                                                     <table class="invoice-items" cellpadding="0" cellspacing="0" style="width: 100%;" width="100%">
                                                         <tr>
                                                             <td class="content-block aligncenter" colspan="2" style="vertical-align: top; text-align: center; padding: 5px 0; border-top: #eee 1px solid;" valign="top" align="center">
-                                                                <a href="<?= $model->getInvoiceUrl(true) ?>" class="btn-primary" style="font-weight: bold; color: #FFF; background-color: #348eda; border: solid #348eda; border-width: 10px 20px; line-height: 2em; text-decoration: none; text-align: center; cursor: pointer; display: inline-block; border-radius: 5px; text-transform: capitalize;"><?= Yii::$app->getModule('billing')->t('View Invoice') ?></a>
+                                                                <a href="<?= $model->getAdminInvoiceUrl(true) ?>" class="btn-primary" style="font-weight: bold; color: #FFF; background-color: #348eda; border: solid #348eda; border-width: 10px 20px; line-height: 2em; text-decoration: none; text-align: center; cursor: pointer; display: inline-block; border-radius: 5px; text-transform: capitalize;"><?= Yii::$app->getModule('billing')->t('View Invoice') ?></a>
                                                             </td>
                                                         </tr>
                                                     </table>

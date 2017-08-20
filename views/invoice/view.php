@@ -212,7 +212,7 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
             </div>
             <div class="col-sm-6 col-sm-pull-6">
                 <?php if ($model->status == Invoice::STATUS_PENDING): ?>
-                    <?php foreach ($model->getBankInfo() as $i => $bank): ?>
+                    <?php foreach ($banks=$model->getBankInfo() as $i => $bank): ?>
                         <?php if ($i == 0): ?>
                             <p class="lead" style="margin-bottom: 0">
                                 <?= Yii::$app->getModule('billing')->t('Bank Transfer:') ?>
@@ -224,6 +224,12 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
                             <em><?= Yii::$app->getModule('billing')->t('(Please transfer the amount in {CURRENCY} as shown above)', ['CURRENCY' => $bank['currency']]) ?></em>
                         </p>
                     <?php endforeach; ?>
+                    <?php if($banks):?>
+                        <div class="well well-sm">
+                            <strong class="text-danger"><?= Yii::$app->getModule('billing')->t('Important:') ?></strong>
+                            <?= Yii::$app->getModule('billing')->t('Please enter {IID} in your Detail of Payment and send all amount in a single transaction.', ['IID'=>'<strong>'.$model->id.'</strong>']) ?>
+                        </div>
+                    <?php endif;?>
                 <?php endif; ?>
             </div>
 

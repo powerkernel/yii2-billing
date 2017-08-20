@@ -14,4 +14,4 @@
 <?= Yii::$app->getModule('billing')->t('Invoice #{ID}', ['ID' => $model->id]) ?>
 
 
-<?= Yii::$app->getModule('billing')->t('View Invoice: {URL}', ['URL'=>$model->getInvoiceUrl(true)]) ?>
+<?= Yii::$app->getModule('billing')->t('View Invoice: {URL}', ['URL'=>$model->getAdminInvoiceUrl(true)]) ?>
