@@ -108,7 +108,7 @@ class InvoiceController extends Controller
 
         /* metaData */
         //$title=$model->title;
-        $this->view->title = Yii::$app->getModule('billing')->t('Invoice #{ID}', ['ID' => $id]);
+        $this->view->title = Yii::$app->getModule('billing')->t('Invoice #{ID}', ['ID' => $model->id_invoice]);
         //$keywords = $model->tags;
         //$description = $model->desc;
         //$metaTags[]=['name'=>'keywords', 'content'=>$keywords];

@@ -9,13 +9,12 @@ namespace modernkernel\billing\models;
 
 use common\models\Account;
 use Yii;
-use yii\behaviors\TimestampBehavior;
-use yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "{{%billing_info}}".
+ * This is the model class for BillingInfo.
  *
- * @property integer $id_account
+ * @property integer|\MongoDB\BSON\ObjectID|string $id
+ * @property integer|string $id_account
  * @property string $company
  * @property string $tax_id
  * @property string $f_name
@@ -27,16 +26,16 @@ use yii\db\ActiveRecord;
  * @property string $zip
  * @property string $country
  * @property string $phone
- * @property integer $status
- * @property integer $created_at
- * @property integer $updated_at
+ * @property string $status
+ * @property integer|\MongoDB\BSON\UTCDateTime $created_at
+ * @property integer|\MongoDB\BSON\UTCDateTime $updated_at
  */
-class BillingInfo extends ActiveRecord
+class BillingInfo extends BillingInfoBase
 {
 
 
-    const STATUS_ACTIVE = 10;
-    const STATUS_INACTIVE = 20;
+    const STATUS_ACTIVE = 'STATUS_ACTIVE'; // 10
+    const STATUS_INACTIVE = 'STATUS_INACTIVE'; // 20
 
 
     /**
@@ -74,24 +73,41 @@ class BillingInfo extends ActiveRecord
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
-        return '{{%billing_info}}';
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function rules()
     {
-        return [
+        if (is_a($this, '\yii\mongodb\ActiveRecord')) {
+            $date = [
+                [['created_at', 'updated_at'], 'yii\mongodb\validators\MongoDateValidator'],
+            ];
+
+        }
+        else {
+            $date = [
+                [['created_at', 'updated_at'], 'integer'],
+            ];
+        }
+
+        if(Yii::$app->params['mongodb']['account']){
+            $account = [
+                [['id_account'], 'string'],
+            ];
+        }
+        else {
+            $account = [
+                [['id_account'], 'integer'],
+            ];
+        }
+
+        $default = [
             [['f_name', 'l_name', 'address', 'city', 'country', 'phone'], 'required'],
-            [['id_account', 'status', 'created_at', 'updated_at'], 'integer'],
-            [['company', 'tax_id', 'f_name', 'l_name', 'address', 'address2', 'city', 'state', 'zip', 'country'], 'string', 'max' => 255],
+
+            [['company', 'tax_id', 'f_name', 'l_name', 'address', 'address2', 'city', 'state', 'zip', 'country', 'status'], 'string', 'max' => 255],
 
             [['phone'], 'string', 'max' => 14],
-            [['phone'], 'match', 'pattern'=>'/^\+[1-9][0-9]{9,12}$/'],
+            [['phone'], 'match', 'pattern' => '/^\+[1-9][0-9]{9,12}$/'],
         ];
+
+        return array_merge($default, $date, $account);
     }
 
     /**
@@ -118,15 +134,6 @@ class BillingInfo extends ActiveRecord
         ];
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            TimestampBehavior::className(),
-        ];
-    }
 
     /**
      * @inheritdoc

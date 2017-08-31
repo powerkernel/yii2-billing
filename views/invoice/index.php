@@ -32,7 +32,7 @@ $this->registerJs('$(document).on("pjax:send", function(){ $(".grid-view-overlay
                     'columns' => [
                         //['class' => 'yii\grid\SerialColumn'],
 
-                        'id',
+                        'id_invoice',
                         //'account.fullname',
                         ['attribute' => 'fullname', 'value' => 'account.fullname'],
                         //['attribute' => 'subtotal', 'value' => function ($model){return Yii::$app->formatter->asCurrency($model->subtotal, $model->currency);}],
@@ -45,7 +45,7 @@ $this->registerJs('$(document).on("pjax:send", function(){ $(".grid-view-overlay
                         // 'status',
                         // 'created_at',
                         // 'updated_at',
-                        ['attribute' => 'created_at', 'value' => 'created_at', 'format' => 'dateTime', 'filter' => DatePicker::widget(['model' => $searchModel, 'attribute' => 'created_at', 'dateFormat' => 'yyyy-MM-dd', 'options' => ['class' => 'form-control']])],
+                        ['attribute' => 'created_at', 'value' => 'createdAt', 'format' => 'dateTime', 'filter' => DatePicker::widget(['model' => $searchModel, 'attribute' => 'created_at', 'dateFormat' => 'yyyy-MM-dd', 'options' => ['class' => 'form-control']])],
                         ['attribute' => 'status', 'value' => function ($model) {
                             return $model->getStatusColorText();
                         }, 'filter' => Invoice::getStatusOption(), 'format' => 'raw'],
@@ -58,10 +58,6 @@ $this->registerJs('$(document).on("pjax:send", function(){ $(".grid-view-overlay
                 ]); ?>
             </div>
             <?php Pjax::end(); ?>
-            <p>
-                <?= Html::a(Yii::t('billing', 'Create Invoice'), ['create'], ['class' => 'btn btn-success']) ?>
-            </p>
-
         </div>
         <!-- Loading (remove the following to stop the loading)-->
         <div class="overlay grid-view-overlay hidden">

@@ -22,9 +22,10 @@ or add
 to the require section of your `composer.json` file, then run
 
 ```
-php yii migrate --interactive=0 --migrationPath=@vendor/modernkernel/yii2-billing/migrations/ --migrationTable={{%billing_migration}}
+php yii migrate --migrationPath=@vendor/modernkernel/yii2-billing/migrations/ --migrationTable={{%billing_migration}}
 ```
-Usage
+MongoDB
 -----
-
-TBD
+```
+php yii mongodb-migrate --migrationPath=@vendor/modernkernel/yii2-billing/migrations/mongodb/ --migrationCollection=billing_migration
+```

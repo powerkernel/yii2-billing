@@ -39,14 +39,14 @@ $this->params['breadcrumbs'][] = $this->title;
                         'country',
                         'phone',
                         'status',
-                        'created_at:date',
-                        'updated_at:date',
+                        'createdAt:date',
+                        'updatedAt:date',
                     ],
                 ]) ?>
             </div>
             <p>
-                <?= Html::a(Yii::t('billing', 'Update'), ['update', 'id' => $model->id_account], ['class' => 'btn btn-primary']) ?>
-                <?= Html::a(Yii::t('billing', 'Delete'), ['delete', 'id' => $model->id_account], [
+                <?= Html::a(Yii::t('billing', 'Update'), ['update', 'id' => (string)$model->id], ['class' => 'btn btn-primary']) ?>
+                <?= Html::a(Yii::t('billing', 'Delete'), ['delete', 'id' => (string)$model->id], [
                     'class' => 'btn btn-danger',
                     'data' => [
                         'confirm' => Yii::t('billing', 'Are you sure you want to delete this item?'),

@@ -24,7 +24,7 @@ class BankSearch extends Bank
     public function rules()
     {
         return [
-            [['id', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['status', 'created_at', 'updated_at'], 'safe'],
             [['country', 'title', 'info', 'currency'], 'safe'],
         ];
     }

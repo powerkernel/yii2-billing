@@ -39,7 +39,7 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
                          alt="<?= Yii::$app->name ?>"/> <?= Yii::$app->name ?>
                     <span class="pull-right visible-print"
                           style="max-height: 24px; vertical-align: bottom; display: block">
-                        <?= $generator->getBarcode($model->id, $generator::TYPE_CODE_128, 1.5, 24) ?>
+                        <?= $generator->getBarcode($model->id_invoice, $generator::TYPE_CODE_128, 1.5, 24) ?>
                     </span>
                 </h2>
 
@@ -88,15 +88,15 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
             <!-- /.col -->
             <div class="col-sm-4 invoice-col">
                 <div class="">
-                    <b><?= Yii::$app->getModule('billing')->t('Invoice #:') ?></b> <?= $model->id ?></div>
+                    <b><?= Yii::$app->getModule('billing')->t('Invoice #:') ?></b> <?= $model->id_invoice ?></div>
                 <div class="">
-                    <b><?= Yii::$app->getModule('billing')->t('Date:') ?></b> <?= Yii::$app->formatter->asDate($model->created_at) ?>
+                    <b><?= Yii::$app->getModule('billing')->t('Date:') ?></b> <?= Yii::$app->formatter->asDate($model->createdAt) ?>
                 </div>
                 <div class="<?= empty($model->payment_method) ? 'hidden' : '' ?>">
                     <b><?= $model->getAttributeLabel('payment_method') ?>: </b> <?= $model->payment_method ?></div>
                 <div class="<?= empty($model->payment_date) ? 'hidden' : '' ?>">
                     <b><?= $model->getAttributeLabel('payment_date') ?>
-                        : </b> <?= Yii::$app->formatter->asDate($model->payment_date) ?></div>
+                        : </b> <?= Yii::$app->formatter->asDate($model->paymentDate) ?></div>
                 <div class="<?= empty($model->transaction) ? 'hidden' : '' ?>">
                     <b><?= $model->getAttributeLabel('transaction') ?>: </b> <?= $model->transaction ?></div>
                 <div class="no-print">

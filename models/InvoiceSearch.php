@@ -26,7 +26,7 @@ class InvoiceSearch extends Invoice
     public function rules()
     {
         return [
-            [['id', 'currency', 'created_at', 'fullname'], 'safe'],
+            [['id_invoice', 'currency', 'created_at', 'fullname'], 'safe'],
             [['id_account', 'status', 'updated_at'], 'integer'],
             [['subtotal', 'shipping', 'tax', 'total'], 'number'],
         ];
@@ -51,7 +51,7 @@ class InvoiceSearch extends Invoice
     public function search($params)
     {
         $query = Invoice::find();
-        $query->joinWith(['account']);
+        //$query->joinWith(['account']);
 
         // add conditions that should always apply here
 
@@ -91,7 +91,7 @@ class InvoiceSearch extends Invoice
             '{{%billing_invoice}}.updated_at' => $this->updated_at,
         ]);
 
-        $query->andFilterWhere(['like', '{{%billing_invoice}}.id', $this->id])
+        $query->andFilterWhere(['like', '{{%billing_invoice}}.id_invoice', $this->id_invoice])
             ->andFilterWhere(['like', '{{%billing_invoice}}.currency', $this->currency])
             ->andFilterWhere(['like', '{{%core_account}}.fullname', $this->fullname]);;
 

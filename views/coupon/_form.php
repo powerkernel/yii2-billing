@@ -21,47 +21,83 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'code')->textInput(['maxlength' => true]) ?>
+    <div class="row">
+        <div class="col-sm-6">
+            <?= $form->field($model, 'code')->textInput(['maxlength' => true]) ?>
+        </div>
+        <div class="col-sm-6">
+            <?= $form->field($model, 'currency')->widget(Select2Widget::className(), [
+                'bootstrap' => false,
+                'items' => Core::getCurrencyList(),
+                'options' => ['prompt' => Yii::$app->getModule('billing')->t('Select Currency')]
+            ]) ?>
+        </div>
+    </div>
 
-    <?= $form->field($model, 'currency')->widget(Select2Widget::className(), [
-        'bootstrap' => false,
-        'items' => Core::getCurrencyList(),
-        'options' => ['prompt' => Yii::$app->getModule('billing')->t('Select Currency')]
-    ]) ?>
+    <div class="row">
+        <div class="col-sm-6">
+            <?= $form->field($model, 'discount')->textInput(['maxlength' => true]) ?>
+        </div>
+        <div class="col-sm-6">
+            <?= $form->field($model, 'discount_type')->radioList(Coupon::getDiscountOption()) ?>
+        </div>
+    </div>
 
-    <?= $form->field($model, 'discount')->textInput(['maxlength' => true]) ?>
+    <div class="row">
+        <div class="col-sm-6">
+            <?= $form->field($model, 'begin_date_picker')->widget(DatePicker::classname(), [
+                'options'=>['class'=>'form-control'],
+                'clientOptions'=>[
+                    'altField'=>'#coupon-begin_at',
+                    'altFormat'=>'mm/dd/yy',
+                    //'altFormat'=>'@',
+                    'changeYear'=>true,
+                    'changeMonth'=>true,
+                    //'onSelect'=>new \yii\web\JsExpression('function(){$("#coupon-begin_at").val($("#coupon-begin_at").val()/1000);}')
+                ],
+            ]) ?>
+            <?= $form->field($model, 'begin_at')->hiddenInput()->label(false)->error(['class'=>'hidden']) ?>
 
-    <?= $form->field($model, 'discount_type')->radioList(Coupon::getDiscountOption()) ?>
+        </div>
+        <div class="col-sm-6">
+            <?= $form->field($model, 'end_date_picker')->widget(DatePicker::classname(), [
+                'options'=>['class'=>'form-control'],
+                'clientOptions'=>[
+                    'altField'=>'#coupon-end_at',
+                    'altFormat'=>'mm/dd/yy',
+                    //'altFormat'=>'@',
+                    'changeYear'=>true,
+                    'changeMonth'=>true,
+                    //'onSelect'=>new \yii\web\JsExpression('function(){$("#coupon-end_at").val($("#coupon-end_at").val()/1000);}')
+                ],
+            ]) ?>
+            <?= $form->field($model, 'end_at')->hiddenInput()->label(false)->error(['class'=>'hidden']) ?>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6">
+            <?= $form->field($model, 'quantity')->textInput()->hint(Yii::$app->getModule('billing')->t('Enter <b>-1</b> for unlimited')) ?>
+        </div>
+        <div class="col-sm-6">
+            <?= $form->field($model, 'reuse')->radioList(\common\Core::getYesNoOption()) ?>
+        </div>
+    </div>
 
 
-    <?= $form->field($model, 'begin_date_picker')->widget(DatePicker::classname(), [
-        'options'=>['class'=>'form-control'],
-        'clientOptions'=>[
-            'altField'=>'#coupon-begin_at',
-            'altFormat'=>'@',
-            'changeYear'=>true,
-            'changeMonth'=>true,
-            'onSelect'=>new \yii\web\JsExpression('function(){$("#coupon-begin_at").val($("#coupon-begin_at").val()/1000);}')
-        ],
-    ]) ?>
-    <?= $form->field($model, 'begin_at')->hiddenInput()->label(false) ?>
 
 
-    <?= $form->field($model, 'end_date_picker')->widget(DatePicker::classname(), [
-        'options'=>['class'=>'form-control'],
-        'clientOptions'=>[
-            'altField'=>'#coupon-end_at',
-            'altFormat'=>'@',
-            'changeYear'=>true,
-            'changeMonth'=>true,
-            'onSelect'=>new \yii\web\JsExpression('function(){$("#coupon-end_at").val($("#coupon-end_at").val()/1000);}')
-        ],
-    ]) ?>
-    <?= $form->field($model, 'end_at')->hiddenInput()->label(false) ?>
 
-    <?= $form->field($model, 'quantity')->textInput()->hint(Yii::$app->getModule('billing')->t('Enter <b>-1</b> for unlimited')) ?>
 
-    <?= $form->field($model, 'reuse')->radioList(\common\Core::getYesNoOption()) ?>
+
+
+
+
+
+
+
+
+
 
     <?= $form->field($model, 'status')->dropDownList(Coupon::getStatusOption()) ?>
 

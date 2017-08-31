@@ -45,14 +45,14 @@ $this->registerJs('$(document).on("pjax:send", function(){ $(".grid-view-overlay
                         ],
                         [
                             'attribute' => 'begin_at',
-                            'value' => 'begin_at',
+                            'value' => 'beginAt',
                             'format' => 'date',
                             'filter' => DatePicker::widget(['model' => $searchModel, 'attribute' => 'begin_at', 'dateFormat' => 'yyyy-MM-dd', 'options' => ['class' => 'form-control']]),
                             'contentOptions' => ['style' => 'min-width: 80px']
                         ],
                         [
                             'attribute' => 'end_at',
-                            'value' => 'end_at',
+                            'value' => 'endAt',
                             'format' => 'date',
                             'filter' => DatePicker::widget(['model' => $searchModel, 'attribute' => 'end_at', 'dateFormat' => 'yyyy-MM-dd', 'options' => ['class' => 'form-control']]),
                             'contentOptions' => ['style' => 'min-width: 80px']

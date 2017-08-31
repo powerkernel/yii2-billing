@@ -34,22 +34,22 @@ $this->params['breadcrumbs'][] = $model->code;
                             'attribute' => 'discount',
                             'value' => $model->discount_type == Coupon::DISCOUNT_TYPE_PERCENT ? Yii::$app->formatter->asPercent($model->discount/100):Yii::$app->formatter->asCurrency($model->discount, $model->currency)
                         ],
-                        'begin_at:date',
-                        'end_at:date',
+                        'beginAt:date',
+                        'endAt:date',
                         [
                             'attribute' => 'quantity',
                             'value' => $model->quantity==-1?Yii::$app->getModule('billing')->t('Unlimited'):Yii::$app->formatter->asDecimal($model->quantity),
                         ],
                         'reuse:boolean',
                         ['attribute' => 'status', 'value' => $model->statusColorText, 'format' => 'raw'],
-                        'created_at:dateTime',
-                        'updated_at:dateTime',
+                        'createdAt:dateTime',
+                        'updatedAt:dateTime',
                     ],
                 ]) ?>
             </div>
             <p>
-                <?= Html::a(Yii::t('billing', 'Update'), ['update', 'id' => $model->code], ['class' => 'btn btn-primary']) ?>
-                <?= Html::a(Yii::t('billing', 'Delete'), ['delete', 'id' => $model->code], [
+                <?= Html::a(Yii::t('billing', 'Update'), ['update', 'id' => (string)$model->id], ['class' => 'btn btn-primary']) ?>
+                <?= Html::a(Yii::t('billing', 'Delete'), ['delete', 'id' => (string)$model->id], [
                     'class' => 'btn btn-danger',
                     'data' => [
                         'confirm' => Yii::t('billing', 'Are you sure you want to delete this item?'),

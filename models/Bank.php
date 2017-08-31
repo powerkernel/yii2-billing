@@ -8,27 +8,25 @@
 namespace modernkernel\billing\models;
 
 use Yii;
-use yii\behaviors\TimestampBehavior;
-use yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "{{%billing_bank}}".
+ * This is the model class for Bank.
  *
- * @property integer $id
+ * @property integer|\MongoDB\BSON\ObjectID|string $id
  * @property string $country
  * @property string $title
  * @property string $info
  * @property string $currency
- * @property integer $status
- * @property integer $created_at
- * @property integer $updated_at
+ * @property string $status
+ * @property integer|\MongoDB\BSON\UTCDateTime $created_at
+ * @property integer|\MongoDB\BSON\UTCDateTime $updated_at
  */
-class Bank extends ActiveRecord
+class Bank extends BankBase
 {
 
 
-    const STATUS_ACTIVE = 10;
-    const STATUS_INACTIVE = 20;
+    const STATUS_ACTIVE = 'STATUS_ACTIVE'; //10
+    const STATUS_INACTIVE = 'STATUS_INACTIVE'; //20
 
 
     /**
@@ -79,27 +77,31 @@ class Bank extends ActiveRecord
         return $this->statusText;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public static function tableName()
-    {
-        return '{{%billing_bank}}';
-    }
 
     /**
      * @inheritdoc
      */
     public function rules()
     {
-        return [
+        if (is_a($this, '\yii\mongodb\ActiveRecord')) {
+            $date = [
+                [['created_at', 'updated_at'], 'yii\mongodb\validators\MongoDateValidator']
+            ];
+        } else {
+            $date = [
+                [['created_at', 'updated_at'], 'integer']
+            ];
+        }
+
+        $default = [
             [['country', 'title', 'info', 'currency'], 'required'],
-            [['info'], 'string'],
-            [['status', 'created_at', 'updated_at'], 'integer'],
+            [['info', 'status'], 'string'],
             [['country'], 'string', 'max' => 2],
             [['title'], 'string', 'max' => 255],
             [['currency'], 'string', 'max' => 3],
         ];
+
+        return array_merge($default, $date);
     }
 
     /**
@@ -119,13 +121,5 @@ class Bank extends ActiveRecord
         ];
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            TimestampBehavior::className(),
-        ];
-    }
+
 }
