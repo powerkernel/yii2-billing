@@ -35,7 +35,7 @@ $this->registerJs($js);
                 <div class="box-body">
                     <div class="row">
                         <div class="col-xs-7">
-                            <?= Yii::$app->getModule('billing')->t('Pay for invoice #{INVOICE}', ['INVOICE' => $invoice->id]) ?>
+                            <?= Yii::$app->getModule('billing')->t('Pay for invoice #{INVOICE}', ['INVOICE' => $invoice->id_invoice]) ?>
                         </div>
                         <div class="col-xs-5">
                             <div class="text-right"><?= Yii::$app->formatter->asDecimal($invoice->total) ?> <?= $invoice->currency ?></div>

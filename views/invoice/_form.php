@@ -37,10 +37,10 @@ use yii\widgets\ActiveForm;
                 'options' => ['class' => 'form-control'],
                 'clientOptions' => [
                     'altField' => '#invoice-payment_date',
-                    'altFormat' => '@',
+                    'altFormat' => 'mm/dd/yy',
                     'changeYear' => true,
                     'changeMonth' => true,
-                    'onSelect' => new \yii\web\JsExpression('function(){$("#invoice-payment_date").val($("#invoice-payment_date").val()/1000);}')
+                    //'onSelect' => new \yii\web\JsExpression('function(){$("#invoice-payment_date").val($("#invoice-payment_date").val()/1000);}')
                 ],
             ]) ?>
             <?= $form->field($model, 'status')->dropDownList(Invoice::getStatusOption()) ?>

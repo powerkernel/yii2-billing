@@ -42,7 +42,7 @@ $("#copy-tab").on("click", "#btc-address", function () {
 });
 
 /**
- * check payment every 5s
+ * check payment every 10s
  */
 setInterval(checkPayment, 10000);
 

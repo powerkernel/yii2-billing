@@ -267,10 +267,10 @@ class InvoiceController extends Controller
     {
         $this->view->title = Yii::t('billing', 'Update Invoice');
         $model = $this->findModel($id);
-        $model->payment_date_picker = $model->payment_date;
+        $model->payment_date_picker = empty($model->paymentDate)?null:strtotime($model->paymentDate);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['view', 'id' => (string)$model->id]);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -299,16 +299,16 @@ class InvoiceController extends Controller
                             return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id' => $id]));
                         }
                     }
-                    return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/paypal/create', 'id' => $model->id]));
+                    return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/paypal/create', 'id' => (string)$model->id]));
                 }
                 if ($method == 'bitcoin') {
                     /* generate make sure always have new addresses */
                     BitcoinAddress::generate();
                     /* if an btc address assigned to this invoice, use that address (assigned address no payment with x days will be released by cronjob */
-                    $address=BitcoinAddress::find()->where(['id_invoice'=>$model->id, 'tx_id'=>null])->one();
+                    $address=BitcoinAddress::find()->where(['id_invoice'=>$model->id_invoice, 'tx_id'=>null])->one();
                     if(empty($address)){
                         $address=BitcoinAddress::find()->where(['status'=>BitcoinAddress::STATUS_NEW])->orderBy(['id'=>SORT_ASC])->one();
-                        $address->id_invoice=$model->id;
+                        $address->id_invoice=$model->id_invoice;
                         $address->id_account=Yii::$app->user->id;
                         $address->status=BitcoinAddress::STATUS_USED;
                     }
@@ -358,10 +358,14 @@ class InvoiceController extends Controller
             $item->name = Yii::$app->getModule('billing')->t('Discount');
             $item->quantity = 1;
             $item->price = $amount * -1;
-            $item->id_invoice = $model->id;
-            $item->save();
+            $item->id_invoice = $model->id_invoice;
+            if($item->save()){
+                Yii::$app->session->setFlash('success', Yii::$app->getModule('billing')->t('Discount amount added.'));
+            }
+            else {
+                Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('An error occurred when processing your request.'));
+            }
 
-            Yii::$app->session->setFlash('success', Yii::$app->getModule('billing')->t('Discount amount added.'));
         }
         return $this->redirect(['view', 'id' => $id]);
     }
@@ -375,7 +379,7 @@ class InvoiceController extends Controller
         $model=$this->findModel($id);
         $model->cancel();
         Yii::$app->session->setFlash('success', Yii::$app->getModule('billing')->t('Invoice has been canceled.'));
-        return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/view', 'id'=>$model->id]));
+        return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/view', 'id'=>(string)$model->id]));
     }
 
     /**

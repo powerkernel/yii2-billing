@@ -27,7 +27,7 @@ class InvoiceSearch extends Invoice
     {
         return [
             [['id_invoice', 'currency', 'created_at', 'fullname'], 'safe'],
-            [['id_account', 'status', 'updated_at'], 'integer'],
+            [['id_account', 'status', 'updated_at'], 'safe'],
             [['subtotal', 'shipping', 'tax', 'total'], 'number'],
         ];
     }
@@ -81,19 +81,19 @@ class InvoiceSearch extends Invoice
 
         // grid filtering conditions
         $query->andFilterWhere([
-            '{{%billing_invoice}}.id_account' => $this->id_account,
-            '{{%billing_invoice}}.subtotal' => $this->subtotal,
-            '{{%billing_invoice}}.shipping' => $this->shipping,
-            '{{%billing_invoice}}.tax' => $this->tax,
-            '{{%billing_invoice}}.total' => $this->total,
-            '{{%billing_invoice}}.status' => $this->status,
+            'id_account' => $this->id_account,
+            'subtotal' => $this->subtotal,
+            'shipping' => $this->shipping,
+            'tax' => $this->tax,
+            'total' => $this->total,
+            'status' => $this->status,
             //'created_at' => $this->created_at,
-            '{{%billing_invoice}}.updated_at' => $this->updated_at,
+            'updated_at' => $this->updated_at,
         ]);
 
-        $query->andFilterWhere(['like', '{{%billing_invoice}}.id_invoice', $this->id_invoice])
-            ->andFilterWhere(['like', '{{%billing_invoice}}.currency', $this->currency])
-            ->andFilterWhere(['like', '{{%core_account}}.fullname', $this->fullname]);;
+        $query->andFilterWhere(['like', 'id_invoice', $this->id_invoice])
+            ->andFilterWhere(['like', 'currency', $this->currency]);
+            //->andFilterWhere(['like', 'fullname', $this->fullname]);;
 
         if(!empty($this->created_at)){
             $query->andFilterWhere([

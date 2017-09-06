@@ -169,7 +169,7 @@ class BillingInfo extends BillingInfoBase
             'phone' => '',
         ];
 
-        $model = BillingInfo::findOne($id);
+        $model = BillingInfo::find()->where(['id_account'=>$id])->one();
         $account = Account::findOne($id);
         if ($model) {
             foreach ($info as $attr => $value) {

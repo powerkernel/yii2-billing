@@ -93,7 +93,7 @@ if (Yii::$app->params['billing']['db'] === 'mongodb') {
          */
         public function getPaymentDate()
         {
-            return $this->payment_date->toDateTime()->format('U');
+            return empty($this->payment_date)?null:$this->payment_date->toDateTime()->format('U');
         }
     }
 } else {

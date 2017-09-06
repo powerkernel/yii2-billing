@@ -143,13 +143,13 @@ class PaypalController extends Controller
             $transaction = new Transaction();
             $transaction->setAmount($amount)
                 ->setItemList($itemList)
-                ->setDescription(Yii::$app->getModule('billing')->t('Invoice #' . $invoice->id))
-                ->setInvoiceNumber($invoice->id);
+                ->setDescription(Yii::$app->getModule('billing')->t('Invoice #' . $invoice->id_invoice))
+                ->setInvoiceNumber($invoice->id_invoice);
 
 
             $urls = new RedirectUrls();
-            $urls->setReturnUrl(Yii::$app->urlManager->createAbsoluteUrl(['/billing/paypal/return', 'id' => $invoice->id]))
-                ->setCancelUrl(Yii::$app->urlManager->createAbsoluteUrl(['/billing/invoice/show', 'id' => $invoice->id, 'cancel' => 'true']));
+            $urls->setReturnUrl(Yii::$app->urlManager->createAbsoluteUrl(['/billing/paypal/return', 'id' => (string)$invoice->id]))
+                ->setCancelUrl(Yii::$app->urlManager->createAbsoluteUrl(['/billing/invoice/show', 'id' => (string)$invoice->id, 'cancel' => 'true']));
 
             $payment = new Payment();
             $payment->setIntent('sale')
@@ -169,7 +169,7 @@ class PaypalController extends Controller
 
         } else {
             Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('We can not process your payment right now.'));
-            return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id' => $id]));
+            return $this->redirect(Yii::$app->urlManager->createUrl(['billing/invoice/show', 'id' => $id]));
         }
     }
 
@@ -202,19 +202,19 @@ class PaypalController extends Controller
                 if (isset($result->state) && $result->state == 'approved') {
                     $invoice->status = Invoice::STATUS_PAID;
                     $invoice->payment_method = 'Paypal';
-                    $invoice->payment_date = time();
+                    $invoice->touch('payment_date');
                     $invoice->transaction = $saleId;
                     $invoice->save();
                     Yii::$app->session->setFlash('success', Yii::$app->getModule('billing')->t('Thank you for your payment. Your transaction has been completed.'));
                     unset($token);
                 }
-                return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id' => $invoice->id]));
+                return $this->redirect(Yii::$app->urlManager->createUrl(['billing/invoice/show', 'id' => (string)$invoice->id]));
             } catch (Exception $ex) {
                 throw new HttpException(500, Yii::$app->getModule('billing')->t('Paypal API Error: {ERROR}', ['ERROR' => $ex->getMessage()]));
             }
         } else {
             Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('We can not process your payment right now.'));
-            return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id' => $id]));
+            return $this->redirect(Yii::$app->urlManager->createUrl(['billing/invoice/show', 'id' => $id]));
         }
 
     }

@@ -35,7 +35,7 @@ class Item extends ItemBase
             [['details'], 'string'],
             [['id_invoice'], 'string', 'max' => 23],
             [['name'], 'string', 'max' => 255],
-            [['id_invoice'], 'exist', 'skipOnError' => true, 'targetClass' => Invoice::className(), 'targetAttribute' => ['id_invoice' => 'id']],
+            [['id_invoice'], 'exist', 'skipOnError' => true, 'targetClass' => Invoice::className(), 'targetAttribute' => ['id_invoice' => 'id_invoice']],
         ];
     }
 
@@ -55,11 +55,11 @@ class Item extends ItemBase
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return \yii\db\ActiveQueryInterface
      */
     public function getInvoice()
     {
-        return $this->hasOne(Invoice::className(), ['id' => 'id_invoice']);
+        return $this->hasOne(Invoice::className(), ['id_invoice' => 'id_invoice']);
     }
 
     /**
