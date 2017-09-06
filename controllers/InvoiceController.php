@@ -296,10 +296,10 @@ class InvoiceController extends Controller
                     if ($model->currency != 'USD') {
                         if (!$model->convertCurrencyTo('USD')) {
                             Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('Only accept payments in USD'));
-                            return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id' => $id]));
+                            return $this->redirect(Yii::$app->urlManager->createUrl(['billing/invoice/show', 'id' => $id]));
                         }
                     }
-                    return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/paypal/create', 'id' => (string)$model->id]));
+                    return $this->redirect(Yii::$app->urlManager->createUrl(['billing/paypal/create', 'id' => (string)$model->id]));
                 }
                 if ($method == 'bitcoin') {
                     /* generate make sure always have new addresses */
@@ -334,13 +334,12 @@ class InvoiceController extends Controller
                     return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/bitcoin/payment', 's' => $s]));
                 }
                 /* return view if no payment method*/
-                return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id' => $id]));
+                return $this->redirect(Yii::$app->urlManager->createUrl(['billing/invoice/show', 'id' => $id]));
             } else {
                 Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('We can not process your payment right now.'));
-                return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/show', 'id' => $id]));
+                return $this->redirect(Yii::$app->urlManager->createUrl(['billing/invoice/show', 'id' => $id]));
             }
         } else throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
-
     }
 
     /**
@@ -379,7 +378,7 @@ class InvoiceController extends Controller
         $model=$this->findModel($id);
         $model->cancel();
         Yii::$app->session->setFlash('success', Yii::$app->getModule('billing')->t('Invoice has been canceled.'));
-        return $this->redirect(Yii::$app->urlManager->createUrl(['/billing/invoice/view', 'id'=>(string)$model->id]));
+        return $this->redirect(Yii::$app->urlManager->createUrl(['billing/invoice/view', 'id'=>(string)$model->id]));
     }
 
     /**

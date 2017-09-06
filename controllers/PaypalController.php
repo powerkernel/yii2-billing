@@ -9,7 +9,6 @@
 namespace modernkernel\billing\controllers;
 
 
-use common\models\Setting;
 use Exception;
 use modernkernel\billing\models\Invoice;
 use PayPal\Api\Amount;
@@ -62,13 +61,13 @@ class PaypalController extends Controller
      */
     public function init()
     {
-        if (Setting::getValue('paypalSandbox') == '1') {
-            $client = Setting::getValue('paypalSandboxClientID');
-            $secret = Setting::getValue('paypalSandboxSecret');
+        if (\modernkernel\billing\models\Setting::getValue('paypalSandbox') == '1') {
+            $client = \modernkernel\billing\models\Setting::getValue('paypalSandboxClientID');
+            $secret = \modernkernel\billing\models\Setting::getValue('paypalSandboxSecret');
             $mode = 'sandbox';
         } else {
-            $client = Setting::getValue('paypalClientID');
-            $secret = Setting::getValue('paypalSecret');
+            $client = \modernkernel\billing\models\Setting::getValue('paypalClientID');
+            $secret = \modernkernel\billing\models\Setting::getValue('paypalSecret');
             $mode = 'live';
         }
         if (isset($client, $secret, $mode)) {

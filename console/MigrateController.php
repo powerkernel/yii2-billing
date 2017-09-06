@@ -23,9 +23,34 @@ class MigrateController extends \yii\console\Controller
 //        $this->coupon();
 //        $this->info();
         //$this->item();
-        $this->invoice();
+        //$this->invoice();
+        $this->setting();
     }
 
+    /**
+     * copy setting to MongoDB
+     */
+    protected function setting(){
+        echo "Migrating Settings...\n";
+        $rows = (new Query())->select('*')->from('{{%billing_settings}}')->all();
+        $collection = \Yii::$app->mongodb->getCollection('billing_settings');
+        $collection->remove();
+        foreach ($rows as $row) {
+            $collection->insert([
+                'key' => $row['key'],
+                'title' => $row['title'],
+                'value' => $row['value'],
+                'type' => $row['type'],
+                'data' => $row['data'],
+                'rules' => $row['rules'],
+            ]);
+        }
+        echo "Settings migration completed.\n";
+    }
+
+    /**
+     * copy invoice to MongoDB
+     */
     protected function invoice()
     {
         echo "Migrating Invoice...\n";

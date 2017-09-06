@@ -4,7 +4,6 @@
  * @link https://modernkernel.com
  * @copyright Copyright (c) 2016 Modern Kernel
  */
-use common\models\Setting;
 use modernkernel\fontawesome\Icon;
 use yii\bootstrap\Tabs;
 use yii\helpers\Html;
@@ -61,7 +60,7 @@ $this->registerJs($js);
 
 
 
-                    <div id="btc-info" data-timeout="<?= Setting::getValue('btcPaymentTime') ?>">
+                    <div id="btc-info" data-timeout="<?= \modernkernel\billing\models\Setting::getValue('btcPaymentTime') ?>">
                         <div style="margin-top: 10px;">
                         <?=
                         Tabs::widget([

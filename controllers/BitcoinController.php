@@ -8,7 +8,6 @@
 namespace modernkernel\billing\controllers;
 
 use common\components\BackendFilter;
-use common\models\Setting;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use modernkernel\billing\models\Invoice;
@@ -197,7 +196,7 @@ class BitcoinController extends Controller
         }
         /* if expired, return */
         $now=time();
-        $point=$now-(integer)Setting::getValue('btcPaymentTime');
+        $point=$now-(integer)\modernkernel\billing\models\Setting::getValue('btcPaymentTime');
         if($time<$point){
             return $this->redirect($invoice->getInvoiceUrl());
         }

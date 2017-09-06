@@ -8,7 +8,6 @@
 namespace modernkernel\billing\models;
 
 use common\models\Account;
-use common\models\Setting;
 use modernkernel\billing\components\CurrencyLayer;
 use modernkernel\billing\components\Tax;
 use Yii;
@@ -366,8 +365,8 @@ class Invoice extends InvoiceBase
                 ],
                 ['title' => $subject, 'model' => $this]
             )
-            ->setFrom([Setting::getValue('outgoingMail') => Yii::$app->name])
-            ->setTo(Setting::getValue('adminMail'))
+            ->setFrom([\common\models\Setting::getValue('outgoingMail') => Yii::$app->name])
+            ->setTo(\common\models\Setting::getValue('adminMail'))
             ->setSubject($subject)
             ->send();
     }
@@ -469,7 +468,7 @@ class Invoice extends InvoiceBase
                     ],
                     ['title' => $subject, 'model' => $this]
                 )
-                ->setFrom([Setting::getValue('outgoingMail') => Yii::$app->name])
+                ->setFrom([\common\models\Setting::getValue('outgoingMail') => Yii::$app->name])
                 ->setTo($this->account->email)
                 ->setSubject($subject)
                 ->send();

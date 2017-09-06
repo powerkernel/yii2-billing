@@ -9,7 +9,6 @@
 namespace modernkernel\billing\components;
 
 
-use common\models\Setting;
 use Yii;
 use yii\httpclient\Client;
 
@@ -27,7 +26,7 @@ class CurrencyLayer
      */
     public function __construct()
     {
-        $access_key=Setting::getValue('currencyLayerAPI');
+        $access_key=\modernkernel\billing\models\Setting::getValue('currencyLayerAPI');
         if(!empty($access_key)){
             $this->init($access_key);
         }

@@ -5,7 +5,7 @@
  * @copyright Copyright (c) 2016 Modern Kernel
  */
 
-use common\models\Setting;
+use modernkernel\billing\models\Setting;
 use modernkernel\billing\components\CurrencyLayer;
 use modernkernel\billing\models\Invoice;
 use modernkernel\fontawesome\Icon;

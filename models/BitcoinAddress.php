@@ -9,7 +9,6 @@ namespace modernkernel\billing\models;
 
 use BitWasp\Bitcoin\Bitcoin;
 use BitWasp\Bitcoin\Key\Deterministic\HierarchicalKeyFactory;
-use common\models\Setting;
 use Yii;
 use yii\httpclient\Client;
 
@@ -168,7 +167,7 @@ class BitcoinAddress extends BitcoinAddressBase
      */
     public static function generate()
     {
-        $xpub = Setting::getValue('btcWalletXPub');
+        $xpub = \modernkernel\billing\models\Setting::getValue('btcWalletXPub');
         if (!empty($xpub)) {
             $network = Bitcoin::getNetwork();
             $hk = HierarchicalKeyFactory::fromExtended($xpub, $network);
