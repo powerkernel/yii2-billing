@@ -184,9 +184,9 @@ class BitcoinController extends Controller
      * @throws NotFoundHttpException
      */
     public function actionPayment($s){
-
         $this->layout = Yii::$app->view->theme->basePath . '/account.php';
         $this->view->title=Yii::$app->getModule('billing')->t('Pay with Bitcoin');
+
         $session=Yii::$app->session[$s];
         $invoice=Invoice::findOne($session['invoice']);
         $address=BitcoinAddress::findOne($session['address']);
@@ -210,7 +210,7 @@ class BitcoinController extends Controller
         //$btc=0.095; // manual BTC amount
         $bitcoin['amount']=$address->request_balance;;
         $bitcoin['address']=$address->address;
-        $bitcoin['date']=$address->updated_at;
+        $bitcoin['date']=$time;
         $bitcoin['url']='bitcoin:'.$bitcoin['address'].'?amount='.$bitcoin['amount'];
         /* QR Code */
         $qrCode = new QrCode($bitcoin['url']);

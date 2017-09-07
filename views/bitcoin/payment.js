@@ -50,13 +50,12 @@ setInterval(checkPayment, 10000);
  * count down
  */
 var $clock = $("#count-down"),
-    addrTime = $("#btc-address").data('date'),
-    currentTime = moment().unix(),
-    diffTime = currentTime - addrTime,
-    timeout = $("#btc-info").data('timeout'),
+    addrTime = $("#btc-address").data('date'), // seconds
+    currentTime = moment().unix(), // seconds
+    diffTime = currentTime - addrTime, // seconds
+    timeout = $("#btc-info").data('timeout'), seconds
     duration = moment.duration((timeout - diffTime) * 1000, 'milliseconds'),
     interval = 1000;
-
 
 var $m = $('<span class="minutes">--</span>').appendTo($clock);
 $('<span class="">:</span>').appendTo($clock);

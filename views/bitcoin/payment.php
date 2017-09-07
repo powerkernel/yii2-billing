@@ -100,4 +100,4 @@ $this->registerJs($js);
 
 </div>
 
-<span id="check-payment-url" class="hidden" data-check-payment-url="<?= Yii::$app->urlManager->createUrl(['/billing/bitcoin/check-payment', 'address'=>$bitcoin['address']]) ?>"></span>
+<span id="check-payment-url" class="hidden" data-check-payment-url="<?= Yii::$app->urlManager->createUrl(['billing/bitcoin/check-payment', 'address'=>$bitcoin['address']]) ?>"></span>
