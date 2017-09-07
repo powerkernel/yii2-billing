@@ -22,9 +22,8 @@ class BitcoinAddressSearch extends BitcoinAddress
     public function rules()
     {
         return [
-            [['address', 'id_invoice', 'tx_id'], 'safe'],
-            [['id', 'id_account', 'tx_date', 'tx_confirmed', 'tx_check_date', 'status', 'created_at', 'updated_at'], 'integer'],
-            [['request_balance', 'total_received', 'final_balance'], 'number'],
+            [['address', 'id_invoice', 'tx_id', 'status'], 'safe'],
+            [['request_balance', 'total_received'], 'number'],
         ];
     }
 

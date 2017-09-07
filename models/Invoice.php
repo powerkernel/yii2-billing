@@ -106,7 +106,7 @@ class Invoice extends InvoiceBase
             [['shipping', 'tax'], 'default', 'value'=>0],
             [['status'], 'default', 'value'=>self::STATUS_PENDING],
 
-            [['id_account'], 'integer'],
+            [['id_account'], 'safe'],
             [['subtotal', 'shipping', 'tax', 'total'], 'number', 'min' => 0],
             [['id_invoice'], 'string', 'max' => 23],
             [['currency'], 'string', 'max' => 3],
@@ -114,7 +114,7 @@ class Invoice extends InvoiceBase
             [['info'], 'string'],
 
             [['id_account'], 'safe'],
-            [['id_account'], 'exist', 'skipOnError' => true, 'targetClass' => Account::className(), 'targetAttribute' => ['id_account' => 'id']],
+            [['id_account'], 'exist', 'skipOnError' => true, 'targetClass' => Account::className(), 'targetAttribute' => ['id_account' => Yii::$app->params['mongodb']['account']?'_id':'id']],
 
             ['payment_date_picker', 'string']
         ];
@@ -347,7 +347,7 @@ class Invoice extends InvoiceBase
      */
     public function getAdminInvoiceUrl()
     {
-        return Yii::$app->urlManagerBackend->createAbsoluteUrl(['/billing/invoice/view', 'id' => $this->id]);
+        return Yii::$app->urlManagerBackend->createAbsoluteUrl(['billing/invoice/view', 'id' => (string)$this->id]);
     }
 
     /**

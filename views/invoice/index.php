@@ -34,7 +34,7 @@ $this->registerJs('$(document).on("pjax:send", function(){ $(".grid-view-overlay
 
                         'id_invoice',
                         //'account.fullname',
-                        ['attribute' => 'fullname', 'value' => 'account.fullname'],
+                        ['attribute' => 'id_account', 'value' => 'account.fullname'],
                         //['attribute' => 'subtotal', 'value' => function ($model){return Yii::$app->formatter->asCurrency($model->subtotal, $model->currency);}],
                         //['attribute' => 'discount', 'value' => function ($model){return Yii::$app->formatter->asCurrency($model->discount, $model->currency);}],
                         //['attribute' => 'tax', 'value' => function ($model){return Yii::$app->formatter->asCurrency($model->tax, $model->currency);}],

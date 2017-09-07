@@ -15,16 +15,17 @@ class m170831_154226_update extends Migration
     {
         $this->renameColumn('{{%billing_invoice}}', 'id', 'id_invoice');
 
-        //$this->dropForeignKey('fk_billing_item-billing_invoice', '{{%billing_item}}');
-        //$this->dropIndex('fk_billing_item-billing_invoice', '{{%billing_item}}');
+        $this->dropForeignKey('fk_billing_item-billing_invoice', '{{%billing_item}}');
+        $this->dropIndex('fk_billing_item-billing_invoice', '{{%billing_item}}');
 
-        //$this->dropForeignKey('fk_billing_invoice-core_account', '{{%billing_invoice}}');
-        //$this->dropIndex('fk_billing_invoice-core_account', '{{%billing_invoice}}');
+        $this->dropForeignKey('fk_billing_invoice-core_account', '{{%billing_invoice}}');
+        $this->dropIndex('fk_billing_invoice-core_account', '{{%billing_invoice}}');
 
-        //$this->dropForeignKey('fk_bitcoin_payments_id_invoice-invoice_id', '{{%billing_bitcoin_payments}}');
-        //$this->dropIndex('fk_bitcoin_payments_id_invoice-invoice_id', '{{%billing_bitcoin_payments}}');
+        $this->dropForeignKey('fk_bitcoin_payments_id_invoice-invoice_id', '{{%billing_bitcoin_payments}}');
+        $this->dropIndex('fk_bitcoin_payments_id_invoice-invoice_id', '{{%billing_bitcoin_payments}}');
 
         $this->dropPrimaryKey('pk', '{{%billing_invoice}}');
+
         $this->addColumn('{{%billing_invoice}}', 'id', $this->primaryKey()->first());
 
         $this->alterColumn('{{%billing_invoice}}', 'status', $this->string(50));

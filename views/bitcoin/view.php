@@ -28,7 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'model' => $model,
                     'attributes' => [
                         ['attribute' => 'address', 'value' => Html::a($model->address, 'https://blockchain.info/address/' . $model->address, ['target' => '_blank']), 'format' => 'raw'],
-                        ['attribute' => 'id_invoice', 'value' => empty($model->id_invoice) ? null : Html::a($model->id_invoice, Yii::$app->urlManager->createUrl(['/billing/invoice/view', 'id' => $model->id_invoice]), ['target' => '_blank']), 'format' => 'raw'],
+                        ['attribute' => 'id_invoice', 'value' => empty($model->invoice) ? null : Html::a($model->id_invoice, Yii::$app->urlManager->createUrl(['billing/invoice/view', 'id' => (string)$model->invoice->id]), ['target' => '_blank']), 'format' => 'raw'],
                         'id_account',
                         'request_balance',
                         'total_received',

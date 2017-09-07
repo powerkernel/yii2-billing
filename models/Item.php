@@ -30,7 +30,7 @@ class Item extends ItemBase
     {
         return [
             [['id_invoice', 'name'], 'required'],
-            [['id', 'quantity'], 'integer'],
+            [['quantity'], 'integer'],
             [['price'], 'number'],
             [['details'], 'string'],
             [['id_invoice'], 'string', 'max' => 23],

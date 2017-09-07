@@ -120,7 +120,9 @@ class BitcoinAddress extends BitcoinAddressBase
             ];
         }
         $default = [
+            [['request_balance', 'total_received', 'final_balance'], 'default', 'value' => 0.0],
             [['status'], 'default', 'value' => self::STATUS_NEW],
+
             [['address'], 'required'],
             [['request_balance', 'total_received', 'final_balance'], 'number'],
             [['address'], 'string', 'max' => 35],
@@ -155,11 +157,11 @@ class BitcoinAddress extends BitcoinAddressBase
 
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return \yii\db\ActiveQueryInterface
      */
     public function getInvoice()
     {
-        return $this->hasOne(Invoice::className(), ['id' => 'id_invoice']);
+        return $this->hasOne(Invoice::className(), ['id_invoice' => 'id_invoice']);
     }
 
     /**
@@ -236,9 +238,9 @@ class BitcoinAddress extends BitcoinAddressBase
             $this->final_balance = $balance['balance'] == 0 ? 0 : $balance['balance'] / 100000000;
 
             $this->tx_id = $txid;
-            $this->tx_check_date = time();
+            $this->touch('tx_check_date');
             $this->tx_date = empty($this->tx_date) ? $txDate : $this->tx_date;
-            $this->tx_confirmed = $txConfirmations;
+            $this->tx_confirmed = (int)$txConfirmations;
             $this->status = BitcoinAddress::STATUS_UNCONFIRMED;
             if ($txConfirmations > 2) {
                 $this->status = BitcoinAddress::STATUS_DONE;

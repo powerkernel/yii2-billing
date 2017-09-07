@@ -7,7 +7,9 @@
 
 namespace modernkernel\billing\console;
 
+use common\models\Account;
 use MongoDB\BSON\UTCDateTime;
+use Yii;
 use yii\db\Query;
 
 /**
@@ -18,13 +20,51 @@ class MigrateController extends \yii\console\Controller
 {
     public function actionIndex()
     {
-//        $this->btc();
-//        $this->bank();
-//        $this->coupon();
-//        $this->info();
-        //$this->item();
-        //$this->invoice();
+        $this->btc();
+        $this->bank();
+        $this->coupon();
+        $this->info();
+        $this->item();
+        $this->invoice();
         $this->setting();
+        $this->userid();
+    }
+
+    /**
+     * convert userid
+     */
+    protected function userid(){
+        echo "Updating user id...\n";
+        /* billing_bitcoin_payments */
+        $rows = (new \yii\mongodb\Query())->select(['id_account'])->from('billing_bitcoin_payments')->distinct('id_account');
+        foreach ($rows as $row) {
+            $id = $this->getUserId((int)$row);
+            if ($id) {
+                Yii::$app->mongodb->createCommand()
+                    ->update('billing_bitcoin_payments', ['id_account' => $row], ['id_account' => $id]);
+            }
+        }
+
+        /* billing_info */
+        $rows = (new \yii\mongodb\Query())->select(['id_account'])->from('billing_info')->distinct('id_account');
+        foreach ($rows as $row) {
+            $id = $this->getUserId((int)$row);
+            if ($id) {
+                Yii::$app->mongodb->createCommand()
+                    ->update('billing_info', ['id_account' => $row], ['id_account' => $id]);
+            }
+        }
+
+        /* billing_invoice */
+        $rows = (new \yii\mongodb\Query())->select(['id_account'])->from('billing_invoice')->distinct('id_account');
+        foreach ($rows as $row) {
+            $id = $this->getUserId((int)$row);
+            if ($id) {
+                Yii::$app->mongodb->createCommand()
+                    ->update('billing_invoice', ['id_account' => $row], ['id_account' => $id]);
+            }
+        }
+        echo "User id updated.\n";
     }
 
     /**
@@ -43,6 +83,8 @@ class MigrateController extends \yii\console\Controller
                 'type' => $row['type'],
                 'data' => $row['data'],
                 'rules' => $row['rules'],
+                'group'=>'Billing',
+                'key_order' => $row['key_order'],
             ]);
         }
         echo "Settings migration completed.\n";
@@ -209,5 +251,18 @@ class MigrateController extends \yii\console\Controller
             ]);
         }
         echo "Bank info migration completed.\n";
+    }
+
+    /**
+     * @param $id
+     * @return null|string
+     */
+    protected function getUserId($id)
+    {
+        $a = Account::find()->where(['user_id' => $id])->one();
+        if ($a) {
+            return (string)$a->_id;
+        }
+        return null;
     }
 }
