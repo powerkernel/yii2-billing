@@ -9,7 +9,6 @@
 namespace modernkernel\billing\controllers;
 
 
-use Exception;
 use modernkernel\billing\models\Invoice;
 use PayPal\Api\Amount;
 use PayPal\Api\Details;
@@ -21,6 +20,7 @@ use PayPal\Api\PaymentExecution;
 use PayPal\Api\RedirectUrls;
 use PayPal\Api\Transaction;
 use PayPal\Auth\OAuthTokenCredential;
+use PayPal\Exception\PayPalConnectionException;
 use PayPal\Rest\ApiContext;
 use Yii;
 use yii\base\InvalidConfigException;
@@ -102,7 +102,7 @@ class PaypalController extends Controller
      * create payment
      * @param string $id
      * @return \yii\web\Response
-     * @throws HttpException
+     * @throws PayPalConnectionException
      */
     public function actionCreate($id)
     {
@@ -129,8 +129,7 @@ class PaypalController extends Controller
 
             /* invoice details */
             $details = new Details();
-            $details
-                ->setShipping($invoice->shipping)
+            $details->setShipping($invoice->shipping)
                 ->setTax($invoice->tax)
                 ->setSubtotal($invoice->subtotal);
 
@@ -151,7 +150,7 @@ class PaypalController extends Controller
                 ->setCancelUrl(Yii::$app->urlManager->createAbsoluteUrl(['/billing/invoice/show', 'id' => (string)$invoice->id, 'cancel' => 'true']));
 
             $payment = new Payment();
-            $payment->setIntent('sale')
+            $payment->setIntent('authorize')
                 ->setPayer($payer)
                 ->setRedirectUrls($urls)
                 ->setTransactions([$transaction]);
@@ -161,8 +160,8 @@ class PaypalController extends Controller
                 $payment->create($this->apiContext);
                 $approvalUrl = $payment->getApprovalLink();
                 return $this->redirect($approvalUrl);
-            } catch (Exception $ex) {
-                throw new HttpException(500, Yii::$app->getModule('billing')->t('Paypal API Error: {ERROR}', ['ERROR' => $ex->getMessage()]));
+            } catch (PayPalConnectionException $ex) {
+                throw new PayPalConnectionException($ex->getCode(), Yii::$app->getModule('billing')->t('Paypal API Error: {ERROR}', ['ERROR' => $ex->getMessage()]));
             }
 
 
@@ -179,38 +178,46 @@ class PaypalController extends Controller
      * @param string $paymentId
      * @param string $PayerID
      * @param string $token
-     * @return \yii\web\Response
+     * @return string|\yii\web\Response
      * @throws HttpException
      */
     public function actionReturn($id, $paymentId, $PayerID, $token)
     {
+        $this->layout = Yii::$app->view->theme->basePath . '/account.php';
         $invoice = Invoice::findOne($id);
         if ($invoice->status == Invoice::STATUS_PENDING) {
-            $payment = Payment::get($paymentId, $this->apiContext);
-            $execution = new PaymentExecution();
-            $execution->setPayerId($PayerID);
+            if (Yii::$app->request->isPost && Yii::$app->request->post('complete')) {
+                try {
+                    $payment = Payment::get($paymentId, $this->apiContext);
+                    /* Approval Status */
 
-            try {
-                $result = $payment->execute($execution, $this->apiContext);
-                /* $transaction id */
-                $transactions = $payment->getTransactions();
-                $relatedResources = $transactions[0]->getRelatedResources();
-                $sale = $relatedResources[0]->getSale();
-                $saleId = $sale->getId();
-                /* update invoice */
-                if (isset($result->state) && $result->state == 'approved') {
-                    $invoice->status = Invoice::STATUS_PAID;
-                    $invoice->payment_method = 'Paypal';
-                    $invoice->touch('payment_date');
-                    $invoice->transaction = $saleId;
-                    $invoice->save();
-                    Yii::$app->session->setFlash('success', Yii::$app->getModule('billing')->t('Thank you for your payment. Your transaction has been completed.'));
-                    unset($token);
+                    /* Execution */
+                    $execution = new PaymentExecution();
+                    $execution->setPayerId($PayerID);
+                    $result = $payment->execute($execution, $this->apiContext);
+                    /* $transaction id */
+                    $transactions = $payment->getTransactions();
+                    $relatedResources = $transactions[0]->getRelatedResources();
+                    $sale = $relatedResources[0]->getSale();
+                    $saleId = $sale->getId();
+                    /* update invoice */
+                    if (isset($result->state) && $result->state == 'approved') {
+                        $invoice->status = Invoice::STATUS_PAID;
+                        $invoice->payment_method = 'Paypal';
+                        $invoice->touch('payment_date');
+                        $invoice->transaction = $saleId;
+                        $invoice->save();
+                        Yii::$app->session->setFlash('success', Yii::$app->getModule('billing')->t('Thank you for your payment. Your transaction has been completed.'));
+                        unset($token);
+                    }
+                    return $this->redirect(Yii::$app->urlManager->createUrl(['billing/invoice/show', 'id' => (string)$invoice->id]));
+                } catch (PayPalConnectionException  $ex) {
+                    Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('Paypal Error: {ERROR}', ['ERROR' => $ex->getMessage()]));
                 }
-                return $this->redirect(Yii::$app->urlManager->createUrl(['billing/invoice/show', 'id' => (string)$invoice->id]));
-            } catch (Exception $ex) {
-                throw new HttpException(500, Yii::$app->getModule('billing')->t('Paypal API Error: {ERROR}', ['ERROR' => $ex->getMessage()]));
             }
+
+
+            return $this->render('return', ['invoice' => $invoice]);
         } else {
             Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('We can not process your payment right now.'));
             return $this->redirect(Yii::$app->urlManager->createUrl(['billing/invoice/show', 'id' => $id]));
