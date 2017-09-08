@@ -207,7 +207,7 @@ class BitcoinController extends Controller
         }
 
         /* set btc info */
-        //$btc=0.095; // manual BTC amount
+        //$btc=0.00612796; // manual BTC amount
         $bitcoin['amount']=$address->request_balance;;
         $bitcoin['address']=$address->address;
         $bitcoin['date']=$time;
