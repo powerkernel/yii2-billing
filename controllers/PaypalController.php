@@ -146,11 +146,11 @@ class PaypalController extends Controller
 
 
             $urls = new RedirectUrls();
-            $urls->setReturnUrl(Yii::$app->urlManager->createAbsoluteUrl(['/billing/paypal/return', 'id' => (string)$invoice->id]))
-                ->setCancelUrl(Yii::$app->urlManager->createAbsoluteUrl(['/billing/invoice/show', 'id' => (string)$invoice->id, 'cancel' => 'true']));
+            $urls->setReturnUrl(Yii::$app->urlManager->createAbsoluteUrl(['billing/paypal/return', 'id' => (string)$invoice->id]))
+                ->setCancelUrl(Yii::$app->urlManager->createAbsoluteUrl(['billing/invoice/show', 'id' => (string)$invoice->id, 'cancel' => 'true']));
 
             $payment = new Payment();
-            $payment->setIntent('authorize')
+            $payment->setIntent('sale')
                 ->setPayer($payer)
                 ->setRedirectUrls($urls)
                 ->setTransactions([$transaction]);
@@ -189,26 +189,30 @@ class PaypalController extends Controller
             if (Yii::$app->request->isPost && Yii::$app->request->post('complete')) {
                 try {
                     $payment = Payment::get($paymentId, $this->apiContext);
-                    /* Approval Status */
-
                     /* Execution */
                     $execution = new PaymentExecution();
                     $execution->setPayerId($PayerID);
+                    /* execute */
                     $result = $payment->execute($execution, $this->apiContext);
-                    /* $transaction id */
-                    $transactions = $payment->getTransactions();
-                    $relatedResources = $transactions[0]->getRelatedResources();
-                    $sale = $relatedResources[0]->getSale();
-                    $saleId = $sale->getId();
-                    /* update invoice */
                     if (isset($result->state) && $result->state == 'approved') {
+                        /* $transaction id */
+                        $transactions = $payment->getTransactions();
+                        $relatedResources = $transactions[0]->getRelatedResources();
+                        $sale = $relatedResources[0]->getSale();
+                        $saleId = $sale->getId();
+                        /* update invoice */
                         $invoice->status = Invoice::STATUS_PAID;
                         $invoice->payment_method = 'Paypal';
                         $invoice->touch('payment_date');
                         $invoice->transaction = $saleId;
-                        $invoice->save();
-                        Yii::$app->session->setFlash('success', Yii::$app->getModule('billing')->t('Thank you for your payment. Your transaction has been completed.'));
-                        unset($token);
+                        if($invoice->save()){
+                            Yii::$app->session->setFlash('success', Yii::$app->getModule('billing')->t('Thank you for your payment. Your transaction has been completed.'));
+                            unset($token);
+                        }
+                        else {
+                            Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('We can not process your payment right now.'));
+                        }
+
                     }
                     return $this->redirect(Yii::$app->urlManager->createUrl(['billing/invoice/show', 'id' => (string)$invoice->id]));
                 } catch (PayPalConnectionException  $ex) {

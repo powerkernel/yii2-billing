@@ -29,11 +29,11 @@ class m170831_154226_update extends Migration
         $this->addColumn('{{%billing_invoice}}', 'id', $this->primaryKey()->first());
 
         $this->alterColumn('{{%billing_invoice}}', 'status', $this->string(50));
-        $this->update('{{%billing_invoice}}', ['status'=> Invoice::STATUS_PENDING], ['status'=>10]);
-        $this->update('{{%billing_invoice}}', ['status'=> Invoice::STATUS_PAID], ['status'=>20]);
-        $this->update('{{%billing_invoice}}', ['status'=> Invoice::STATUS_CANCELED], ['status'=>30]);
-        $this->update('{{%billing_invoice}}', ['status'=> Invoice::STATUS_REFUNDED], ['status'=>40]);
-        $this->update('{{%billing_invoice}}', ['status'=> Invoice::STATUS_PAID_UNCONFIRMED], ['status'=>50]);
+        $this->update('{{%billing_invoice}}', ['status'=> Invoice::STATUS_PENDING], ['status'=>'10']);
+        $this->update('{{%billing_invoice}}', ['status'=> Invoice::STATUS_PAID], ['status'=>'20']);
+        $this->update('{{%billing_invoice}}', ['status'=> Invoice::STATUS_CANCELED], ['status'=>'30']);
+        $this->update('{{%billing_invoice}}', ['status'=> Invoice::STATUS_REFUNDED], ['status'=>'40']);
+        $this->update('{{%billing_invoice}}', ['status'=> Invoice::STATUS_PAID_UNCONFIRMED], ['status'=>'50']);
 
 
     }

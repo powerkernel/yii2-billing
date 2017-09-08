@@ -200,7 +200,7 @@ class InvoiceController extends Controller
             /* metaData */
             //$title=$model->title;
             $this->layout = Yii::$app->view->theme->basePath . '/account.php';
-            $this->view->title = Yii::$app->getModule('billing')->t('Invoice #{ID}', ['ID' => $id]);
+            $this->view->title = Yii::$app->getModule('billing')->t('Invoice #{ID}', ['ID' => $model->id_invoice]);
 
             /* coupon */
             $coupon=null;
