@@ -188,6 +188,10 @@ class Invoice extends InvoiceBase
         $info = BillingInfo::getInfo($this->id_account);
         $this->info = json_encode($info);
 
+        /* shipping */
+        $this->shipping=(float)$this->shipping;
+        $this->tax=(float)$this->tax;
+
         if ($insert) {
             $this->id_invoice = strtoupper(uniqid());
         } else {
@@ -243,7 +247,7 @@ class Invoice extends InvoiceBase
      */
     protected function getTotalItemAmount()
     {
-        $total = 0;
+        $total = 0.0;
         foreach ($this->items as $item) {
             $total += $item->quantity * $item->price;
         }
