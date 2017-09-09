@@ -13,14 +13,14 @@ $schedule->call(function (\yii\console\Application $app) {
 
     /* check payment within 15 min */
     $now = time();
-    $period = 960; // margin is always better :)
+    $period = 999; // margin is always better :)
     $point = $now - $period;
 
     if(Yii::$app->params['billing']['db']==='mongodb'){
         $addresses = BitcoinAddress::find()
             ->where([
                 'status'=>BitcoinAddress::STATUS_USED,
-                'updated_at'=>['$gte'=>new \MongoDB\BSON\UTCDateTime($point)]
+                'updated_at'=>['$gte'=>new \MongoDB\BSON\UTCDateTime($point*1000)]
             ])->all();
     }
     else {
@@ -37,7 +37,7 @@ $schedule->call(function (\yii\console\Application $app) {
         $obj = [];
         foreach ($addresses as $address) {
             $address->checkPayment();
-            $obj[] = $address->id;
+            $obj[] = $address->address;
         }
         $output = $app->getModule('billing')->t('Addresses checked: {ADDR}', ['ADDR' => implode(', ', $obj)]);
     }
@@ -57,7 +57,7 @@ $schedule->call(function (\yii\console\Application $app) {
     if(Yii::$app->params['mongodb']['taskLog']){
         \common\models\TaskLog::deleteAll([
             'task'=>basename(__FILE__, '.php'),
-            'created_at'=>['$lte', new \MongoDB\BSON\UTCDateTime($point)]
+            'created_at'=>['$lte', new \MongoDB\BSON\UTCDateTime($point*1000)]
         ]);
     }
     else {
