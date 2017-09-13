@@ -18,6 +18,10 @@
 
 <?php endforeach;?>
 
+<?= Yii::$app->getModule('billing')->t('Shipping: {SHIP}', ['SHIP' => Yii::$app->formatter->asCurrency($model->shipping, $model->currency)]) ?>
+
+<?= Yii::$app->getModule('billing')->t('Tax: {TAX}', ['TAX' => Yii::$app->formatter->asCurrency($model->tax, $model->currency)]) ?>
+
 <?= Yii::$app->getModule('billing')->t('Total: {TOTAL}', ['TOTAL' => Yii::$app->formatter->asCurrency($model->total, $model->currency)]) ?>
 
 

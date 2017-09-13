@@ -47,11 +47,9 @@
                                                 </td>
                                             </tr>
                                             <?php endforeach;?>
-                                            <tr>
-                                                <td style="vertical-align: top; padding: 5px 0;" valign="top">
-                                            <?= Yii::$app->getModule('billing')->t('Total: {TOTAL}', ['TOTAL' => Yii::$app->formatter->asCurrency($model->total, $model->currency)]) ?>
-                                                </td>
-                                            </tr>
+                                            <tr><td style="vertical-align: top; padding: 5px 0;" valign="top"><?= Yii::$app->getModule('billing')->t('Shipping: {SHIP}', ['SHIP' => Yii::$app->formatter->asCurrency($model->shipping, $model->currency)]) ?></td></tr>
+                                            <tr><td style="vertical-align: top; padding: 5px 0;" valign="top"><?= Yii::$app->getModule('billing')->t('Tax: {TAX}', ['TAX' => Yii::$app->formatter->asCurrency($model->tax, $model->currency)]) ?></td></tr>
+                                            <tr><td style="vertical-align: top; padding: 5px 0;" valign="top"><?= Yii::$app->getModule('billing')->t('Total: {TOTAL}', ['TOTAL' => Yii::$app->formatter->asCurrency($model->total, $model->currency)]) ?></td></tr>
 
                                             <tr>
                                                 <td style="vertical-align: top; padding: 5px 0;" valign="top">
