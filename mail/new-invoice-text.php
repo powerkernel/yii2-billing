@@ -11,7 +11,7 @@
 <?= Yii::$app->getModule('billing')->t('A new order has just been placed') ?>
 
 
-<?= Yii::$app->getModule('billing')->t('Invoice #{ID}', ['ID' => $model->id]) ?>
+<?= Yii::$app->getModule('billing')->t('Invoice #{ID}', ['ID' => $model->id_invoice]) ?>
 
 
 <?= Yii::$app->getModule('billing')->t('View Invoice: {URL}', ['URL'=>$model->getAdminInvoiceUrl(true)]) ?>

@@ -9,7 +9,7 @@
         <link itemprop="target" href="<?= $model->getAdminInvoiceUrl(true) ?>">
         <meta itemprop="name" content="<?= Yii::$app->getModule('billing')->t('View Invoice') ?>">
     </div>
-    <meta itemprop="description" content="<?= Yii::$app->getModule('billing')->t('{APP}: New invoice #{ID} placed', ['ID'=>$model->id, 'APP'=>Yii::$app->name]) ?>">
+    <meta itemprop="description" content="<?= Yii::$app->getModule('billing')->t('{APP}: New invoice #{ID} placed', ['ID'=>$model->id_invoice, 'APP'=>Yii::$app->name]) ?>">
 </div>
 
 <table class="body-wrap" style="background-color: #f6f6f6; width: 100%;" width="100%" bgcolor="#f6f6f6">
@@ -37,7 +37,7 @@
                                         <table class="invoice" style="margin: 20px auto; text-align: left; width: 100%;" width="100%" align="left">
                                             <tr>
                                                 <td style="vertical-align: top; padding: 5px 0;" valign="top">
-                                                    <?= Yii::$app->getModule('billing')->t('Invoice #{ID}', ['ID'=>$model->id]) ?><br>
+                                                    <?= Yii::$app->getModule('billing')->t('Invoice #{ID}', ['ID'=>$model->id_invoice]) ?><br>
                                                 </td>
                                             </tr>
                                             <tr>
