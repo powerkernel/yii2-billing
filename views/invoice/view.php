@@ -253,7 +253,7 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
                 <div class="col-sm-6 text-right">
                     <?=
                     ButtonDropdown::widget([
-                        'label' => Yii::$app->getModule('hosting')->t('Update'),
+                        'label' => Yii::$app->getModule('billing')->t('Update'),
                         'options' => ['class' => 'btn btn-warning'],
                         'dropdown' => [
                             'items' => [
