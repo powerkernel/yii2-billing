@@ -8,30 +8,20 @@
 namespace modernkernel\billing\models;
 
 use Yii;
-use yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "{{%billing_item}}".
+ * This is the model class for Item.
  *
- * @property integer $id
+ * @property integer|\MongoDB\BSON\ObjectID|string $id
  * @property string $id_invoice
  * @property string $name
  * @property integer $quantity
- * @property string $price
+ * @property double $price
  * @property string $details
- *
- * @property Invoice $invoice
  */
-class Item extends ActiveRecord
+class Item extends ItemBase
 {
 
-    /**
-     * @inheritdoc
-     */
-    public static function tableName()
-    {
-        return '{{%billing_item}}';
-    }
 
     /**
      * @inheritdoc
@@ -40,12 +30,12 @@ class Item extends ActiveRecord
     {
         return [
             [['id_invoice', 'name'], 'required'],
-            [['id', 'quantity'], 'integer'],
+            [['quantity'], 'integer'],
             [['price'], 'number'],
             [['details'], 'string'],
             [['id_invoice'], 'string', 'max' => 23],
             [['name'], 'string', 'max' => 255],
-            [['id_invoice'], 'exist', 'skipOnError' => true, 'targetClass' => Invoice::className(), 'targetAttribute' => ['id_invoice' => 'id']],
+            [['id_invoice'], 'exist', 'skipOnError' => true, 'targetClass' => Invoice::className(), 'targetAttribute' => ['id_invoice' => 'id_invoice']],
         ];
     }
 
@@ -60,17 +50,16 @@ class Item extends ActiveRecord
             'name' => Yii::$app->getModule('billing')->t('Name'),
             'quantity' => Yii::$app->getModule('billing')->t('Quantity'),
             'price' => Yii::$app->getModule('billing')->t('Price'),
-            //'original_price' => Yii::$app->getModule('billing')->t('Original Price'),
             'details' => Yii::$app->getModule('billing')->t('Details'),
         ];
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return \yii\db\ActiveQueryInterface
      */
     public function getInvoice()
     {
-        return $this->hasOne(Invoice::className(), ['id' => 'id_invoice']);
+        return $this->hasOne(Invoice::className(), ['id_invoice' => 'id_invoice']);
     }
 
     /**

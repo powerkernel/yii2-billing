@@ -8,7 +8,6 @@
 namespace modernkernel\billing\controllers;
 
 use common\components\BackendFilter;
-use common\models\Setting;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use modernkernel\billing\models\Invoice;
@@ -185,9 +184,9 @@ class BitcoinController extends Controller
      * @throws NotFoundHttpException
      */
     public function actionPayment($s){
-
         $this->layout = Yii::$app->view->theme->basePath . '/account.php';
         $this->view->title=Yii::$app->getModule('billing')->t('Pay with Bitcoin');
+
         $session=Yii::$app->session[$s];
         $invoice=Invoice::findOne($session['invoice']);
         $address=BitcoinAddress::findOne($session['address']);
@@ -197,7 +196,7 @@ class BitcoinController extends Controller
         }
         /* if expired, return */
         $now=time();
-        $point=$now-(integer)Setting::getValue('btcPaymentTime');
+        $point=$now-(integer)\modernkernel\billing\models\Setting::getValue('btcPaymentTime');
         if($time<$point){
             return $this->redirect($invoice->getInvoiceUrl());
         }
@@ -208,16 +207,16 @@ class BitcoinController extends Controller
         }
 
         /* set btc info */
-        //$btc=0.095; // manual BTC amount
+        //$btc=0.00612796; // manual BTC amount
         $bitcoin['amount']=$address->request_balance;;
         $bitcoin['address']=$address->address;
-        $bitcoin['date']=$address->updated_at;
+        $bitcoin['date']=$time;
         $bitcoin['url']='bitcoin:'.$bitcoin['address'].'?amount='.$bitcoin['amount'];
         /* QR Code */
         $qrCode = new QrCode($bitcoin['url']);
         $qrCode->setSize(500);
-        $pngWriter = new PngWriter($qrCode);
-        $bitcoin['base64QR']=base64_encode($pngWriter->writeString());
+        $pngWriter = new PngWriter();
+        $bitcoin['base64QR']=base64_encode($pngWriter->writeString($qrCode));
 
         return $this->render('payment', [
             'bitcoin'=>$bitcoin,

@@ -7,6 +7,7 @@
 
 namespace modernkernel\billing\models;
 
+use MongoDB\BSON\UTCDateTime;
 use Yii;
 use yii\base\Model;
 
@@ -41,55 +42,64 @@ class CouponForm extends Model
      */
     public function checkCoupon($attribute, $params, $validator)
     {
-//        if (!in_array($this->$attribute, ['USA', 'Web'])) {
-//            $this->addError($attribute, 'The country must be either "USA" or "Web".');
-//        }
-        /* exist */
-        $code = Coupon::find()->where([
+        $query = Coupon::find()->where([
             'code' => $this->$attribute,
             'status' => Coupon::STATUS_ACTIVE,
-        ])->andWhere(':now>=`begin_at` AND :now<=`end_at`', [':now' => time()])
-            ->one();
+        ]);
+        /* exist */
+        if (Yii::$app->params['billing']['db'] === 'mongodb') {
+            $code = $query->andFilterWhere([
+                'begin_at' => ['$lte' => new UTCDateTime()],
+                'end_at' => ['$gte' => new UTCDateTime()]
+            ])
+                ->one();
+        } else {
+            $code = $query->andWhere(':now>=`begin_at` AND :now<=`end_at`', [':now' => time()])
+                ->one();
+        }
+
+
         if (!$code) {
             $this->addError($attribute, Yii::$app->getModule('billing')->t('The code you entered is invalid or expired.'));
             return false;
         }
+
         /* currency */
-        if($code->currency!=$this->invoice->currency){
+        if ($code->currency != $this->invoice->currency) {
             $this->addError($attribute, Yii::$app->getModule('billing')->t('The invoice is not eligible for this promotion.'));
             return false;
         }
 
         /* Quantity */
-        if($code->quantity!=-1){
-            $used=Invoice::find()->where([
-                'coupon'=>$code,
-                'status'=>[
+        if ($code->quantity != -1) {
+            $used = Invoice::find()->where([
+                'coupon' => $code,
+                'status' => [
                     Invoice::STATUS_PENDING,
                     Invoice::STATUS_PAID,
                     Invoice::STATUS_PAID_UNCONFIRMED,
                     Invoice::STATUS_REFUNDED
                 ]
             ])->count();
-            if($code->quantity<=$used){
+            if ($code->quantity <= $used) {
                 $this->addError($attribute, Yii::$app->getModule('billing')->t('The code you entered is ended.'));
                 return false;
             }
         }
 
         /* can reuse? */
-        if(!$code->reuse){
-            $reused=Invoice::find()->where([
-                'coupon'=>$code,
-                'status'=>[
+        if (!$code->reuse) {
+            $reused = Invoice::find()->where([
+                'coupon' => $code,
+                'status' => [
                     Invoice::STATUS_PENDING,
                     Invoice::STATUS_PAID,
                     Invoice::STATUS_PAID_UNCONFIRMED,
                     Invoice::STATUS_REFUNDED
                 ],
-                'id_account'=>Yii::$app->user->id
+                'id_account' => Yii::$app->user->id
             ])->count();
-            if($reused){
+            if ($reused) {
                 $this->addError($attribute, Yii::$app->getModule('billing')->t('You already used this code once!'));
                 return false;
             }

@@ -19,6 +19,7 @@ function checkPayment() {
     var url = $("#check-payment-url").data("check-payment-url");
     $.getJSON(url)
         .done(function (response) {
+            /** @namespace response.payment_received */
             if(response.payment_received===true){
                 $("#payment-waiting").addClass("hidden");
                 $("#btc-info").addClass("hidden");
@@ -42,21 +43,18 @@ $("#copy-tab").on("click", "#btc-address", function () {
 });
 
 /**
- * check payment every 5s
+ * check payment every 10s
  */
 setInterval(checkPayment, 10000);
 
-/**
- * count down
- */
+/* count down */
 var $clock = $("#count-down"),
-    addrTime = $("#btc-address").data('date'),
-    currentTime = moment().unix(),
-    diffTime = currentTime - addrTime,
-    timeout = $("#btc-info").data('timeout'),
+    addrTime = $("#btc-address").data('date'), // seconds
+    currentTime = moment().unix(), // seconds
+    diffTime = currentTime - addrTime, // seconds
+    timeout = $("#btc-info").data('timeout'), // seconds
     duration = moment.duration((timeout - diffTime) * 1000, 'milliseconds'),
     interval = 1000;
-
 
 var $m = $('<span class="minutes">--</span>').appendTo($clock);
 $('<span class="">:</span>').appendTo($clock);

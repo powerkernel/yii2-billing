@@ -22,9 +22,9 @@ class CouponSearch extends Coupon
     public function rules()
     {
         return [
-            [['code', 'begin_at', 'end_at'], 'safe'],
+            [['code', 'begin_at', 'end_at', 'status', 'discount', 'quantity'], 'safe'],
             [['discount'], 'number'],
-            [['quantity', 'reuse', 'status', 'created_at', 'updated_at'], 'integer'],
+            //[['quantity', 'reuse', 'status', 'created_at', 'updated_at'], 'integer'],
         ];
     }
 
@@ -52,7 +52,7 @@ class CouponSearch extends Coupon
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            //'sort'=> ['defaultOrder' => ['id'=>SORT_DESC]],
+            'sort' => ['defaultOrder' => ['created_at' => SORT_DESC]],
             //'pagination'=>['pageSize'=>20],
         ]);
 
@@ -65,35 +65,47 @@ class CouponSearch extends Coupon
         }
 
         // grid filtering conditions
-        $query->andFilterWhere([
-            'discount' => $this->discount,
-            //'begin_at' => $this->begin_at,
-            //'end_at' => $this->end_at,
-            'quantity' => $this->quantity,
-            'reuse' => $this->reuse,
-            'status' => $this->status,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
-        ]);
-
         $query->andFilterWhere(['like', 'code', $this->code]);
+        $query->andFilterWhere([
+            'discount' => in_array($this->discount, ['', null], true)?null:(float)$this->discount,
+            'quantity' => in_array($this->quantity, ['', null], true)?null:(float)$this->quantity,
+            'status' => $this->status,
+        ]);
+        if (!empty($this->begin_at)) {
+            if (is_a($this, '\yii\mongodb\ActiveRecord')) {
+                $query->andFilterWhere([
+                    'begin_at' => ['$gte' => new \MongoDB\BSON\UTCDateTime(strtotime($this->begin_at) * 1000)],
+                ])->andFilterWhere([
+                    'begin_at' => ['$lt' => new \MongoDB\BSON\UTCDateTime((strtotime($this->begin_at) + 86400) * 1000)],
+                ]);
+            }
+        }
+        if (!empty($this->end_at)) {
+            if (is_a($this, '\yii\mongodb\ActiveRecord')) {
+                $query->andFilterWhere([
+                    'end_at' => ['$gte' => new \MongoDB\BSON\UTCDateTime(strtotime($this->end_at) * 1000)],
+                ])->andFilterWhere([
+                    'end_at' => ['$lt' => new \MongoDB\BSON\UTCDateTime((strtotime($this->end_at) + 86400) * 1000)],
+                ]);
+            }
+        }
 
-        if(!empty($this->begin_at)){
-            $query->andFilterWhere([
-                'DATE(CONVERT_TZ(FROM_UNIXTIME(`begin_at`), :UTC, :ATZ))' => $this->begin_at,
-            ])->params([
-                ':UTC'=>'+00:00',
-                ':ATZ'=>date('P')
-            ]);
-        }
-        if(!empty($this->end_at)){
-            $query->andFilterWhere([
-                'DATE(CONVERT_TZ(FROM_UNIXTIME(`end_at`), :UTC, :ATZ))' => $this->end_at,
-            ])->params([
-                ':UTC'=>'+00:00',
-                ':ATZ'=>date('P')
-            ]);
-        }
+//        if(!empty($this->begin_at)){
+//            $query->andFilterWhere([
+//                'DATE(CONVERT_TZ(FROM_UNIXTIME(`begin_at`), :UTC, :ATZ))' => $this->begin_at,
+//            ])->params([
+//                ':UTC'=>'+00:00',
+//                ':ATZ'=>date('P')
+//            ]);
+//        }
+//        if(!empty($this->end_at)){
+//            $query->andFilterWhere([
+//                'DATE(CONVERT_TZ(FROM_UNIXTIME(`end_at`), :UTC, :ATZ))' => $this->end_at,
+//            ])->params([
+//                ':UTC'=>'+00:00',
+//                ':ATZ'=>date('P')
+//            ]);
+//        }
 
         return $dataProvider;
     }

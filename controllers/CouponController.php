@@ -164,8 +164,9 @@ class CouponController extends BackendController
         $model = new Coupon();
         $model->setScenario('create');
 
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->code]);
+            return $this->redirect(['view', 'id' => (string)$model->id]);
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -184,11 +185,15 @@ class CouponController extends BackendController
         $this->view->title = Yii::t('billing', 'Update Coupon');
         $model = $this->findModel($id);
 
-        $model->begin_date_picker = $model->begin_at;
-        $model->end_date_picker = $model->end_at;
+        $model->begin_date_picker = $model->beginAt;
+        $model->end_date_picker = $model->endAt;
+
+        $model->begin_at=date('m/d/Y',$model->beginAt);
+        $model->end_at=date('m/d/Y',$model->endAt);
+
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->code]);
+            return $this->redirect(['view', 'id' => (string)$model->id]);
         } else {
             return $this->render('update', [
                 'model' => $model,

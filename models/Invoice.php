@@ -8,48 +8,42 @@
 namespace modernkernel\billing\models;
 
 use common\models\Account;
-use common\models\Setting;
 use modernkernel\billing\components\CurrencyLayer;
 use modernkernel\billing\components\Tax;
 use Yii;
-use yii\behaviors\TimestampBehavior;
-use yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "{{%billing_invoice}}".
+ * This is the model class for Invoice
  *
- * @property string $id
- * @property integer $id_account
+ * @property integer|\MongoDB\BSON\ObjectID|string $id
+ * @property string $id_invoice
+ * @property integer|string $id_account
  * @property string $coupon
  * @property double $subtotal
  * @property double $shipping
  * @property double $tax
  * @property double $total
  * @property string $currency
- *
  * @property string $payment_method
- * @property integer $payment_date
+ * @property integer|\MongoDB\BSON\UTCDateTime $payment_date
  * @property string $transaction
  * @property string $info
- *
- * @property integer $status
- * @property integer $created_at
- * @property integer $updated_at
+ * @property string $status
+ * @property integer|\MongoDB\BSON\UTCDateTime $created_at
+ * @property integer|\MongoDB\BSON\UTCDateTime $updated_at
  *
  * @property Account $account
  * @property Item[] $items
  */
-class Invoice extends ActiveRecord
+class Invoice extends InvoiceBase
 {
+    const STATUS_PENDING = 'STATUS_PENDING'; //10;
+    const STATUS_PAID = 'STATUS_PAID'; //20;
 
+    const STATUS_CANCELED = 'STATUS_CANCELED'; //30
+    const STATUS_REFUNDED = 'STATUS_REFUNDED'; //40;
 
-    const STATUS_PENDING = 10;
-    const STATUS_PAID = 20;
-
-    const STATUS_CANCELED = 30;
-    const STATUS_REFUNDED = 40;
-
-    const STATUS_PAID_UNCONFIRMED = 50;
+    const STATUS_PAID_UNCONFIRMED = 'STATUS_PAID_UNCONFIRMED'; //50;
 
     public $payment_date_picker;
 
@@ -92,28 +86,38 @@ class Invoice extends ActiveRecord
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
-        return '{{%billing_invoice}}';
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function rules()
     {
-        return [
-            //[['id', 'created_at', 'updated_at'], 'required'],
-            [['id_account', 'payment_date', 'status', 'created_at', 'updated_at'], 'integer'],
+        /* date */
+        if (is_a($this, 'yii\mongodb\ActiveRecord')) {
+            $date = [
+                [['created_at', 'updated_at', 'payment_date'], 'yii\mongodb\validators\MongoDateValidator'],
+                //[['payment_date'], 'yii\mongodb\validators\MongoDateValidator', 'format' => 'MM/dd/yyyy', 'mongoDateAttribute'=>'payment_date'],
+            ];
+        } else {
+            $date = [
+                [['payment_date', 'created_at', 'updated_at'], 'integer'],
+            ];
+        }
+
+        $default = [
+            [['shipping', 'tax'], 'default', 'value' => 0],
+            [['status'], 'default', 'value' => self::STATUS_PENDING],
+
+            [['id_account'], 'safe'],
             [['subtotal', 'shipping', 'tax', 'total'], 'number', 'min' => 0],
-            [['id'], 'string', 'max' => 23],
+            [['id_invoice'], 'string', 'max' => 23],
             [['currency'], 'string', 'max' => 3],
             [['payment_method', 'transaction'], 'string', 'max' => 50],
             [['info'], 'string'],
-            [['id_account'], 'exist', 'skipOnError' => true, 'targetClass' => Account::className(), 'targetAttribute' => ['id_account' => 'id']],
 
-            ['payment_date_picker', 'string']
+            [['id_account'], 'safe'],
+            [['id_account'], 'exist', 'skipOnError' => true, 'targetClass' => Account::className(), 'targetAttribute' => ['id_account' => Yii::$app->params['mongodb']['account'] ? '_id' : 'id']],
+
+            //['payment_date_picker', 'string']
         ];
+
+        return array_merge($default, $date);
     }
 
     /**
@@ -123,6 +127,7 @@ class Invoice extends ActiveRecord
     {
         return [
             'id' => Yii::$app->getModule('billing')->t('ID'),
+            'id_invoice' => Yii::$app->getModule('billing')->t('ID'),
             'id_account' => Yii::$app->getModule('billing')->t('Account'),
             'coupon' => Yii::$app->getModule('billing')->t('Coupon'),
             'subtotal' => Yii::$app->getModule('billing')->t('Subtotal'),
@@ -132,6 +137,7 @@ class Invoice extends ActiveRecord
             'currency' => Yii::$app->getModule('billing')->t('Currency'),
             'payment_method' => Yii::$app->getModule('billing')->t('Payment Method'),
             'payment_date' => Yii::$app->getModule('billing')->t('Payment Date'),
+            'payment_date_picker' => Yii::$app->getModule('billing')->t('Payment Date'),
             'transaction' => Yii::$app->getModule('billing')->t('Transaction'),
             'info' => Yii::$app->getModule('billing')->t('Billing Information'),
             'status' => Yii::$app->getModule('billing')->t('Status'),
@@ -140,31 +146,27 @@ class Invoice extends ActiveRecord
         ];
     }
 
+
     /**
-     * @return \yii\db\ActiveQuery
+     * @return \yii\db\ActiveQueryInterface
      */
     public function getAccount()
     {
-        return $this->hasOne(Account::className(), ['id' => 'id_account']);
+        if (Yii::$app->params['mongodb']['account']) {
+            return $this->hasOne(Account::className(), ['_id' => 'id_account']);
+        } else {
+            return $this->hasOne(Account::className(), ['id' => 'id_account']);
+        }
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return \yii\db\ActiveQueryInterface
      */
     public function getItems()
     {
-        return $this->hasMany(Item::className(), ['id_invoice' => 'id']);
+        return $this->hasMany(Item::className(), ['id_invoice' => 'id_invoice']);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            TimestampBehavior::className(),
-        ];
-    }
 
     /**
      * @inheritdoc
@@ -182,12 +184,18 @@ class Invoice extends ActiveRecord
         $info = BillingInfo::getInfo($this->id_account);
         $this->info = json_encode($info);
 
+        /* shipping */
+        $this->shipping = (float)$this->shipping;
+        $this->tax = (float)$this->tax;
+
         if ($insert) {
-            $this->id = strtoupper(uniqid());
+            $this->id_invoice = strtoupper(uniqid());
         } else {
             $this->calculate();
+            if ($this->status == self::STATUS_PAID && empty($this->payment_date)) {
+                $this->touch('payment_date');
+            }
         }
-
 
         return parent::beforeSave($insert); // TODO: Change the autogenerated stub
     }
@@ -200,9 +208,9 @@ class Invoice extends ActiveRecord
     public function afterSave($insert, $changedAttributes)
     {
         parent::afterSave($insert, $changedAttributes); // TODO: Change the autogenerated stub
-        if($insert){
-            $this->sendMail();
-        }
+//        if ($insert) {
+//            $this->sendMail();
+//        }
     }
 
     /**
@@ -235,7 +243,7 @@ class Invoice extends ActiveRecord
      */
     protected function getTotalItemAmount()
     {
-        $total = 0;
+        $total = 0.0;
         foreach ($this->items as $item) {
             $total += $item->quantity * $item->price;
         }
@@ -326,26 +334,69 @@ class Invoice extends ActiveRecord
         if ($absolute) {
             $act = 'createAbsoluteUrl';
         }
-        return Yii::$app->urlManagerFrontend->$act(['/billing/invoice/show', 'id' => $this->id]);
+        if (Yii::$app->id != 'app-frontend') {
+            return Yii::$app->urlManagerFrontend->createAbsoluteUrl(['/billing/invoice/show', 'id' => (string)$this->id]);
+        }
+        return Yii::$app->urlManager->$act(['/billing/invoice/show', 'id' => (string)$this->id]);
     }
 
     /**
-     * sending new invoice email to admin
+     * admin invoice url
+     * @return mixed
+     */
+    public function getAdminInvoiceUrl()
+    {
+        return Yii::$app->urlManagerBackend->createAbsoluteUrl(['billing/invoice/view', 'id' => (string)$this->id]);
+    }
+
+    /**
+     * sending new invoice email to admin and user
      * @return bool
      */
     public function sendMail()
     {
-        $subject = Yii::$app->getModule('billing')->t('{APP}: New invoice #{ID} placed', ['ID'=>$this->id, 'APP' => Yii::$app->name]);
+        $this->calculate();
+        return $this->sendEmailAdmin() && $this->sendEmailUser();
+    }
+
+    /**
+     * send email to admin
+     * @return bool
+     */
+    protected function sendEmailAdmin()
+    {
+        $subject = Yii::$app->getModule('billing')->t('{APP}: New invoice #{ID} placed', ['ID' => $this->id_invoice, 'APP' => Yii::$app->name]);
         return Yii::$app->mailer
             ->compose(
                 [
-                    'html' => 'new-invoice-html',
-                    'text' => 'new-invoice-text'
+                    'html' => 'new-invoice-admin-html',
+                    'text' => 'new-invoice-admin-text'
                 ],
                 ['title' => $subject, 'model' => $this]
             )
-            ->setFrom([Setting::getValue('outgoingMail') => Yii::$app->name])
-            ->setTo(Setting::getValue('adminMail'))
+            ->setFrom([\common\models\Setting::getValue('outgoingMail') => Yii::$app->name])
+            ->setTo(\common\models\Setting::getValue('adminMail'))
+            ->setSubject($subject)
+            ->send();
+    }
+
+    /**
+     * send email to user
+     * @return bool
+     */
+    protected function sendEmailUser()
+    {
+        $subject = Yii::$app->getModule('billing')->t('{APP}: you\'ve got a new invoice #{ID}', ['ID' => $this->id_invoice, 'APP' => Yii::$app->name]);
+        return Yii::$app->mailer
+            ->compose(
+                [
+                    'html' => 'new-invoice-user-html',
+                    'text' => 'new-invoice-user-text'
+                ],
+                ['title' => $subject, 'model' => $this]
+            )
+            ->setFrom([\common\models\Setting::getValue('outgoingMail') => Yii::$app->name])
+            ->setTo($this->account->email)
             ->setSubject($subject)
             ->send();
     }
@@ -393,35 +444,36 @@ class Invoice extends ActiveRecord
      * @param $code
      * @return bool
      */
-    public function applyCoupon($code){
-        $coupon=Coupon::findOne($code);
-        if($coupon){
+    public function applyCoupon($code)
+    {
+        $coupon = Coupon::find()->where(['code' => $code])->one();
+        if ($coupon) {
             /* percent */
-            if($coupon->discount_type==Coupon::DISCOUNT_TYPE_PERCENT){
-                $discount=new Item();
-                $discount->id_invoice=$this->id;
-                $discount->name=Yii::$app->getModule('billing')->t('Coupon {CODE}', ['CODE'=>$coupon->code]);
-                $discount->quantity=1;
-                $discount->price=($this->subtotal*$coupon->discount/100)*-1;
+            if ($coupon->discount_type == Coupon::DISCOUNT_TYPE_PERCENT) {
+                $discount = new Item();
+                $discount->id_invoice = $this->id_invoice;
+                $discount->name = Yii::$app->getModule('billing')->t('Coupon {CODE}', ['CODE' => $coupon->code]);
+                $discount->quantity = 1;
+                $discount->price = ($this->subtotal * $coupon->discount / 100) * -1;
                 $discount->save();
             }
             /* value */
-            if($coupon->discount_type==Coupon::DISCOUNT_TYPE_VALUE){
+            if ($coupon->discount_type == Coupon::DISCOUNT_TYPE_VALUE) {
                 /* value > invoice total */
-                $value=$coupon->discount;
-                if($value>$this->subtotal){
-                    $value=$this->subtotal;
+                $value = $coupon->discount;
+                if ($value > $this->subtotal) {
+                    $value = $this->subtotal;
                 }
-                $discount=new Item();
-                $discount->id_invoice=$this->id;
-                $discount->name=Yii::$app->getModule('billing')->t('Coupon {CODE}', ['CODE'=>$coupon->code]);
-                $discount->quantity=1;
-                $discount->price=$value*-1;
+                $discount = new Item();
+                $discount->id_invoice = $this->id_invoice;
+                $discount->name = Yii::$app->getModule('billing')->t('Coupon {CODE}', ['CODE' => $coupon->code]);
+                $discount->quantity = 1;
+                $discount->price = $value * -1;
                 $discount->save();
             }
 
             /* save */
-            $this->coupon=$code;
+            $this->coupon = $code;
             $this->save();
             return true;
         }
@@ -432,9 +484,10 @@ class Invoice extends ActiveRecord
      * cancel invoice
      * @return bool
      */
-    public function cancel(){
-        $this->status=Invoice::STATUS_CANCELED;
-        if($this->save()){
+    public function cancel()
+    {
+        $this->status = Invoice::STATUS_CANCELED;
+        if ($this->save()) {
             /* send email */
             $subject = Yii::$app->getModule('billing')->t('{APP}: Your invoice has been canceled', ['APP' => Yii::$app->name]);
             Yii::$app->mailer
@@ -445,12 +498,24 @@ class Invoice extends ActiveRecord
                     ],
                     ['title' => $subject, 'model' => $this]
                 )
-                ->setFrom([Setting::getValue('outgoingMail') => Yii::$app->name])
+                ->setFrom([\common\models\Setting::getValue('outgoingMail') => Yii::$app->name])
                 ->setTo($this->account->email)
                 ->setSubject($subject)
                 ->send();
             return true;
         }
         return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function beforeDelete()
+    {
+        $items = $this->getItems();
+        foreach ($items as $item) {
+            $item->delete();
+        }
+        return parent::beforeDelete(); // TODO: Change the autogenerated stub
     }
 }

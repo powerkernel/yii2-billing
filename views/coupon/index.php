@@ -39,25 +39,29 @@ $this->registerJs('$(document).on("pjax:send", function(){ $(".grid-view-overlay
                         'code',
                         [
                             'attribute' => 'discount',
-                            'value' => function($model){return $model->discount_type == Coupon::DISCOUNT_TYPE_PERCENT ? Yii::$app->formatter->asPercent($model->discount/100):Yii::$app->formatter->asCurrency($model->discount, $model->currency);}
+                            'value' => function ($model) {
+                                return $model->discount_type == Coupon::DISCOUNT_TYPE_PERCENT ? Yii::$app->formatter->asPercent($model->discount / 100) : Yii::$app->formatter->asCurrency($model->discount, $model->currency);
+                            }
                         ],
                         [
                             'attribute' => 'begin_at',
-                            'value' => 'begin_at',
+                            'value' => 'beginAt',
                             'format' => 'date',
                             'filter' => DatePicker::widget(['model' => $searchModel, 'attribute' => 'begin_at', 'dateFormat' => 'yyyy-MM-dd', 'options' => ['class' => 'form-control']]),
-                            'contentOptions'=>['style'=>'min-width: 80px']
+                            'contentOptions' => ['style' => 'min-width: 80px']
                         ],
                         [
                             'attribute' => 'end_at',
-                            'value' => 'end_at',
+                            'value' => 'endAt',
                             'format' => 'date',
                             'filter' => DatePicker::widget(['model' => $searchModel, 'attribute' => 'end_at', 'dateFormat' => 'yyyy-MM-dd', 'options' => ['class' => 'form-control']]),
-                            'contentOptions'=>['style'=>'min-width: 80px']
+                            'contentOptions' => ['style' => 'min-width: 80px']
                         ],
                         [
                             'attribute' => 'quantity',
-                            'value' => function($model){return $model->quantity==-1?Yii::$app->getModule('billing')->t('Unlimited'):Yii::$app->formatter->asDecimal($model->quantity);},
+                            'value' => function ($model) {
+                                return $model->quantity == -1 ? Yii::$app->getModule('billing')->t('Unlimited') : Yii::$app->formatter->asDecimal($model->quantity);
+                            },
                         ],
                         //'',
                         // 'reuse',
@@ -71,8 +75,13 @@ $this->registerJs('$(document).on("pjax:send", function(){ $(".grid-view-overlay
                         //    'filter' => DatePicker::widget(['model' => $searchModel, 'attribute' => 'created_at', 'dateFormat' => 'yyyy-MM-dd', 'options' => ['class' => 'form-control']]),
                         //    'contentOptions'=>['style'=>'min-width: 80px']
                         //],
-                        ['attribute' => 'status', 'value' => function ($model){return $model->statusColorText;}, 'filter'=> Coupon::getStatusOption(), 'format'=>'raw'],
-                        ['class' => 'yii\grid\ActionColumn'],
+                        ['attribute' => 'status', 'value' => function ($model) {
+                            return $model->statusColorText;
+                        }, 'filter' => Coupon::getStatusOption(), 'format' => 'raw'],
+                        [
+                            'class' => 'yii\grid\ActionColumn',
+                            'contentOptions' => ['style' => 'min-width: 70px']
+                        ],
                     ],
                 ]); ?>
             </div>

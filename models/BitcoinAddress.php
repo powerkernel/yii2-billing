@@ -9,19 +9,16 @@ namespace modernkernel\billing\models;
 
 use BitWasp\Bitcoin\Bitcoin;
 use BitWasp\Bitcoin\Key\Deterministic\HierarchicalKeyFactory;
-use common\models\Setting;
 use Yii;
-use yii\behaviors\TimestampBehavior;
-use yii\db\ActiveRecord;
 use yii\httpclient\Client;
 
 /**
- * This is the model class for table "{{%billing_bitcoin_payments}}".
+ * This is the model class for BitcoinAddress
  *
- * @property integer $id
+ * @property integer|\MongoDB\BSON\ObjectID|string $id
  * @property string $address
  * @property string $id_invoice
- * @property integer $id_account
+ * @property integer|\MongoDB\BSON\ObjectID|string $id_account
  * @property string $request_balance
  * @property string $total_received
  * @property string $final_balance
@@ -30,19 +27,19 @@ use yii\httpclient\Client;
  * @property integer $tx_confirmed
  * @property integer $tx_check_date
  * @property integer $status
- * @property integer $created_at
- * @property integer $updated_at
+ * @property integer|\MongoDB\BSON\UTCDateTime $created_at
+ * @property integer|\MongoDB\BSON\UTCDateTime $updated_at
  *
  * @property Invoice $invoice
  */
-class BitcoinAddress extends ActiveRecord
+class BitcoinAddress extends BitcoinAddressBase
 {
 
 
-    const STATUS_NEW = 10;
-    const STATUS_USED = 20;
-    const STATUS_DONE = 30;
-    const STATUS_UNCONFIRMED = 40;
+    const STATUS_NEW = 'STATUS_NEW'; //10
+    const STATUS_USED = 'STATUS_USED'; //20
+    const STATUS_DONE = 'STATUS_DONE'; //30
+    const STATUS_UNCONFIRMED = 'STATUS_UNCONFIRMED'; //40
 
 
     /**
@@ -104,31 +101,35 @@ class BitcoinAddress extends ActiveRecord
         if (!empty($status) && in_array($status, array_keys($list))) {
             return '<span class="label label-' . $color . '">' . $list[$status] . '</span>';
         }
-        return '<span class="label label-' . $color . '">' . Yii::$app->getModule('ticket')->t('Unknown') . '</span>';
+        return '<span class="label label-' . $color . '">' . Yii::$app->getModule('billing')->t('Unknown') . '</span>';
     }
 
-
-    /**
-     * @inheritdoc
-     */
-    public static function tableName()
-    {
-        return '{{%billing_bitcoin_payments}}';
-    }
 
     /**
      * @inheritdoc
      */
     public function rules()
     {
-        return [
+        if (is_a($this, '\yii\mongodb\ActiveRecord')) {
+            $date = [
+                [['created_at', 'updated_at'], 'yii\mongodb\validators\MongoDateValidator']
+            ];
+        } else {
+            $date = [
+                [['created_at', 'updated_at'], 'integer']
+            ];
+        }
+        $default = [
+            [['request_balance', 'total_received', 'final_balance'], 'default', 'value' => 0.0],
+            [['status'], 'default', 'value' => self::STATUS_NEW],
+
             [['address'], 'required'],
-            [['id', 'id_account', 'tx_date', 'tx_confirmed', 'tx_check_date', 'status', 'created_at', 'updated_at'], 'integer'],
             [['request_balance', 'total_received', 'final_balance'], 'number'],
             [['address'], 'string', 'max' => 35],
-            [['id_invoice'], 'string', 'max' => 23],
+            [['id_invoice'], 'string', 'max' => 32],
             [['tx_id'], 'string', 'max' => 64],
         ];
+        return array_merge($default, $date);
     }
 
     /**
@@ -154,22 +155,13 @@ class BitcoinAddress extends ActiveRecord
         ];
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            TimestampBehavior::className(),
-        ];
-    }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return \yii\db\ActiveQueryInterface
      */
     public function getInvoice()
     {
-        return $this->hasOne(Invoice::className(), ['id' => 'id_invoice']);
+        return $this->hasOne(Invoice::className(), ['id_invoice' => 'id_invoice']);
     }
 
     /**
@@ -177,7 +169,7 @@ class BitcoinAddress extends ActiveRecord
      */
     public static function generate()
     {
-        $xpub = Setting::getValue('btcWalletXPub');
+        $xpub = \modernkernel\billing\models\Setting::getValue('btcWalletXPub');
         if (!empty($xpub)) {
             $network = Bitcoin::getNetwork();
             $hk = HierarchicalKeyFactory::fromExtended($xpub, $network);
@@ -246,12 +238,12 @@ class BitcoinAddress extends ActiveRecord
             $this->final_balance = $balance['balance'] == 0 ? 0 : $balance['balance'] / 100000000;
 
             $this->tx_id = $txid;
-            $this->tx_check_date = time();
-            $this->tx_date = empty($this->tx_date)?$txDate:$this->tx_date;
-            $this->tx_confirmed = $txConfirmations;
-            $this->status=BitcoinAddress::STATUS_UNCONFIRMED;
-            if($txConfirmations>2){
-                $this->status=BitcoinAddress::STATUS_DONE;
+            $this->touch('tx_check_date');
+            $this->tx_date = empty($this->tx_date) ? $txDate : $this->tx_date;
+            $this->tx_confirmed = (int)$txConfirmations;
+            $this->status = BitcoinAddress::STATUS_UNCONFIRMED;
+            if ($txConfirmations > 2) {
+                $this->status = BitcoinAddress::STATUS_DONE;
             }
             $this->save();
             return json_encode(['payment_received' => true]);

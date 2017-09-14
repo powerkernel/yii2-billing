@@ -4,7 +4,6 @@
  * @link https://modernkernel.com
  * @copyright Copyright (c) 2016 Modern Kernel
  */
-use common\models\Setting;
 use modernkernel\fontawesome\Icon;
 use yii\bootstrap\Tabs;
 use yii\helpers\Html;
@@ -35,7 +34,7 @@ $this->registerJs($js);
                 <div class="box-body">
                     <div class="row">
                         <div class="col-xs-7">
-                            <?= Yii::$app->getModule('billing')->t('Pay for invoice #{INVOICE}', ['INVOICE' => $invoice->id]) ?>
+                            <?= Yii::$app->getModule('billing')->t('Pay for invoice #{INVOICE}', ['INVOICE' => $invoice->id_invoice]) ?>
                         </div>
                         <div class="col-xs-5">
                             <div class="text-right"><?= Yii::$app->formatter->asDecimal($invoice->total) ?> <?= $invoice->currency ?></div>
@@ -61,7 +60,7 @@ $this->registerJs($js);
 
 
 
-                    <div id="btc-info" data-timeout="<?= Setting::getValue('btcPaymentTime') ?>">
+                    <div id="btc-info" data-timeout="<?= \modernkernel\billing\models\Setting::getValue('btcPaymentTime') ?>">
                         <div style="margin-top: 10px;">
                         <?=
                         Tabs::widget([
@@ -101,4 +100,4 @@ $this->registerJs($js);
 
 </div>
 
-<span id="check-payment-url" class="hidden" data-check-payment-url="<?= Yii::$app->urlManager->createUrl(['/billing/bitcoin/check-payment', 'address'=>$bitcoin['address']]) ?>"></span>
+<span id="check-payment-url" class="hidden" data-check-payment-url="<?= Yii::$app->urlManager->createUrl(['billing/bitcoin/check-payment', 'address'=>$bitcoin['address']]) ?>"></span>

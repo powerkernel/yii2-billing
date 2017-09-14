@@ -5,7 +5,7 @@
  * @copyright Copyright (c) 2016 Modern Kernel
  */
 
-use common\models\Setting;
+use modernkernel\billing\models\Setting;
 use modernkernel\billing\components\CurrencyLayer;
 use modernkernel\billing\models\Invoice;
 use modernkernel\fontawesome\Icon;
@@ -39,7 +39,7 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
                          alt="<?= Yii::$app->name ?>"/> <?= Yii::$app->name ?>
                     <span class="pull-right visible-print"
                           style="max-height: 24px; vertical-align: bottom; display: block">
-                        <?= $generator->getBarcode($model->id, $generator::TYPE_CODE_128, 1.5, 24) ?>
+                        <?= $generator->getBarcode($model->id_invoice, $generator::TYPE_CODE_128, 1.5, 24) ?>
                     </span>
                 </h2>
 
@@ -88,17 +88,26 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
             <!-- /.col -->
             <div class="col-sm-4 invoice-col">
                 <div class="">
-                    <b><?= Yii::$app->getModule('billing')->t('Invoice #:') ?></b> <?= $model->id ?></div>
+                    <b><?= Yii::$app->getModule('billing')->t('Invoice #:') ?></b> <?= $model->id_invoice ?></div>
                 <div class="">
-                    <b><?= Yii::$app->getModule('billing')->t('Date:') ?></b> <?= Yii::$app->formatter->asDate($model->created_at) ?>
+                    <b><?= Yii::$app->getModule('billing')->t('Date:') ?></b> <?= Yii::$app->formatter->asDate($model->createdAt) ?>
                 </div>
-                <div class="<?= empty($model->payment_method) ? 'hidden' : '' ?>">
+
+                <?php if(!empty($model->payment_method)):?>
+                <div class="">
                     <b><?= $model->getAttributeLabel('payment_method') ?>: </b> <?= $model->payment_method ?></div>
-                <div class="<?= empty($model->payment_date) ? 'hidden' : '' ?>">
+                <?php endif;?>
+
+                <?php if(!empty($model->payment_date)):?>
+                <div class="">
                     <b><?= $model->getAttributeLabel('payment_date') ?>
-                        : </b> <?= Yii::$app->formatter->asDate($model->payment_date) ?></div>
-                <div class="<?= empty($model->transaction) ? 'hidden' : '' ?>">
+                        : </b> <?= Yii::$app->formatter->asDate($model->paymentDate) ?></div>
+                <?php endif;?>
+
+                <?php if(!empty($model->transaction)):?>
+                <div class="">
                     <b><?= $model->getAttributeLabel('transaction') ?>: </b> <?= $model->transaction ?></div>
+                <?php endif;?>
                 <div class="no-print">
                     <b><?= Yii::$app->getModule('billing')->t('Status:') ?></b> <?= $model->statusText ?></div>
             </div>
@@ -189,8 +198,8 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
 
 
                         <div class="text-center">
-                            <?= Html::a(Icon::widget(['icon' => 'paypal']) . ' ' . Yii::$app->getModule('billing')->t('Pay'), Yii::$app->urlManager->createUrl(['/billing/invoice/pay', 'id' => $model->id, 'method' => 'paypal']), ['class' => 'btn btn-primary']) ?>
-                            <?= Html::a(Icon::widget(['icon' => 'btc']) . ' ' . Yii::$app->getModule('billing')->t('Pay with Bitcoin'), Yii::$app->urlManager->createUrl(['/billing/invoice/pay', 'id' => $model->id, 'method' => 'bitcoin']), ['class' => 'btn btn-warning']) ?>
+                            <?= Html::a(Icon::widget(['icon' => 'paypal']) . ' ' . Yii::$app->getModule('billing')->t('Pay'), Yii::$app->urlManager->createUrl(['billing/invoice/pay', 'id' => (string)$model->id, 'method' => 'paypal']), ['class' => 'btn btn-primary']) ?>
+                            <?= Html::a(Icon::widget(['icon' => 'btc']) . ' ' . Yii::$app->getModule('billing')->t('Pay with Bitcoin'), Yii::$app->urlManager->createUrl(['billing/invoice/pay', 'id' => (string)$model->id, 'method' => 'bitcoin']), ['class' => 'btn btn-warning']) ?>
                         </div>
 
 
@@ -212,7 +221,7 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
             </div>
             <div class="col-sm-6 col-sm-pull-6">
                 <?php if ($model->status == Invoice::STATUS_PENDING): ?>
-                    <?php foreach ($model->getBankInfo() as $i => $bank): ?>
+                    <?php foreach ($banks=$model->getBankInfo() as $i => $bank): ?>
                         <?php if ($i == 0): ?>
                             <p class="lead" style="margin-bottom: 0">
                                 <?= Yii::$app->getModule('billing')->t('Bank Transfer:') ?>
@@ -224,6 +233,12 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
                             <em><?= Yii::$app->getModule('billing')->t('(Please transfer the amount in {CURRENCY} as shown above)', ['CURRENCY' => $bank['currency']]) ?></em>
                         </p>
                     <?php endforeach; ?>
+                    <?php if($banks):?>
+                        <div class="well well-sm">
+                            <strong class="text-danger"><?= Yii::$app->getModule('billing')->t('Important:') ?></strong>
+                            <?= Yii::$app->getModule('billing')->t('Please enter {IID} in your Detail of Payment and send all amount in a single transaction.', ['IID'=>'<strong>'.$model->id_invoice.'</strong>']) ?>
+                        </div>
+                    <?php endif;?>
                 <?php endif; ?>
             </div>
 
@@ -237,7 +252,7 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
             </div>
             <div class="row">
                 <div class="col-sm-6">
-                    <?= Html::beginForm(Yii::$app->urlManager->createUrl(['/billing/invoice/discount', 'id' => $model->id]), 'post', ['class' => 'form-inline']) ?>
+                    <?= Html::beginForm(Yii::$app->urlManager->createUrl(['/billing/invoice/discount', 'id' => (string)$model->id]), 'post', ['class' => 'form-inline']) ?>
                     <div class="form-group">
                         <label class="sr-only" for="discountAmount"><?= Yii::t('billing', 'Amount') ?></label>
                         <div class="input-group">
@@ -259,19 +274,19 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
                             'items' => [
                                 [
                                     'label' => Yii::$app->getModule('billing')->t('Cancel'),
-                                    'url' => Yii::$app->urlManager->createUrl(['/billing/invoice/cancel', 'id' => $model->id]),
+                                    'url' => Yii::$app->urlManager->createUrl(['/billing/invoice/cancel', 'id' => (string)$model->id]),
                                     'linkOptions'=>['data-confirm'=>Yii::$app->getModule('billing')->t('Are you sure want to cancel this invoice?')]
                                 ],
                                 [
                                     'label' => Yii::$app->getModule('billing')->t('Edit'),
-                                    'url' => Yii::$app->urlManager->createUrl(['/billing/invoice/update', 'id' => $model->id]),
+                                    'url' => Yii::$app->urlManager->createUrl(['/billing/invoice/update', 'id' => (string)$model->id]),
                                 ]
                             ],
                             'options' => ['class' => 'dropdown-menu dropdown-menu-right']
                         ],
                     ]);
                     ?>
-                    <?php Html::a(Yii::t('billing', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary pull-right']) ?>
+                    <?php Html::a(Yii::t('billing', 'Update'), ['update', 'id' => (string)$model->id], ['class' => 'btn btn-primary pull-right']) ?>
                 </div>
             </div>
             <!-- /.row -->

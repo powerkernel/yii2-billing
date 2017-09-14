@@ -32,17 +32,21 @@ use yii\widgets\ActiveForm;
             <?= $form->field($model, 'currency')->textInput(['maxlength' => true, 'disabled' => true]) ?>
             <?= $form->field($model, 'transaction')->textInput(['maxlength' => true]) ?>
             <?= $form->field($model, 'payment_method')->dropDownList(Invoice::getPaymentMethodOption(), ['prompt'=>'']) ?>
-            <?= $form->field($model, 'payment_date')->hiddenInput()->label(false) ?>
-            <?= $form->field($model, 'payment_date_picker')->widget(DatePicker::classname(), [
-                'options' => ['class' => 'form-control'],
-                'clientOptions' => [
-                    'altField' => '#invoice-payment_date',
-                    'altFormat' => '@',
-                    'changeYear' => true,
-                    'changeMonth' => true,
-                    'onSelect' => new \yii\web\JsExpression('function(){$("#invoice-payment_date").val($("#invoice-payment_date").val()/1000);}')
-                ],
-            ]) ?>
+            <?php
+                //$form->field($model, 'payment_date')->hiddenInput()->label(false)
+            ?>
+            <?php
+//            $form->field($model, 'payment_date_picker')->widget(DatePicker::classname(), [
+//                'options' => ['class' => 'form-control'],
+//                'clientOptions' => [
+//                    'altField' => '#invoice-payment_date',
+//                    'altFormat' => 'mm/dd/yy',
+//                    'changeYear' => true,
+//                    'changeMonth' => true,
+//                    //'onSelect' => new \yii\web\JsExpression('function(){$("#invoice-payment_date").val($("#invoice-payment_date").val()/1000);}')
+//                ],
+//            ])
+            ?>
             <?= $form->field($model, 'status')->dropDownList(Invoice::getStatusOption()) ?>
         </div>
     </div>

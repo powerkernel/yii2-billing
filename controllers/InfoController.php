@@ -90,7 +90,7 @@ class InfoController extends Controller
         $this->layout = Yii::$app->view->theme->basePath . '/account.php';
         $this->view->title = Yii::t('billing', 'My Information');
         //$this->title=Yii::$app->getModule('billing')->t('My Information');
-        $model = BillingInfo::findOne(Yii::$app->user->id);
+        $model = BillingInfo::find()->where(['id_account'=>Yii::$app->user->id])->one();
         if (!$model) {
             $model = new BillingInfo();
         }
@@ -195,6 +195,9 @@ class InfoController extends Controller
      */
     public function actionCreate($id)
     {
+        if(is_numeric($id)){
+            $id=(int)$id;
+        }
         $this->view->title = Yii::t('billing', 'Create Billing Information');
         $model = new BillingInfo();
 
@@ -204,9 +207,8 @@ class InfoController extends Controller
             $model->id_account = $id;
         }
 
-
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id_account]);
+            return $this->redirect(['view', 'id' => (string)$model->id]);
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -227,7 +229,7 @@ class InfoController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id_account]);
+            return $this->redirect(['view', 'id' => (string)$model->id]);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -255,9 +257,12 @@ class InfoController extends Controller
      */
     public function actionCheck($id)
     {
-        $model = BillingInfo::findOne($id);
+        if(is_numeric($id)){
+            $id=(int)$id;
+        }
+        $model = BillingInfo::find()->where(['id_account'=>$id])->one();
         if ($model) {
-            return $this->redirect(['view', 'id' => $id]);
+            return $this->redirect(['view', 'id' => (string)$model->id]);
         }
         return $this->redirect(['create', 'id' => $id]);
     }
