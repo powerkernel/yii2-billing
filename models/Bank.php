@@ -24,10 +24,8 @@ use Yii;
 class Bank extends BankBase
 {
 
-
     const STATUS_ACTIVE = 'STATUS_ACTIVE'; //10
     const STATUS_INACTIVE = 'STATUS_INACTIVE'; //20
-
 
     /**
      * get status list
