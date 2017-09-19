@@ -2,8 +2,10 @@
 
 namespace modernkernel\billing\models;
 
+use common\Core;
 use common\models\Account;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for collection "billing_address".
@@ -163,6 +165,22 @@ class Address extends AddressBase
         } else {
             return $this->hasOne(Account::className(), ['id' => 'id_account']);
         }
+    }
+
+    public static function getAddressDataList($id_account){
+        $addresses=self::find()->where(['id_account'=>$id_account])->all();
+        $data=[];
+        foreach($addresses as $address){
+            $data[(string)$address->id]='<strong>'.$address->contact_name.'</strong>';
+            $data[(string)$address->id].='<br />'.$address->street_address_1;
+            if(!empty($address->street_address_2)){
+                $data[(string)$address->id].='<br />'.$address->street_address_2;
+            }
+            $data[(string)$address->id].='<br />'.$address->city.', '.$address->state.' '.$address->zip_code;
+            $data[(string)$address->id].='<br />'.Core::getCountryText($address->country);
+            $data[(string)$address->id].='<br />'.$address->phone;
+        }
+        return $data;
     }
 
 }
