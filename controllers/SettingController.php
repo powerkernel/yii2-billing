@@ -83,6 +83,7 @@ class SettingController extends BackendController
             ['key' => 'merchantEmail', 'value' => '', 'title' => 'Merchant Email', 'description' => 'Merchant email', 'group' => 'Merchant', 'type' => 'textInput', 'data' => '[]', 'default' => '', 'rules' => json_encode(['required' => [], 'email' => []])],
 
             /* Paypal */
+            ['key' => 'paypalEmail', 'value' => '', 'title' => 'Paypal Email', 'description' => 'Paypal email address', 'group' => 'Paypal', 'type' => 'textInput', 'data' => json_encode(Core::getYesNoOption()), 'default' => '', 'rules' => json_encode(['string' => [], 'email' => []])],
             ['key' => 'paypalSandbox', 'value' => '', 'title' => 'Paypal Sandbox Mode', 'description' => 'Set yes to enable sandbox', 'group' => 'Paypal', 'type' => 'dropDownList', 'data' => json_encode(Core::getYesNoOption()), 'default' => '1', 'rules' => json_encode(['required' => [], 'boolean' => []])],
             ['key' => 'paypalClientID', 'value' => '', 'title' => 'Paypal Client ID', 'description' => 'Live client ID', 'group' => 'Paypal', 'type' => 'textInput', 'data' => '[]', 'default' => '', 'rules' => json_encode(['string' => []])],
             ['key' => 'paypalSecret', 'value' => '', 'title' => 'Paypal Secret', 'description' => 'Live secret string', 'group' => 'Paypal', 'type' => 'passwordInput', 'data' => '[]', 'default' => '', 'rules' => json_encode(['string' => []])],

@@ -10,10 +10,12 @@ namespace modernkernel\billing\controllers;
 
 
 use modernkernel\billing\models\Invoice;
+use modernkernel\billing\models\Setting;
 use PayPal\Api\Amount;
 use PayPal\Api\Details;
 use PayPal\Api\Item;
 use PayPal\Api\ItemList;
+use PayPal\Api\Payee;
 use PayPal\Api\Payer;
 use PayPal\Api\Payment;
 use PayPal\Api\PaymentExecution;
@@ -138,7 +140,13 @@ class PaypalController extends Controller
                 ->setTotal($invoice->total)
                 ->setDetails($details);
 
+            /* transaction */
             $transaction = new Transaction();
+            if ($email = Setting::getValue('paypalEmail')) {
+                $payee = new Payee();
+                $payee->setEmail($email);
+                $transaction->setPayee($payee);
+            }
             $transaction->setAmount($amount)
                 ->setItemList($itemList)
                 ->setDescription(Yii::$app->getModule('billing')->t('Invoice #' . $invoice->id_invoice))
@@ -152,6 +160,7 @@ class PaypalController extends Controller
             $payment = new Payment();
             $payment->setIntent('sale')
                 ->setPayer($payer)
+                //->setPayee($payee)
                 ->setRedirectUrls($urls)
                 ->setTransactions([$transaction]);
 
@@ -205,11 +214,10 @@ class PaypalController extends Controller
                         $invoice->payment_method = 'Paypal';
                         $invoice->touch('payment_date');
                         $invoice->transaction = $saleId;
-                        if($invoice->save()){
+                        if ($invoice->save()) {
                             Yii::$app->session->setFlash('success', Yii::$app->getModule('billing')->t('Thank you for your payment. Your transaction has been completed.'));
                             unset($token);
-                        }
-                        else {
+                        } else {
                             Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('We can not process your payment right now.'));
                         }
 
