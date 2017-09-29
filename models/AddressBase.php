@@ -6,9 +6,7 @@
  */
 
 
-
 namespace modernkernel\billing\models;
-
 
 
 use Yii;
@@ -16,7 +14,7 @@ use yii\behaviors\TimestampBehavior;
 use common\behaviors\UTCDateTimeBehavior;
 
 
-if (Yii::$app->params['billing']['db']=='mongodb') {
+if (Yii::$app->getModule('billing')->params['db'] === 'mongodb') {
     /**
      * Class AddressActiveRecord
      */
@@ -85,7 +83,7 @@ if (Yii::$app->params['billing']['db']=='mongodb') {
         public function getCreatedAt()
         {
             return $this->created_at->toDateTime()->format('U');
-        }        
+        }
     }
 } else {
     /**
@@ -125,12 +123,13 @@ if (Yii::$app->params['billing']['db']=='mongodb') {
         public function getCreatedAt()
         {
             return $this->created_at;
-        }        
+        }
     }
 }
 
 /**
  * Class AddressBase
  */
-class AddressBase extends AddressActiveRecord {
+class AddressBase extends AddressActiveRecord
+{
 }

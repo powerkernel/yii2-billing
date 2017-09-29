@@ -17,7 +17,7 @@ $schedule->call(function (\yii\console\Application $app) {
     $point = $now - $days;
 
 
-    if (Yii::$app->params['billing']['db'] === 'mongodb') {
+    if (Yii::$app->getModule('billing')->params['db'] === 'mongodb') {
         $invoices = Invoice::find()
             ->where([
                 'status' => Invoice::STATUS_PENDING,

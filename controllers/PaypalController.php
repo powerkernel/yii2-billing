@@ -1,8 +1,8 @@
 <?php
 /**
- * @author Harry Tang <harry@modernkernel.com>
- * @link https://modernkernel.com
- * @copyright Copyright (c) 2016 Modern Kernel
+ * @author Harry Tang <harry@powerkernel.com>
+ * @link https://powerkernel.com
+ * @copyright Copyright (c) 2017 Power Kernel
  */
 
 
@@ -114,6 +114,9 @@ class PaypalController extends Controller
             $payer = new Payer();
             $payer->setPaymentMethod("paypal");
 
+            /* payer info */
+
+
             /* items */
             $items = [];
             foreach ($invoice->items as $i => $item) {
@@ -160,7 +163,6 @@ class PaypalController extends Controller
             $payment = new Payment();
             $payment->setIntent('sale')
                 ->setPayer($payer)
-                //->setPayee($payee)
                 ->setRedirectUrls($urls)
                 ->setTransactions([$transaction]);
 

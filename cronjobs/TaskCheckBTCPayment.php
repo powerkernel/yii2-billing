@@ -16,7 +16,7 @@ $schedule->call(function (\yii\console\Application $app) {
     $period = 999; // margin is always better :)
     $point = $now - $period;
 
-    if(Yii::$app->params['billing']['db']==='mongodb'){
+    if(Yii::$app->getModule('billing')->params['db']==='mongodb'){
         $addresses = BitcoinAddress::find()
             ->where([
                 'status'=>BitcoinAddress::STATUS_USED,

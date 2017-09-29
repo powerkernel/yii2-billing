@@ -1,17 +1,15 @@
 <?php
 /**
- * @author Harry Tang <harry@modernkernel.com>
- * @link https://modernkernel.com
- * @copyright Copyright (c) 2016 Modern Kernel
+ * @author Harry Tang <harry@powerkernel.com>
+ * @link https://powerkernel.com
+ * @copyright Copyright (c) 2017 Power Kernel
  */
 
 
 namespace modernkernel\billing\models;
 
-use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use modernkernel\billing\models\Bank;
 
 /**
  * BankSearch represents the model behind the search form about `modernkernel\billing\models\Bank`.

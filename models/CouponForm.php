@@ -1,8 +1,8 @@
 <?php
 /**
- * @author Harry Tang <harry@modernkernel.com>
- * @link https://modernkernel.com
- * @copyright Copyright (c) 2017 Modern Kernel
+ * @author Harry Tang <harry@powerkernel.com>
+ * @link https://powerkernel.com
+ * @copyright Copyright (c) 2017 Power Kernel
  */
 
 namespace modernkernel\billing\models;
@@ -47,7 +47,7 @@ class CouponForm extends Model
             'status' => Coupon::STATUS_ACTIVE,
         ]);
         /* exist */
-        if (Yii::$app->params['billing']['db'] === 'mongodb') {
+        if (Yii::$app->getModule('billing')->params['db'] === 'mongodb') {
             $code = $query->andFilterWhere([
                 'begin_at' => ['$lte' => new UTCDateTime()],
                 'end_at' => ['$gte' => new UTCDateTime()]
