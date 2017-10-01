@@ -34,7 +34,7 @@
                                 </tr>
                                 <tr>
                                     <td class="content-block">
-                                        <?= Yii::$app->getModule('billing')->t('Invoice #{ID}', ['ID'=>$model->id]) ?><br>
+                                        <?= Yii::$app->getModule('billing')->t('Invoice #{ID}', ['ID'=>$model->id_invoice]) ?><br>
                                     </td>
                                 </tr>
                                 <tr>
