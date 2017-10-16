@@ -29,6 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'attributes' => [
                         //'id_account',
                         'company',
+                        'tax_id',
                         'f_name',
                         'l_name',
                         'address',
@@ -38,7 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'zip',
                         'country',
                         'phone',
-                        'status',
+                        ['attribute' => 'status', 'value' => $model->statusColorText, 'format'=>'raw'],
                         'createdAt:date',
                         'updatedAt:date',
                     ],
