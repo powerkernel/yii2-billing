@@ -252,7 +252,7 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
             </div>
             <div class="row">
                 <div class="col-sm-6">
-                    <?= Html::beginForm(Yii::$app->urlManager->createUrl(['/billing/invoice/discount', 'id' => (string)$model->id]), 'post', ['class' => 'form-inline']) ?>
+                    <?php ActiveForm::begin(['action'=>Yii::$app->urlManager->createUrl(['/billing/invoice/discount', 'id' => (string)$model->id]), 'options'=>['class' => 'form-inline']]); ?>
                     <div class="form-group">
                         <label class="sr-only" for="discountAmount"><?= Yii::t('billing', 'Amount') ?></label>
                         <div class="input-group">
@@ -261,9 +261,8 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
                                    placeholder="<?= Yii::t('billing', 'Amount') ?>">
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary"
-                            data-confirm="<?= Yii::t('billing', 'Are you sure you want to perform this action?') ?>"><?= Yii::t('billing', 'Add discount') ?></button>
-                    <?= Html::endForm() ?>
+                    <?= \common\components\SubmitButton::widget(['text'=>Yii::t('billing', 'Add discount'), 'options'=>['class' => 'btn btn-primary', 'data-confirm'=>Yii::t('billing', 'Are you sure you want to perform this action?')]]) ?>
+                    <?php ActiveForm::end(); ?>
                 </div>
                 <div class="col-sm-6 text-right">
                     <?=
