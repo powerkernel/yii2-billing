@@ -6,7 +6,6 @@
  */
 
 use modernkernel\billing\models\Invoice;
-use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
@@ -50,7 +49,7 @@ use yii\widgets\ActiveForm;
         </div>
     </div>
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? Yii::t('billing', 'Create') : Yii::t('billing', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?= \common\components\SubmitButton::widget(['text'=>$model->isNewRecord ? Yii::t('billing', 'Create') : Yii::t('billing', 'Update'), 'options'=>['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']]) ?>
     </div>
     <?php ActiveForm::end(); ?>
 </div>

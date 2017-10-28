@@ -8,10 +8,8 @@
 /* @var $model \modernkernel\billing\models\Address */
 
 use common\Core;
-use conquer\select2\Select2Widget;
 use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Modal;
-use yii\helpers\Html;
 
 ?>
 <div class="widget-add-address">
@@ -64,7 +62,7 @@ use yii\helpers\Html;
 
 
         <div class="form-group">
-            <?= Html::submitButton(Yii::t('billing', 'Add'), ['class' => 'btn btn-success']) ?>
+            <?= \common\components\SubmitButton::widget(['text'=>Yii::t('billing', 'Add'), 'options'=>['class' => 'btn btn-primary']]) ?>
         </div>
 
         <?php ActiveForm::end(); ?>

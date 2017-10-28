@@ -8,7 +8,6 @@
 use common\Core;
 use conquer\select2\Select2Widget;
 use modernkernel\billing\models\Bank;
-use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
@@ -39,7 +38,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'status')->dropDownList(Bank::getStatusOption()) ?>
 
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? Yii::t('billing', 'Create') : Yii::t('billing', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?= \common\components\SubmitButton::widget(['text'=>$model->isNewRecord ? Yii::t('billing', 'Create') : Yii::t('billing', 'Update'), 'options'=>['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']]) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

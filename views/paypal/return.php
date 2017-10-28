@@ -77,7 +77,7 @@ $this->params['breadcrumbs'][] = ['label' => 'label', 'url' => '#'];
                     </div>
                     <div class="text-center">
                         <?= Html::beginForm() ?>
-                        <?= Html::submitButton($this->title,['name'=>'complete', 'class'=>'btn btn-success', 'value'=>'true'])?>
+                        <?= \common\components\SubmitButton::widget(['text'=>$this->title, 'options'=>['name'=>'complete', 'class'=>'btn btn-success', 'value'=>'true']]) ?>
                         <?= Html::endForm() ?>
                     </div>
                 </div>

@@ -2,7 +2,6 @@
 
 use modernkernel\billing\models\Setting;
 use yii\bootstrap\ActiveForm;
-use yii\helpers\Html;
 
 
 /* @var $this yii\web\View */
@@ -68,7 +67,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
-                    <?= Html::submitButton(Yii::t('billing', 'Save Settings'), ['class' => 'btn btn-primary']) ?>
+                    <?= \common\components\SubmitButton::widget(['text'=>Yii::t('billing', 'Save Settings'), 'options'=>['class' => 'btn btn-primary']]) ?>
                 </div>
             </div>
         </div>

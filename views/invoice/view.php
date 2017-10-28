@@ -187,7 +187,7 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
                                     <?= $form->field($coupon, 'coupon')->textInput(['maxlength' => true, 'placeholder' => $coupon->getAttributeLabel('coupon')])->label(false) ?>
                                 </div>
                                 <div class="col-sm-3">
-                                    <?= Html::submitButton(Yii::t('billing', 'Apply'), ['class' => 'btn btn-success']) ?>
+                                    <?= \common\components\SubmitButton::widget(['text'=>Yii::t('billing', 'Apply'), 'options'=>['class' => 'btn btn-primary']]) ?>
                                 </div>
                             </div>
                             <?php ActiveForm::end(); ?>
