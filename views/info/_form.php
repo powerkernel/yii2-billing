@@ -54,7 +54,7 @@ use yii\helpers\Html;
     </div>
 
     <div class="form-group">
-        <?= Html::submitButton(Yii::t('billing', 'Save'), ['class' => 'btn btn-primary']) ?>
+        <?= \common\components\SubmitButton::widget(['text'=>Yii::t('billing', 'Save'), 'options'=>['class' => 'btn btn-primary']]) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
