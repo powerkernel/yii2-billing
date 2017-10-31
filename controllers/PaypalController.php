@@ -237,8 +237,6 @@ class PaypalController extends Controller
                     }
                     return $this->redirect(Yii::$app->urlManager->createUrl(['billing/invoice/show', 'id' => (string)$invoice->id]));
                 } catch (PayPalConnectionException  $ex) {
-                    $body='Message: '.$ex->getMessage();
-                    $body.='DATA: '.json_encode($ex->getData());
                     Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('Sorry, we cannot complete your payment at this time.'));
                     /* send error email to admin */
                     Yii::$app->mailer
@@ -246,7 +244,7 @@ class PaypalController extends Controller
                         ->setFrom([\common\models\Setting::getValue('outgoingMail') => Yii::$app->name])
                         ->setTo(\common\models\Setting::getValue('adminMail'))
                         ->setSubject('Paypal Error')
-                        ->setTextBody($body)
+                        ->setTextBody($ex->getData())
                         ->send();
                 }
             }
