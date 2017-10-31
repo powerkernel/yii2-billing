@@ -9,6 +9,7 @@
 namespace modernkernel\billing\components;
 
 
+use common\components\CurrencyFraction;
 use Yii;
 use yii\httpclient\Client;
 
@@ -69,7 +70,7 @@ class CurrencyLayer
             if($to=='VND'){
                 $result=ceil($result/1000)*1000; // round up
             }
-            return $result;
+            return round($result, CurrencyFraction::getFraction($to));
         }
         return false;
     }
@@ -85,7 +86,7 @@ class CurrencyLayer
         //if($amount==0) return $amount;
 
         if (!empty($this->quotes['USD' . $from])) {
-            return $amount / $this->quotes['USD' . $from];
+            return round($amount / $this->quotes['USD' . $from], CurrencyFraction::getFraction('USD'));
         }
         return false;
     }

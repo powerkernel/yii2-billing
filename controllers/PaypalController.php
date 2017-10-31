@@ -172,7 +172,18 @@ class PaypalController extends Controller
                 $approvalUrl = $payment->getApprovalLink();
                 return $this->redirect($approvalUrl);
             } catch (PayPalConnectionException $ex) {
-                throw new PayPalConnectionException($ex->getCode(), Yii::$app->getModule('billing')->t('Paypal API Error: {ERROR}', ['ERROR' => $ex->getMessage()]));
+                /* send admin email */
+                Yii::$app->mailer
+                    ->compose()
+                    ->setFrom([\common\models\Setting::getValue('outgoingMail') => Yii::$app->name])
+                    ->setTo(\common\models\Setting::getValue('adminMail'))
+                    ->setSubject('Paypal Error')
+                    ->setTextBody(json_encode($ex->getData()))
+                    ->send();
+                /* redirect */
+                Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('We can not process your payment right now.'));
+                return $this->redirect(Yii::$app->urlManager->createUrl(['billing/invoice/show', 'id' => $id]));
+
             }
 
 
@@ -226,7 +237,17 @@ class PaypalController extends Controller
                     }
                     return $this->redirect(Yii::$app->urlManager->createUrl(['billing/invoice/show', 'id' => (string)$invoice->id]));
                 } catch (PayPalConnectionException  $ex) {
-                    Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('Paypal Error: {ERROR}', ['ERROR' => $ex->getMessage()]));
+                    $body='Message: '.$ex->getMessage();
+                    $body.='DATA: '.json_encode($ex->getData());
+                    Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('Sorry, we cannot complete your payment at this time.'));
+                    /* send error email to admin */
+                    Yii::$app->mailer
+                        ->compose()
+                        ->setFrom([\common\models\Setting::getValue('outgoingMail') => Yii::$app->name])
+                        ->setTo(\common\models\Setting::getValue('adminMail'))
+                        ->setSubject('Paypal Error')
+                        ->setTextBody($body)
+                        ->send();
                 }
             }
 

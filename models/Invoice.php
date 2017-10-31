@@ -7,6 +7,7 @@
 
 namespace modernkernel\billing\models;
 
+use common\components\CurrencyFraction;
 use common\models\Account;
 use modernkernel\billing\components\CurrencyLayer;
 use modernkernel\billing\components\Tax;
@@ -227,11 +228,11 @@ class Invoice extends InvoiceBase
             $this->tax = $tax->getTaxValue($info['country']);
         }
         if ($this->tax < 1) {
-            $this->tax = $this->subtotal * $this->tax;
+            $this->tax = round($this->subtotal * $this->tax, CurrencyFraction::getFraction($this->currency));
         }
 
         /* total */
-        $this->total = $this->subtotal + $this->shipping + $this->tax;
+        $this->total = round($this->subtotal + $this->shipping + $this->tax, CurrencyFraction::getFraction($this->currency));
 
         if ($this->total == 0) {
             $this->status = Invoice::STATUS_PAID;
@@ -430,7 +431,7 @@ class Invoice extends InvoiceBase
                 $bankInfo[] = [
                     'info' => $bank->info,
                     'currency' => $bank->currency,
-                    'total' => (new CurrencyLayer())->convert($this->currency, $bank->currency, $this->total)
+                    'total' => $bank->currency!=$this->currency?(new CurrencyLayer())->convert($this->currency, $bank->currency, $this->total):$this->total
                 ];
             }
         }
