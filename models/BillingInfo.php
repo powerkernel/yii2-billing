@@ -164,6 +164,18 @@ class BillingInfo extends BillingInfoBase
     }
 
     /**
+     * @return \yii\db\ActiveQueryInterface
+     */
+    public function getAccount()
+    {
+        if (Yii::$app->params['mongodb']['account']) {
+            return $this->hasOne(Account::className(), ['_id' => 'id_account']);
+        } else {
+            return $this->hasOne(Account::className(), ['id' => 'id_account']);
+        }
+    }
+
+    /**
      * get info, return account full name if no info
      * @param $id
      * @return array

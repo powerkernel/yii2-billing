@@ -32,6 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'tax_id',
                         'f_name',
                         'l_name',
+                        'account.email',
                         'address',
                         'address2',
                         'city',
