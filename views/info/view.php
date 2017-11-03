@@ -47,6 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]) ?>
             </div>
             <p>
+                <?= Html::a(Yii::t('billing', 'View Account'), Yii::$app->urlManager->createUrl(['account/view', 'id'=>(string)$model->id_account]), ['class' => 'btn btn-info']) ?>
                 <?= Html::a(Yii::t('billing', 'Update'), ['update', 'id' => (string)$model->id], ['class' => 'btn btn-primary']) ?>
                 <?= Html::a(Yii::t('billing', 'Delete'), ['delete', 'id' => (string)$model->id], [
                     'class' => 'btn btn-danger',
