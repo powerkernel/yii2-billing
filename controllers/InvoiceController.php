@@ -8,6 +8,7 @@
 namespace modernkernel\billing\controllers;
 
 use common\components\BackendFilter;
+use common\components\MainController;
 use modernkernel\billing\components\CurrencyLayer;
 use modernkernel\billing\models\BitcoinAddress;
 use modernkernel\billing\models\CouponForm;
@@ -17,14 +18,13 @@ use modernkernel\billing\models\Invoice;
 use modernkernel\billing\models\InvoiceSearch;
 use yii\filters\AccessControl;
 use yii\httpclient\Client;
-use yii\web\Controller;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 
 /**
  * InvoiceController implements the CRUD actions for Invoice model.
  */
-class InvoiceController extends Controller
+class InvoiceController extends MainController
 {
 
     public $defaultAction = 'manage';

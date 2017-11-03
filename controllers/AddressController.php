@@ -8,18 +8,18 @@
 namespace modernkernel\billing\controllers;
 
 use common\components\BackendFilter;
+use common\components\MainController;
 use Yii;
 use modernkernel\billing\models\Address;
 use modernkernel\billing\models\AddressSearch;
 use yii\filters\AccessControl;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
  * AddressController implements the CRUD actions for Address model.
  */
-class AddressController extends Controller
+class AddressController extends MainController
 {
 
     public $defaultAction='manage';

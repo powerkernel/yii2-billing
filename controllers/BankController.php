@@ -8,18 +8,18 @@
 namespace modernkernel\billing\controllers;
 
 use common\components\BackendFilter;
+use common\components\MainController;
 use Yii;
 use modernkernel\billing\models\Bank;
 use modernkernel\billing\models\BankSearch;
 use yii\filters\AccessControl;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
  * BankController implements the CRUD actions for Bank model.
  */
-class BankController extends Controller
+class BankController extends MainController
 {
     /**
      * @inheritdoc

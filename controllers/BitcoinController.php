@@ -8,6 +8,7 @@
 namespace modernkernel\billing\controllers;
 
 use common\components\BackendFilter;
+use common\components\MainController;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use modernkernel\billing\models\Invoice;
@@ -15,13 +16,12 @@ use Yii;
 use modernkernel\billing\models\BitcoinAddress;
 use modernkernel\billing\models\BitcoinAddressSearch;
 use yii\filters\AccessControl;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
 /**
  * BitcoinController implements the CRUD actions for BitcoinAddress model.
  */
-class BitcoinController extends Controller
+class BitcoinController extends MainController
 {
     /**
      * @inheritdoc

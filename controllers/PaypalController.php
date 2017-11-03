@@ -9,6 +9,7 @@
 namespace modernkernel\billing\controllers;
 
 
+use common\components\MainController;
 use modernkernel\billing\models\Invoice;
 use modernkernel\billing\models\Setting;
 use PayPal\Api\Amount;
@@ -27,14 +28,13 @@ use PayPal\Rest\ApiContext;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\filters\AccessControl;
-use yii\web\Controller;
 use yii\web\HttpException;
 
 /**
  * Class PaypalController
  * @package modernkernel\billing\controllers
  */
-class PaypalController extends Controller
+class PaypalController extends MainController
 {
     protected $apiContext = null;
 

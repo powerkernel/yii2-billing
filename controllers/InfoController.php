@@ -8,19 +8,19 @@
 namespace modernkernel\billing\controllers;
 
 use common\components\BackendFilter;
+use common\components\MainController;
 use common\models\Account;
 use Yii;
 use modernkernel\billing\models\BillingInfo;
 use modernkernel\billing\models\BillingInfoSearch;
 use yii\filters\AccessControl;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
  * InfoController implements the CRUD actions for BillingInfo model.
  */
-class InfoController extends Controller
+class InfoController extends MainController
 {
 
     public $defaultAction = 'manage';
