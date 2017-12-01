@@ -1,6 +1,6 @@
 <?php
 /**
- * @var \omnilight\scheduling\Schedule $schedule
+ * @var \powerkernel\scheduling\Schedule $schedule
  */
 
 use common\Core;
