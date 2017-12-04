@@ -5,7 +5,7 @@
  * @copyright Copyright (c) 2017 Power Kernel
  */
 
-namespace modernkernel\billing\models;
+namespace powerkernel\billing\models;
 
 use MongoDB\BSON\UTCDateTime;
 use Yii;
@@ -13,7 +13,7 @@ use yii\base\Model;
 
 /**
  * Class CouponForm
- * @package modernkernel\billing\models
+ * @package powerkernel\billing\models
  */
 class CouponForm extends Model
 {

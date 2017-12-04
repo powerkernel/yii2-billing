@@ -5,12 +5,12 @@
  * @copyright Copyright (c) 2017 Power Kernel
  */
 
-namespace modernkernel\billing\models;
+namespace powerkernel\billing\models;
 
 use common\components\CurrencyFraction;
 use common\models\Account;
-use modernkernel\billing\components\CurrencyLayer;
-use modernkernel\billing\components\Tax;
+use powerkernel\billing\components\CurrencyLayer;
+use powerkernel\billing\components\Tax;
 use Yii;
 
 /**

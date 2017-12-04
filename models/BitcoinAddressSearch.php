@@ -6,13 +6,13 @@
  */
 
 
-namespace modernkernel\billing\models;
+namespace powerkernel\billing\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
 /**
- * BitcoinAddressSearch represents the model behind the search form about `modernkernel\billing\models\BitcoinAddress`.
+ * BitcoinAddressSearch represents the model behind the search form about `powerkernel\billing\models\BitcoinAddress`.
  */
 class BitcoinAddressSearch extends BitcoinAddress
 {

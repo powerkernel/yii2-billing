@@ -6,7 +6,7 @@
  */
 
 /* @var $this yii\web\View */
-/* @var $model modernkernel\billing\models\BillingInfo */
+/* @var $model powerkernel\billing\models\BillingInfo */
 
 
 $this->params['breadcrumbs'][] = ['label' => Yii::t('billing', 'Customers'), 'url' => ['index']];

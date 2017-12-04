@@ -6,15 +6,15 @@
  */
 
 
-namespace modernkernel\billing\widgets;
+namespace powerkernel\billing\widgets;
 
-use modernkernel\billing\models\Address;
+use powerkernel\billing\models\Address;
 use Yii;
 use yii\base\Widget;
 
 /**
  * Class AddAddress
- * @package modernkernel\billing\widgets
+ * @package powerkernel\billing\widgets
  */
 class AddAddress extends Widget
 {

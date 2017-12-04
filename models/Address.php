@@ -1,11 +1,10 @@
 <?php
 
-namespace modernkernel\billing\models;
+namespace powerkernel\billing\models;
 
 use common\Core;
 use common\models\Account;
 use Yii;
-use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for collection "billing_address".

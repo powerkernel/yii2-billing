@@ -6,7 +6,7 @@ use yii\widgets\ListView;
 use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
-/* @var $searchModel modernkernel\billing\models\AddressSearch */
+/* @var $searchModel powerkernel\billing\models\AddressSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 

@@ -4,12 +4,12 @@
  * @link https://powerkernel.com
  * @copyright Copyright (c) 2017 Power Kernel
  */
-namespace modernkernel\billing\components;
+namespace powerkernel\billing\components;
 
 
 /**
  * Class Tax
- * @package modernkernel\billing\components
+ * @package powerkernel\billing\components
  */
 class Tax
 {

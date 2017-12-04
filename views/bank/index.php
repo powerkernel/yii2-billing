@@ -5,7 +5,7 @@ use yii\grid\GridView;
 use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
-/* @var $searchModel modernkernel\billing\models\BankSearch */
+/* @var $searchModel powerkernel\billing\models\BankSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 
@@ -46,7 +46,7 @@ $this->registerJs('$(document).on("pjax:send", function(){ $(".grid-view-overlay
                         //['attribute' => 'created_at', 'value' => 'created_at', 'format' => 'dateTime', 'filter' => DatePicker::widget(['model' => $searchModel, 'attribute' => 'created_at', 'dateFormat' => 'yyyy-MM-dd', 'options' => ['class' => 'form-control']])],
                         ['attribute' => 'status', 'value' => function ($model) {
                             return $model->statusColorText;
-                        }, 'filter' => \modernkernel\billing\models\Bank::getStatusOption(), 'format' => 'raw'],
+                        }, 'filter' => \powerkernel\billing\models\Bank::getStatusOption(), 'format' => 'raw'],
                         [
                             'class' => 'yii\grid\ActionColumn',
                             'contentOptions' => ['style' => 'min-width: 70px']
@@ -62,7 +62,7 @@ $this->registerJs('$(document).on("pjax:send", function(){ $(".grid-view-overlay
         </div>
         <!-- Loading (remove the following to stop the loading)-->
         <div class="overlay grid-view-overlay hidden">
-            <?= \modernkernel\fontawesome\Icon::widget(['icon' => 'refresh fa-spin']) ?>
+            <?= \powerkernel\fontawesome\Icon::widget(['icon' => 'refresh fa-spin']) ?>
         </div>
         <!-- end loading -->
     </div>

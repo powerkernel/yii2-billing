@@ -4,7 +4,7 @@
  */
 
 use common\Core;
-use modernkernel\billing\models\Invoice;
+use powerkernel\billing\models\Invoice;
 
 $local = Core::isLocalhost();
 $time = $local ? '* * * * *' : '7 7 * * *';

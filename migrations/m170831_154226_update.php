@@ -1,6 +1,6 @@
 <?php
 
-use modernkernel\billing\models\Invoice;
+use powerkernel\billing\models\Invoice;
 use yii\db\Migration;
 
 /**

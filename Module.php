@@ -1,6 +1,6 @@
 <?php
 
-namespace modernkernel\billing;
+namespace powerkernel\billing;
 
 use Yii;
 
@@ -12,7 +12,7 @@ class Module extends \yii\base\Module
     /**
      * @inheritdoc
      */
-    public $controllerNamespace = 'modernkernel\billing\controllers';
+    public $controllerNamespace = 'powerkernel\billing\controllers';
     public $defaultRoute='info';
 
     /**

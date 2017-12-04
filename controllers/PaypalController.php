@@ -6,12 +6,12 @@
  */
 
 
-namespace modernkernel\billing\controllers;
+namespace powerkernel\billing\controllers;
 
 
 use common\components\MainController;
-use modernkernel\billing\models\Invoice;
-use modernkernel\billing\models\Setting;
+use powerkernel\billing\models\Invoice;
+use powerkernel\billing\models\Setting;
 use PayPal\Api\Amount;
 use PayPal\Api\Details;
 use PayPal\Api\Item;
@@ -32,7 +32,7 @@ use yii\web\HttpException;
 
 /**
  * Class PaypalController
- * @package modernkernel\billing\controllers
+ * @package powerkernel\billing\controllers
  */
 class PaypalController extends MainController
 {
@@ -63,13 +63,13 @@ class PaypalController extends MainController
      */
     public function init()
     {
-        if (\modernkernel\billing\models\Setting::getValue('paypalSandbox') == '1') {
-            $client = \modernkernel\billing\models\Setting::getValue('paypalSandboxClientID');
-            $secret = \modernkernel\billing\models\Setting::getValue('paypalSandboxSecret');
+        if (\powerkernel\billing\models\Setting::getValue('paypalSandbox') == '1') {
+            $client = \powerkernel\billing\models\Setting::getValue('paypalSandboxClientID');
+            $secret = \powerkernel\billing\models\Setting::getValue('paypalSandboxSecret');
             $mode = 'sandbox';
         } else {
-            $client = \modernkernel\billing\models\Setting::getValue('paypalClientID');
-            $secret = \modernkernel\billing\models\Setting::getValue('paypalSecret');
+            $client = \powerkernel\billing\models\Setting::getValue('paypalClientID');
+            $secret = \powerkernel\billing\models\Setting::getValue('paypalSecret');
             $mode = 'live';
         }
         if (isset($client, $secret, $mode)) {

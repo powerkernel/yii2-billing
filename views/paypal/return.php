@@ -5,11 +5,11 @@
  * @copyright Copyright (c) 2017 Power Kernel
  */
 
-use modernkernel\fontawesome\Icon;
+use powerkernel\fontawesome\Icon;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $invoice \modernkernel\billing\models\Invoice */
+/* @var $invoice \powerkernel\billing\models\Invoice */
 
 $this->title = Yii::$app->getModule('billing')->t('Complete Payment');
 $keywords = '';

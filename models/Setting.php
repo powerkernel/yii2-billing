@@ -1,6 +1,6 @@
 <?php
 
-namespace modernkernel\billing\models;
+namespace powerkernel\billing\models;
 
 use Yii;
 

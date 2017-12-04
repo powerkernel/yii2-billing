@@ -6,7 +6,7 @@
  */
 
 
-namespace modernkernel\billing\models;
+namespace powerkernel\billing\models;
 
 
 use Yii;
@@ -15,7 +15,7 @@ use Yii;
 if (Yii::$app->getModule('billing')->params['db'] === 'mongodb') {
     /**
      * Class ItemActiveRecord
-     * @package modernkernel\billing\models
+     * @package powerkernel\billing\models
      */
     class ItemActiveRecord extends \yii\mongodb\ActiveRecord
     {
@@ -56,7 +56,7 @@ if (Yii::$app->getModule('billing')->params['db'] === 'mongodb') {
 } else {
     /**
      * Class ItemActiveRecord
-     * @package modernkernel\billing\models
+     * @package powerkernel\billing\models
      */
     class ItemActiveRecord extends \yii\db\ActiveRecord
     {
@@ -74,7 +74,7 @@ if (Yii::$app->getModule('billing')->params['db'] === 'mongodb') {
 
 /**
  * Class ItemBase
- * @package modernkernel\billing\models
+ * @package powerkernel\billing\models
  */
 class ItemBase extends ItemActiveRecord
 {

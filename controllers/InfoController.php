@@ -5,14 +5,14 @@
  * @copyright Copyright (c) 2017 Power Kernel
  */
 
-namespace modernkernel\billing\controllers;
+namespace powerkernel\billing\controllers;
 
 use common\components\BackendFilter;
 use common\components\MainController;
 use common\models\Account;
 use Yii;
-use modernkernel\billing\models\BillingInfo;
-use modernkernel\billing\models\BillingInfoSearch;
+use powerkernel\billing\models\BillingInfo;
+use powerkernel\billing\models\BillingInfoSearch;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;

@@ -6,7 +6,7 @@
  */
 
 
-namespace modernkernel\billing\models;
+namespace powerkernel\billing\models;
 
 use common\models\Account;
 use MongoDB\BSON\UTCDateTime;
@@ -15,7 +15,7 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
 /**
- * InvoiceSearch represents the model behind the search form about `modernkernel\billing\models\Invoice`.
+ * InvoiceSearch represents the model behind the search form about `powerkernel\billing\models\Invoice`.
  */
 class InvoiceSearch extends Invoice
 {

@@ -5,7 +5,7 @@
  * @copyright Copyright (c) 2017 Power Kernel
  */
 
-namespace modernkernel\billing\models;
+namespace powerkernel\billing\models;
 
 use common\models\Account;
 use Yii;

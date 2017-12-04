@@ -5,7 +5,7 @@
  * @copyright Copyright (c) 2017 Power Kernel
  */
 
-namespace modernkernel\billing\console;
+namespace powerkernel\billing\console;
 
 use common\models\Account;
 use MongoDB\BSON\UTCDateTime;
@@ -14,7 +14,7 @@ use yii\db\Query;
 
 /**
  * Class MigrateController
- * @package modernkernel\billing\console
+ * @package powerkernel\billing\console
  */
 class MigrateController extends \yii\console\Controller
 {

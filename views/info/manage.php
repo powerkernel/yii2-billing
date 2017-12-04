@@ -6,7 +6,7 @@
  */
 
 /* @var $this yii\web\View */
-/* @var $model modernkernel\billing\models\BillingInfo */
+/* @var $model powerkernel\billing\models\BillingInfo */
 
 
 /* breadcrumbs */

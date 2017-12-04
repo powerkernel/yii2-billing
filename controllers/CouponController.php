@@ -5,12 +5,12 @@
  * @copyright Copyright (c) 2017 Power Kernel
  */
 
-namespace modernkernel\billing\controllers;
+namespace powerkernel\billing\controllers;
 
 use backend\controllers\BackendController;
 use Yii;
-use modernkernel\billing\models\Coupon;
-use modernkernel\billing\models\CouponSearch;
+use powerkernel\billing\models\Coupon;
+use powerkernel\billing\models\CouponSearch;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 

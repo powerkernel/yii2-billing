@@ -9,7 +9,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model modernkernel\billing\models\CouponSearch */
+/* @var $model powerkernel\billing\models\CouponSearch */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 

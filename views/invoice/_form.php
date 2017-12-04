@@ -5,11 +5,11 @@
  * @copyright Copyright (c) 2017 Power Kernel
  */
 
-use modernkernel\billing\models\Invoice;
+use powerkernel\billing\models\Invoice;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model modernkernel\billing\models\Invoice */
+/* @var $model powerkernel\billing\models\Invoice */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 

@@ -1,1 +1,1 @@
-grunt --dist=../vendor/modernkernel/yii2-billing/mail
+grunt --dist=../vendor/powerkernel/yii2-billing/mail

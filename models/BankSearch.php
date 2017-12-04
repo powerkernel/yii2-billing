@@ -6,13 +6,13 @@
  */
 
 
-namespace modernkernel\billing\models;
+namespace powerkernel\billing\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
 /**
- * BankSearch represents the model behind the search form about `modernkernel\billing\models\Bank`.
+ * BankSearch represents the model behind the search form about `powerkernel\billing\models\Bank`.
  */
 class BankSearch extends Bank
 {

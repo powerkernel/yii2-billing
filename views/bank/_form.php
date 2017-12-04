@@ -7,11 +7,11 @@
 
 use common\Core;
 use conquer\select2\Select2Widget;
-use modernkernel\billing\models\Bank;
+use powerkernel\billing\models\Bank;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model modernkernel\billing\models\Bank */
+/* @var $model powerkernel\billing\models\Bank */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 

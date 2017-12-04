@@ -4,7 +4,7 @@
  */
 
 use common\Core;
-use modernkernel\billing\models\BitcoinAddress;
+use powerkernel\billing\models\BitcoinAddress;
 
 $local = Core::isLocalhost();
 $time = $local ? '* * * * *' : '6 6 * * *';

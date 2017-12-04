@@ -1,13 +1,12 @@
 <?php
 
-use modernkernel\billing\models\Invoice;
-use yii\helpers\Html;
+use powerkernel\billing\models\Invoice;
 use yii\grid\GridView;
 use yii\jui\DatePicker;
 use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
-/* @var $searchModel modernkernel\billing\models\InvoiceSearch */
+/* @var $searchModel powerkernel\billing\models\InvoiceSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 
@@ -61,7 +60,7 @@ $this->registerJs('$(document).on("pjax:send", function(){ $(".grid-view-overlay
         </div>
         <!-- Loading (remove the following to stop the loading)-->
         <div class="overlay grid-view-overlay hidden">
-            <?= \modernkernel\fontawesome\Icon::widget(['icon' => 'refresh fa-spin']) ?>
+            <?= \powerkernel\fontawesome\Icon::widget(['icon' => 'refresh fa-spin']) ?>
         </div>
         <!-- end loading -->
     </div>

@@ -1,7 +1,7 @@
 <?php
 
 /* @var $this yii\web\View */
-/* @var $model \modernkernel\billing\models\Invoice */
+/* @var $model \powerkernel\billing\models\Invoice */
 
 ?>
 <div itemscope="" itemtype="http://schema.org/EmailMessage">

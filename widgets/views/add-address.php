@@ -5,7 +5,7 @@
  * @copyright Copyright (c) 2017 Power Kernel
  */
 
-/* @var $model \modernkernel\billing\models\Address */
+/* @var $model \powerkernel\billing\models\Address */
 
 use common\Core;
 use yii\bootstrap\ActiveForm;

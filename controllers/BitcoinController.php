@@ -5,16 +5,16 @@
  * @copyright Copyright (c) 2017 Power Kernel
  */
 
-namespace modernkernel\billing\controllers;
+namespace powerkernel\billing\controllers;
 
 use common\components\BackendFilter;
 use common\components\MainController;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
-use modernkernel\billing\models\Invoice;
+use powerkernel\billing\models\Invoice;
 use Yii;
-use modernkernel\billing\models\BitcoinAddress;
-use modernkernel\billing\models\BitcoinAddressSearch;
+use powerkernel\billing\models\BitcoinAddress;
+use powerkernel\billing\models\BitcoinAddressSearch;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 
@@ -196,7 +196,7 @@ class BitcoinController extends MainController
         }
         /* if expired, return */
         $now=time();
-        $point=$now-(integer)\modernkernel\billing\models\Setting::getValue('btcPaymentTime');
+        $point=$now-(integer)\powerkernel\billing\models\Setting::getValue('btcPaymentTime');
         if($time<$point){
             return $this->redirect($invoice->getInvoiceUrl());
         }

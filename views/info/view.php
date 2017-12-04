@@ -9,7 +9,7 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model modernkernel\billing\models\BillingInfo */
+/* @var $model powerkernel\billing\models\BillingInfo */
 
 $this->params['breadcrumbs'][] = ['label' => Yii::t('billing', 'Customers'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;

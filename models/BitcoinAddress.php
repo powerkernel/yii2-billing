@@ -5,7 +5,7 @@
  * @copyright Copyright (c) 2017 Power Kernel
  */
 
-namespace modernkernel\billing\models;
+namespace powerkernel\billing\models;
 
 use BitWasp\Bitcoin\Bitcoin;
 use BitWasp\Bitcoin\Key\Deterministic\HierarchicalKeyFactory;
@@ -169,7 +169,7 @@ class BitcoinAddress extends BitcoinAddressBase
      */
     public static function generate()
     {
-        $xpub = \modernkernel\billing\models\Setting::getValue('btcWalletXPub');
+        $xpub = \powerkernel\billing\models\Setting::getValue('btcWalletXPub');
         if (!empty($xpub)) {
             $network = Bitcoin::getNetwork();
             $hk = HierarchicalKeyFactory::fromExtended($xpub, $network);

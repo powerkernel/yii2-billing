@@ -6,13 +6,13 @@
  */
 
 
-namespace modernkernel\billing\models;
+namespace powerkernel\billing\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
 /**
- * CouponSearch represents the model behind the search form about `modernkernel\billing\models\Coupon`.
+ * CouponSearch represents the model behind the search form about `powerkernel\billing\models\Coupon`.
  */
 class CouponSearch extends Coupon
 {

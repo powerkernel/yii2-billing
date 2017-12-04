@@ -4,13 +4,13 @@
  * @link https://powerkernel.com
  * @copyright Copyright (c) 2017 Power Kernel
  */
-use modernkernel\fontawesome\Icon;
+use powerkernel\fontawesome\Icon;
 use yii\bootstrap\Tabs;
 use yii\helpers\Html;
 \common\plugins\moment\MomentAsset::register($this);
 
 /* @var $this yii\web\View */
-/* @var $invoice \modernkernel\billing\models\Invoice */
+/* @var $invoice \powerkernel\billing\models\Invoice */
 /* @var $bitcoin [] */
 
 $this->params['breadcrumbs'][] = $this->title;
@@ -60,7 +60,7 @@ $this->registerJs($js);
 
 
 
-                    <div id="btc-info" data-timeout="<?= \modernkernel\billing\models\Setting::getValue('btcPaymentTime') ?>">
+                    <div id="btc-info" data-timeout="<?= \powerkernel\billing\models\Setting::getValue('btcPaymentTime') ?>">
                         <div style="margin-top: 10px;">
                         <?=
                         Tabs::widget([

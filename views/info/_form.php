@@ -12,7 +12,7 @@ use yii\helpers\Html;
 
 
 /* @var $this yii\web\View */
-/* @var $model modernkernel\billing\models\BillingInfo */
+/* @var $model powerkernel\billing\models\BillingInfo */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 

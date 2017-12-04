@@ -1,12 +1,12 @@
 <?php
 
-use modernkernel\billing\models\BitcoinAddress;
+use powerkernel\billing\models\BitcoinAddress;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
-/* @var $searchModel modernkernel\billing\models\BitcoinAddressSearch */
+/* @var $searchModel powerkernel\billing\models\BitcoinAddressSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 
@@ -69,7 +69,7 @@ $this->registerJs('$(document).on("pjax:send", function(){ $(".grid-view-overlay
         </div>
         <!-- Loading (remove the following to stop the loading)-->
         <div class="overlay grid-view-overlay hidden">
-            <?= \modernkernel\fontawesome\Icon::widget(['icon' => 'refresh fa-spin']) ?>
+            <?= \powerkernel\fontawesome\Icon::widget(['icon' => 'refresh fa-spin']) ?>
         </div>
         <!-- end loading -->
     </div>

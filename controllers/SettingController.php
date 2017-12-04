@@ -5,11 +5,11 @@
  * @copyright Copyright (c) 2017 Power Kernel
  */
 
-namespace modernkernel\billing\controllers;
+namespace powerkernel\billing\controllers;
 
 use backend\controllers\BackendController;
 use common\Core;
-use modernkernel\billing\models\Setting;
+use powerkernel\billing\models\Setting;
 use Yii;
 use yii\base\DynamicModel;
 

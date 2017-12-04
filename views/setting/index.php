@@ -1,6 +1,6 @@
 <?php
 
-use modernkernel\billing\models\Setting;
+use powerkernel\billing\models\Setting;
 use yii\bootstrap\ActiveForm;
 
 

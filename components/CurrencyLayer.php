@@ -6,7 +6,7 @@
  */
 
 
-namespace modernkernel\billing\components;
+namespace powerkernel\billing\components;
 
 
 use common\components\CurrencyFraction;
@@ -15,7 +15,7 @@ use yii\httpclient\Client;
 
 /**
  * Class CurrencyLayer
- * @package modernkernel\billing\components
+ * @package powerkernel\billing\components
  */
 class CurrencyLayer
 {
@@ -27,7 +27,7 @@ class CurrencyLayer
      */
     public function __construct()
     {
-        $access_key=\modernkernel\billing\models\Setting::getValue('currencyLayerAPI');
+        $access_key=\powerkernel\billing\models\Setting::getValue('currencyLayerAPI');
         if(!empty($access_key)){
             $this->init($access_key);
         }

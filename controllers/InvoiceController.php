@@ -5,17 +5,17 @@
  * @copyright Copyright (c) 2017 Power Kernel
  */
 
-namespace modernkernel\billing\controllers;
+namespace powerkernel\billing\controllers;
 
 use common\components\BackendFilter;
 use common\components\MainController;
-use modernkernel\billing\components\CurrencyLayer;
-use modernkernel\billing\models\BitcoinAddress;
-use modernkernel\billing\models\CouponForm;
-use modernkernel\billing\models\Item;
+use powerkernel\billing\components\CurrencyLayer;
+use powerkernel\billing\models\BitcoinAddress;
+use powerkernel\billing\models\CouponForm;
+use powerkernel\billing\models\Item;
 use Yii;
-use modernkernel\billing\models\Invoice;
-use modernkernel\billing\models\InvoiceSearch;
+use powerkernel\billing\models\Invoice;
+use powerkernel\billing\models\InvoiceSearch;
 use yii\filters\AccessControl;
 use yii\httpclient\Client;
 use yii\web\ForbiddenHttpException;

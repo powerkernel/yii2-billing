@@ -6,7 +6,7 @@
  */
 
 
-namespace modernkernel\billing\models;
+namespace powerkernel\billing\models;
 
 
 use Yii;
@@ -17,7 +17,7 @@ use common\behaviors\UTCDateTimeBehavior;
 if (Yii::$app->getModule('billing')->params['db'] === 'mongodb') {
     /**
      * Class BillingInfoActiveRecord
-     * @package modernkernel\billing\models;
+     * @package powerkernel\billing\models;
      */
     class BillingInfoActiveRecord extends \yii\mongodb\ActiveRecord
     {
@@ -134,7 +134,7 @@ if (Yii::$app->getModule('billing')->params['db'] === 'mongodb') {
 
 /**
  * Class BillingInfoBase
- * @package modernkernel\billing\models
+ * @package powerkernel\billing\models
  */
 class BillingInfoBase extends BillingInfoActiveRecord
 {

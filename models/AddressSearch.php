@@ -6,7 +6,7 @@
  */
 
 
-namespace modernkernel\billing\models;
+namespace powerkernel\billing\models;
 
 use common\Core;
 use common\models\Account;
@@ -15,7 +15,7 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
 /**
- * AddressSearch represents the model behind the search form about `modernkernel\billing\models\Address`.
+ * AddressSearch represents the model behind the search form about `powerkernel\billing\models\Address`.
  */
 class AddressSearch extends Address
 {

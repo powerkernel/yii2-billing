@@ -6,13 +6,13 @@
  */
 
 
-namespace modernkernel\billing\models;
+namespace powerkernel\billing\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
 /**
- * BillingInfoSearch represents the model behind the search form about `modernkernel\billing\models\BillingInfo`.
+ * BillingInfoSearch represents the model behind the search form about `powerkernel\billing\models\BillingInfo`.
  */
 class BillingInfoSearch extends BillingInfo
 {

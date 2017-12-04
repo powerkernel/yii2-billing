@@ -9,7 +9,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model modernkernel\billing\models\AddressSearch */
+/* @var $model powerkernel\billing\models\AddressSearch */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 

@@ -7,12 +7,12 @@
 
 use common\Core;
 use conquer\select2\Select2Widget;
-use modernkernel\billing\models\Coupon;
+use powerkernel\billing\models\Coupon;
 use yii\jui\DatePicker;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model modernkernel\billing\models\Coupon */
+/* @var $model powerkernel\billing\models\Coupon */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 

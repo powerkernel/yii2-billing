@@ -5,18 +5,18 @@
  * @copyright Copyright (c) 2017 Power Kernel
  */
 
-use modernkernel\billing\models\Setting;
-use modernkernel\billing\components\CurrencyLayer;
-use modernkernel\billing\models\Invoice;
-use modernkernel\fontawesome\Icon;
+use powerkernel\billing\models\Setting;
+use powerkernel\billing\components\CurrencyLayer;
+use powerkernel\billing\models\Invoice;
+use powerkernel\fontawesome\Icon;
 use yii\bootstrap\ActiveForm;
 use yii\bootstrap\ButtonDropdown;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $info [] */
-/* @var $model modernkernel\billing\models\Invoice */
-/* @var $coupon modernkernel\billing\models\CouponForm */
+/* @var $model powerkernel\billing\models\Invoice */
+/* @var $coupon powerkernel\billing\models\CouponForm */
 
 $this->params['breadcrumbs'][] = ['label' => Yii::t('billing', 'Invoices'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;

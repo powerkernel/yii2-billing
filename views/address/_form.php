@@ -11,7 +11,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model modernkernel\billing\models\Address */
+/* @var $model powerkernel\billing\models\Address */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 

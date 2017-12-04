@@ -8,7 +8,7 @@
 use yii\helpers\Html;
 
 /* @var $this \yii\web\View */
-/* @var $model \modernkernel\billing\models\Address */
+/* @var $model \powerkernel\billing\models\Address */
 
 ?>
 <div class="col-sm-4">

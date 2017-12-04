@@ -5,12 +5,12 @@
  * @copyright Copyright (c) 2017 Power Kernel
  */
 
-use modernkernel\billing\models\Coupon;
+use powerkernel\billing\models\Coupon;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model modernkernel\billing\models\Coupon */
+/* @var $model powerkernel\billing\models\Coupon */
 
 $this->params['breadcrumbs'][] = ['label' => Yii::t('billing', 'Coupons'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $model->code;
