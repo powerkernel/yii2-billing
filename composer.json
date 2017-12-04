@@ -1,5 +1,5 @@
 {
-    "name": "modernkernel/yii2-billing",
+    "name": "powerkernel/yii2-billing",
     "description": "Yii2 Billing",
     "type": "yii2-extension",
     "keywords": ["yii2","billing"],
@@ -7,19 +7,19 @@
     "authors": [
         {
             "name": "Harry Tang",
-            "email": "harry@modernkernel.com"
+            "email": "harry@powerkernel.com"
         }
     ],
     "require": {
-        "yiisoft/yii2": "~2.0.0",
+        "yiisoft/yii2": "~2.0",
         "picqer/php-barcode-generator": "~0.2.0",
-        "paypal/rest-api-sdk-php": "*",
-        "endroid/qrcode": "~2.2.0",
+        "paypal/rest-api-sdk-php": "~1.0",
+        "endroid/qrcode": "~2.2",
         "bitwasp/bitcoin": "*"
     },
     "autoload": {
         "psr-4": {
-            "modernkernel\\billing\\": ""
+            "powerkernel\\billing\\": ""
         }
     }
 }
