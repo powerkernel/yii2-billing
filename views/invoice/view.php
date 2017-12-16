@@ -34,7 +34,7 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
         <div class="row">
             <div class="col-xs-12">
                 <h2 class="page-header">
-                    <img src="/images/logo-mini.svg" class="img-responsive"
+                    <img src="<?= \common\Core::getStorageUrl() ?>/images/logo-mini.svg" class="img-responsive"
                          style="height: 30px; width: 30px; vertical-align: text-bottom; display: inline-block"
                          alt="<?= Yii::$app->name ?>"/> <?= Yii::$app->name ?>
                     <span class="pull-right visible-print"
