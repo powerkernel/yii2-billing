@@ -24,6 +24,12 @@ class Module extends \yii\base\Module
         \Yii::configure($this, require(__DIR__ . '/config.php'));
         $this->registerTranslations();
         $this->registerMailer();
+        /* api module */
+        $this->modules = [
+            'api' => [
+                'class' => 'powerkernel\billing\modules\api\Module',
+            ],
+        ];
     }
 
     /**

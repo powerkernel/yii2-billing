@@ -262,6 +262,7 @@ class InvoiceController extends MainController
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param string $id
      * @return mixed
+     * @throws NotFoundHttpException
      */
     public function actionUpdate($id)
     {
@@ -278,6 +279,18 @@ class InvoiceController extends MainController
         }
     }
 
+    public function actionConvert($id, $currency){
+        $model = $this->findModel($id);
+        if (Yii::$app->user->can('viewOwnItem', ['model' => $model])) {
+            if ($model->currency != $currency) {
+                if (!$model->convertCurrencyTo($currency)) {
+                    Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('Cannot convert your invoice to {CURRENCY} currency!', ['CURRENCY'=>$currency]));
+                }
+            }
+            return $this->redirect(Yii::$app->urlManager->createUrl(['billing/invoice/show', 'id' => $id]));
+        }
+        else throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
+    }
 
     /**
      * user click pay button
@@ -285,6 +298,7 @@ class InvoiceController extends MainController
      * @param $method
      * @return \yii\web\Response
      * @throws ForbiddenHttpException
+     * @throws NotFoundHttpException
      */
     public function actionPay($id, $method)
     {
@@ -339,13 +353,15 @@ class InvoiceController extends MainController
                 Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('We can not process your payment right now.'));
                 return $this->redirect(Yii::$app->urlManager->createUrl(['billing/invoice/show', 'id' => $id]));
             }
-        } else throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
+        }
+        else throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
     }
 
     /**
      * add discount
      * @param $id
      * @return \yii\web\Response
+     * @throws NotFoundHttpException
      */
     public function actionDiscount($id)
     {

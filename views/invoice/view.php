@@ -198,20 +198,27 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
 
 
                         <div class="text-center">
-                            <?php if ($model->currency != 'USD'): ?>
-                                <?= Html::a(
-                                    Icon::widget(['icon' => 'paypal']) . ' ' . Yii::$app->getModule('billing')->t('Pay'),
-                                    Yii::$app->urlManager->createUrl(['billing/invoice/pay', 'id' => (string)$model->id, 'method' => 'paypal']),
-                                    [
-                                        'class' => 'btn btn-primary',
-                                        'data-confirm' => Yii::$app->getModule('billing')->t('Your invoice will be converted to USD currency.')
-                                    ])
-                                ?>
-                            <?php else: ?>
-                                <?= Html::a(Icon::widget(['icon' => 'paypal']) . ' ' . Yii::$app->getModule('billing')->t('Pay'), Yii::$app->urlManager->createUrl(['billing/invoice/pay', 'id' => (string)$model->id, 'method' => 'paypal']), ['class' => 'btn btn-primary']) ?>
-                            <?php endif; ?>
+                            <?=
+                            ButtonDropdown::widget([
+                                'label' => Yii::$app->getModule('billing')->t('Online Payment'),
+                                'options' => ['class' => 'btn btn-lg btn-warning'],
+                                'dropdown' => [
+                                    'items' => [
+                                        [
+                                            'label' => Icon::widget(['icon' => 'btc text-yellow']) .' Bitcoin',
+                                            'url' => Yii::$app->urlManager->createUrl(['billing/invoice/pay', 'id' => (string)$model->id, 'method' => 'bitcoin'])
+                                        ],
+                                        [
+                                            'label' => Icon::widget(['icon' => 'paypal text-primary']) .' Paypal/Credit Cards',
+                                            'url' => Yii::$app->urlManager->createUrl(['billing/invoice/pay', 'id' => (string)$model->id, 'method' => 'paypal'])
+                                        ],
+                                    ],
+                                    'options' => ['class' => 'dropdown-menu dropdown-menu-right'],
+                                    'encodeLabels' => false
+                                ],
 
-                            <?= Html::a(Icon::widget(['icon' => 'btc']) . ' ' . Yii::$app->getModule('billing')->t('Pay with Bitcoin'), Yii::$app->urlManager->createUrl(['billing/invoice/pay', 'id' => (string)$model->id, 'method' => 'bitcoin']), ['class' => 'btn btn-warning']) ?>
+                            ]);
+                            ?>
                         </div>
 
 
@@ -231,6 +238,7 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
                     <?php endif; ?>
                 </div>
             </div>
+
             <div class="col-sm-6 col-sm-pull-6">
                 <?php if ($model->status == Invoice::STATUS_PENDING): ?>
                     <?php foreach ($banks = $model->getBankInfo() as $i => $bank): ?>
@@ -241,22 +249,29 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
                         <?php endif; ?>
                         <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
                             <?= nl2br($bank['info']) ?><br/>
+                            <?php if($model->currency!=$bank['currency']):?>
+                                <strong><?= Yii::$app->getModule('billing')->t('This account accepts funds in {BANK_CURRENCY} only!', ['BANK_CURRENCY'=>$bank['currency']]) ?></strong>
+                                <a href="<?= Yii::$app->urlManager->createUrl(['/billing/invoice/convert', 'id'=>(string)$model->id, 'currency'=>$bank['currency']]) ?>" class="btn btn-primary btn-xs" data-confirm="<?= Yii::$app->getModule('billing')->t('Your invoice amount will be convert to {CURRENCY} currency!', ['CURRENCY'=>$bank['currency']]) ?>"><?= Yii::$app->getModule('billing')->t('Convert to {CURRENCY}', ['CURRENCY'=>$bank['currency']]) ?></a>
+                            <?php else:?>
                             <strong><?= Yii::$app->getModule('billing')->t('Amount: {AMOUNT}', ['AMOUNT' => Yii::$app->formatter->asCurrency($bank['total'], $bank['currency'])]) ?></strong><br/>
                             <em><?= Yii::$app->getModule('billing')->t('(Please transfer the amount in {CURRENCY} as shown above)', ['CURRENCY' => $bank['currency']]) ?></em>
+                            <?php endif;?>
                         </p>
                     <?php endforeach; ?>
+
                     <?php if ($banks): ?>
                         <div class="well well-sm">
                             <strong class="text-danger"><?= Yii::$app->getModule('billing')->t('Important:') ?></strong>
                             <?= Yii::$app->getModule('billing')->t('Please enter {IID} in your Detail of Payment and send all amount in a single transaction.', ['IID' => '<strong>' . $model->id_invoice . '</strong>']) ?>
                         </div>
                     <?php endif; ?>
+
                 <?php endif; ?>
             </div>
 
         </div>
 
-
+        <!-- admin functoin -->
         <?php if (Yii::$app->id == 'app-backend' && Yii::$app->user->can('admin') && $model->status == Invoice::STATUS_PENDING): ?>
             <!-- update row -->
             <div>
@@ -276,6 +291,7 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
                     <?= \common\components\SubmitButton::widget(['text' => Yii::t('billing', 'Add discount'), 'options' => ['class' => 'btn btn-primary', 'data-confirm' => Yii::t('billing', 'Are you sure you want to perform this action?')]]) ?>
                     <?php ActiveForm::end(); ?>
                 </div>
+
                 <div class="col-sm-6 text-right">
                     <?=
                     ButtonDropdown::widget([

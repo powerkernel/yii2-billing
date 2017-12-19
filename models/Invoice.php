@@ -325,9 +325,11 @@ class Invoice extends InvoiceBase
 
     }
 
+
     /**
      * get invoice url
      * @param bool $absolute
+     * @return mixed
      */
     public function getInvoiceUrl($absolute = false)
     {
