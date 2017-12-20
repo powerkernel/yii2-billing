@@ -43,7 +43,7 @@ class InvoiceController extends MainController
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['manage', 'show', 'pay'],
+                        'actions' => ['manage', 'show', 'pay', 'convert'],
                         'roles' => ['@'],
                         'allow' => true,
                     ],
