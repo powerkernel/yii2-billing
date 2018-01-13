@@ -14,7 +14,7 @@
         "yiisoft/yii2": "~2.0",
         "picqer/php-barcode-generator": "~0.2.0",
         "paypal/rest-api-sdk-php": "~1.0",
-        "endroid/qrcode": "~2.2",
+        "endroid/qr-code": "~3.1",
         "bitwasp/bitcoin": "*"
     },
     "autoload": {

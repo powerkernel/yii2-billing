@@ -29,6 +29,8 @@ use Yii;
  * @property integer|\MongoDB\BSON\UTCDateTime $payment_date
  * @property string $transaction
  * @property string $info
+ * @property string $shipping_info
+ * @property string $note
  * @property string $status
  * @property integer|\MongoDB\BSON\UTCDateTime $created_at
  * @property integer|\MongoDB\BSON\UTCDateTime $updated_at
@@ -104,13 +106,13 @@ class Invoice extends InvoiceBase
         $default = [
             [['shipping', 'tax'], 'default', 'value' => 0],
             [['status'], 'default', 'value' => self::STATUS_PENDING],
+            [['currency'], 'default', 'value'=>'USD'],
 
-            [['id_account'], 'safe'],
             [['subtotal', 'shipping', 'tax', 'total'], 'number', 'min' => 0],
             [['id_invoice'], 'string', 'max' => 23],
             [['currency'], 'string', 'max' => 3],
             [['payment_method', 'transaction'], 'string', 'max' => 50],
-            [['info'], 'string'],
+            [['info', 'shipping_info', 'note'], 'string'],
 
             [['id_account'], 'safe'],
             [['id_account'], 'exist', 'skipOnError' => true, 'targetClass' => Account::className(), 'targetAttribute' => ['id_account' => Yii::$app->params['mongodb']['account'] ? '_id' : 'id']],
@@ -141,6 +143,8 @@ class Invoice extends InvoiceBase
             'payment_date_picker' => Yii::$app->getModule('billing')->t('Payment Date'),
             'transaction' => Yii::$app->getModule('billing')->t('Transaction'),
             'info' => Yii::$app->getModule('billing')->t('Billing Information'),
+            'shipping_info'=> Yii::$app->getModule('billing')->t('Shipping Information'),
+            'note' => Yii::$app->getModule('billing')->t('Note'),
             'status' => Yii::$app->getModule('billing')->t('Status'),
             'created_at' => Yii::$app->getModule('billing')->t('Date'),
             'updated_at' => Yii::$app->getModule('billing')->t('Updated At'),
@@ -329,7 +333,7 @@ class Invoice extends InvoiceBase
     /**
      * get invoice url
      * @param bool $absolute
-     * @return mixed
+     * @return string url
      */
     public function getInvoiceUrl($absolute = false)
     {
