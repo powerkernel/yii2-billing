@@ -205,7 +205,7 @@ class AddressController extends MainController
     {
         $this->view->title = Yii::t('billing', 'Update Address');
         $model = $this->findModel($id);
-        if (!Yii::$app->user->can('viewOwnItem', ['model' => $model])) {
+        if (!Yii::$app->user->can('updateOwnItem', ['model' => $model])) {
             throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
         }
 
@@ -227,7 +227,7 @@ class AddressController extends MainController
     public function actionDelete($id)
     {
         $model=$this->findModel($id);
-        if (Yii::$app->user->can('viewOwnItem', ['model' => $model])) {
+        if (Yii::$app->user->can('updateOwnItem', ['model' => $model])) {
             $model->delete();
         }
         return $this->redirect(['manage']);

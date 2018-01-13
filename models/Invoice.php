@@ -272,6 +272,19 @@ class Invoice extends InvoiceBase
     }
 
     /**
+     * load shipping info
+     * @return array|mixed
+     */
+    public function loadShippingInfo()
+    {
+        $info=[];
+        if (!empty($this->shipping_info)) {
+            $info = json_decode($this->shipping_info, true);
+        }
+        return $info;
+    }
+
+    /**
      * status color text
      * @return string
      */

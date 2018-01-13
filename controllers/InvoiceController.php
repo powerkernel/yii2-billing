@@ -190,11 +190,12 @@ class InvoiceController extends MainController
     public function actionShow($id, $cancel = null)
     {
         $model = $this->findModel($id);
-        if (Yii::$app->user->can('viewOwnItem', ['model' => $model])) {
+        if (Yii::$app->user->can('admin') || Yii::$app->user->can('updateOwnItem', ['model' => $model])) {
             if (!empty($cancel) && $cancel == 'true') {
                 Yii::$app->session->setFlash('warning', Yii::$app->getModule('billing')->t('Payment cancelled.'));
             }
-            $info = $model->loadInfo();
+            $info['billing'] = $model->loadInfo();
+            $info['shipping'] = $model->loadShippingInfo();
             //$info=empty($model->info)?BillingInfo::getInfo($model->id_account):json_decode($model->info, true);
 
             /* metaData */
@@ -279,9 +280,17 @@ class InvoiceController extends MainController
         }
     }
 
+    /**
+     * convert currency
+     * @param $id
+     * @param $currency
+     * @return \yii\web\Response
+     * @throws ForbiddenHttpException
+     * @throws NotFoundHttpException
+     */
     public function actionConvert($id, $currency){
         $model = $this->findModel($id);
-        if (Yii::$app->user->can('viewOwnItem', ['model' => $model])) {
+        if (Yii::$app->user->can('updateOwnItem', ['model' => $model])) {
             if ($model->currency != $currency) {
                 if (!$model->convertCurrencyTo($currency)) {
                     Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('Cannot convert your invoice to {CURRENCY} currency!', ['CURRENCY'=>$currency]));
@@ -303,7 +312,7 @@ class InvoiceController extends MainController
     public function actionPay($id, $method)
     {
         $model = $this->findModel($id);
-        if (Yii::$app->user->can('viewOwnItem', ['model' => $model])) {
+        if (Yii::$app->user->can('updateOwnItem', ['model' => $model])) {
             if ($model->status == Invoice::STATUS_PENDING) {
                 if ($method == 'paypal') {
                     /* convert */
@@ -316,6 +325,12 @@ class InvoiceController extends MainController
                     return $this->redirect(Yii::$app->urlManager->createUrl(['billing/paypal/create', 'id' => (string)$model->id]));
                 }
                 if ($method == 'bitcoin') {
+                    /* is btc enabled ?*/
+                    $xpub = \powerkernel\billing\models\Setting::getValue('btcWalletXPub');
+                    if(empty($xpub)){
+                        Yii::$app->session->setFlash('error', Yii::$app->getModule('billing')->t('We can not process your payment right now.'));
+                        return $this->redirect(Yii::$app->urlManager->createUrl(['billing/invoice/show', 'id' => $id]));
+                    }
                     /* generate make sure always have new addresses */
                     BitcoinAddress::generate();
                     /* if an btc address assigned to this invoice, use that address (assigned address no payment with x days will be released by cronjob */
@@ -339,7 +354,7 @@ class InvoiceController extends MainController
                     if(empty($btc)){
                         return $this->redirect($model->getInvoiceUrl());
                     }
-                    $address->request_balance=$btc;
+                    $address->request_balance=(float)str_replace(',', '', $btc);
                     $address->save();
                     /* session */
                     $time=time();
