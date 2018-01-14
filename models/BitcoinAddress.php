@@ -192,65 +192,102 @@ class BitcoinAddress extends BitcoinAddressBase
 
 
     /**
-     * check payment
-     * @return string|null
+     * get address transactions (only tx which fund is received)
+     * @return null|[]
      */
-    public function checkPayment()
+    public function getTx()
     {
-        $addr = $this->address;
-        $btc = $this->request_balance;
-
-        $client = new Client(['baseUrl' => 'https://blockexplorer.com/api']);
-        $response = $client->get('txs', ['address' => $addr])->send();
-
-        $r = $response->getContent();
-        $tx = json_decode($r, true);
-
-        $txid = null;
-        $txConfirmations = null;
-        $txDate = null;
-        $found = false;
-
-        if (!empty($tx['txs'])) {
-            foreach ($tx['txs'] as $transaction) {
-                $txid = $transaction['txid'];
-                $txConfirmations = $transaction['confirmations'];
-                $txDate = $transaction['time'];
-                foreach ($transaction['vout'] as $out) {
-                    if ($out['value'] == $btc) {
-                        if (in_array($addr, $out['scriptPubKey']['addresses'])) {
-                            $found = true;
-                            break;
+        $client = new Client(['baseUrl' => 'https://blockchain.info']);
+        $response = $client->get('rawaddr/' . $this->address)->send();
+        if ($response->statusCode == '200') {
+            $json = $response->getContent();
+            $info = json_decode($json, true);
+            if (isset($info['n_tx']) && $info['n_tx'] > 0) {
+                foreach ($info['txs'] as $tx) {
+                    /* check outs */
+                    foreach ($tx['out'] as $output) {
+                        if ($output['addr'] == $this->address && ($output['value'] / 100000000) == $this->request_balance) {
+                            /* get tx info/ check double spend */
+                            return $this->verifyTx($tx['hash']);
                         }
                     }
                 }
             }
-
         }
+        return null;
+    }
 
-        /* payment received? */
-        if (!empty($txid) && $found) {
+    /**
+     * check double spend, return tx info
+     * @param $hash string
+     * @return bool|[]
+     */
+    public function verifyTx($hash){
+        $client = new Client(['baseUrl' => 'https://blockchain.info']);
+        $response = $client->get('rawtx/' . $hash)->send();
+        if ($response->statusCode == '200') {
+            $json = $response->getContent();
+            $tx = json_decode($json, true);
+            if($tx['double_spend']==false){
+                return $tx;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    /**
+     * get tx confirm number
+     * @param $tx []
+     * @return int
+     */
+    public function getTxConfirmation($tx)
+    {
+        if (isset($tx['block_height'])) {
+            $client = new Client(['baseUrl' => 'https://blockchain.info']);
+            $response = $client->get('q/getblockcount/')->send();
+            if ($response->statusCode == '200') {
+                $blockCount = (int)$response->getContent();
+                return $blockCount - $tx['block_height'];
+            }
+            return 0;
+        }
+        return 0;
+    }
+
+
+    /**
+     * check payment
+     * @return string
+     */
+    public function checkPayment()
+    {
+        $tx=$this->getTx();
+        if(is_array($tx)){ // found tx with no double spend
             /* check balance */
-            $client = new Client(['baseUrl' => 'https://blockexplorer.com/api/']);
-            $balance['totalReceived'] = $client->get('addr/' . $this->address . '/totalReceived')->send()->getContent();
-            $balance['balance'] = $client->get('addr/' . $this->address . '/balance')->send()->getContent();
-            $this->total_received = $balance['totalReceived'] == 0 ? 0 : $balance['totalReceived'] / 100000000;
-            $this->final_balance = $balance['balance'] == 0 ? 0 : $balance['balance'] / 100000000;
+            $client = new Client(['baseUrl' => 'https://blockchain.info']);
+            $response = $client->get('rawaddr/' . $this->address)->send();
+            if ($response->statusCode == '200') {
+                $json = $response->getContent();
+                $info=json_decode($json, true);
+                $this->total_received = $info['total_received'] == 0 ? 0 : $info['total_received'] / 100000000;
+                $this->final_balance = $info['final_balance'] == 0 ? 0 : $info['final_balance'] / 100000000;
+            }
 
-            $this->tx_id = $txid;
+            /* update addr info */
+            $confirmations=$this->getTxConfirmation($tx);
+            $this->tx_id = $tx['hash'];
             $this->touch('tx_check_date');
-            $this->tx_date = empty($this->tx_date) ? $txDate : $this->tx_date;
-            $this->tx_confirmed = (int)$txConfirmations;
+            $this->tx_date = $tx['time'];
+            $this->tx_confirmed = (int)$confirmations;
             $this->status = BitcoinAddress::STATUS_UNCONFIRMED;
-            if ($txConfirmations > 2) {
+            if ($confirmations > 2) {
                 $this->status = BitcoinAddress::STATUS_DONE;
             }
             $this->save();
             return json_encode(['payment_received' => true]);
         }
-
         return json_encode(['payment_received' => false]);
-
     }
 
 
@@ -261,7 +298,7 @@ class BitcoinAddress extends BitcoinAddressBase
      */
     public function beforeSave($insert)
     {
-        $this->request_balance=round($this->request_balance,6);
+        $this->request_balance = round($this->request_balance, 8);
         return parent::beforeSave($insert); // TODO: Change the autogenerated stub
     }
 
