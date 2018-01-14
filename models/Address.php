@@ -108,10 +108,10 @@ class Address extends AddressBase
 
         $default = [
             [['street_address_2', 'zip_code'], 'default', 'value'=>null],
-            [['country', 'contact_name', 'street_address_1', 'city', 'state', 'phone'], 'required'],
+            [['country', 'contact_name', 'street_address_1', 'city', 'phone'], 'required'],
 
             [['country', 'contact_name', 'street_address_1', 'street_address_2', 'city', 'state', 'zip_code', 'phone', 'status'], 'string'],
-            [['street_address_2', 'zip_code'], 'safe']
+            [['street_address_2', 'zip_code', 'state'], 'safe']
         ];
 
         return array_merge($default, $date, $account);
