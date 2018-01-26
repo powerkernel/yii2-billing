@@ -114,8 +114,12 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
                     <?php foreach ($model->items as $i => $item): ?>
                         <tr>
                             <td><?= $i + 1 ?></td>
-                            <td><?= $item->name ?> <span
-                                        class="badge <?= $item->quantity == 1 ? 'hidden' : '' ?>"><?= $item->quantity ?></span>
+                            <td>
+                                <?= $item->name ?>
+                                <span class="badge <?= $item->quantity == 1 ? 'hidden' : '' ?>"><?= $item->quantity ?></span>
+                                <?php if(!empty($item->status)):?>
+                                <span class="label label-info"><?= $item->statusText ?></span>
+                                <?php endif;?>
                             </td>
                             <td><?= Yii::$app->formatter->asCurrency($item->price, $model->currency) ?></td>
                             <td><?= Yii::$app->formatter->asCurrency($item->quantity * $item->price, $model->currency) ?></td>
@@ -169,6 +173,14 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
                                 <?php endif; ?>
                             </td>
                         </tr>
+                        <?php if($model->refund):?>
+                            <tr>
+                                <th class="text-danger"><?= Yii::$app->getModule('billing')->t('Refund:') ?></th>
+                                <td class="text-danger">
+                                    <?= Yii::$app->formatter->asCurrency($model->refund, $model->currency) ?>
+                                </td>
+                            </tr>
+                        <?php endif;?>
                         </tbody>
                     </table>
                 </div>

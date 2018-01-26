@@ -39,6 +39,7 @@ if (Yii::$app->getModule('billing')->params['db'] === 'mongodb') {
                 'quantity',
                 'price',
                 'details',
+                'status'
             ];
         }
 

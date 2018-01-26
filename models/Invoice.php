@@ -24,6 +24,7 @@ use Yii;
  * @property double $shipping
  * @property double $tax
  * @property double $total
+ * @property double $refund
  * @property string $currency
  * @property string $payment_method
  * @property integer|\MongoDB\BSON\UTCDateTime $payment_date
@@ -108,7 +109,7 @@ class Invoice extends InvoiceBase
             [['status'], 'default', 'value' => self::STATUS_PENDING],
             [['currency'], 'default', 'value'=>'USD'],
 
-            [['subtotal', 'shipping', 'tax', 'total'], 'number', 'min' => 0],
+            [['subtotal', 'shipping', 'tax', 'total', 'refund'], 'number', 'min' => 0],
             [['id_invoice'], 'string', 'max' => 23],
             [['currency'], 'string', 'max' => 3],
             [['payment_method', 'transaction'], 'string', 'max' => 50],

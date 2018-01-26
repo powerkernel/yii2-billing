@@ -18,11 +18,14 @@ use yii\widgets\ActiveForm;
     <div class="row">
         <div class="col-sm-6">
             <?= $form->field($model, 'id')->textInput(['disabled' => true]) ?>
-            <?= $form->field($model, 'subtotal')->textInput(['maxlength' => true, 'disabled' => true]) ?>
-            <?= $form->field($model, 'total')->textInput(['maxlength' => true, 'disabled' => true]) ?>
+
             <?= $form->field($model, 'shipping')->textInput(['maxlength' => true]) ?>
             <?php $info=json_decode($model->info, true); if(empty($info['tax_id'])):?>
             <?= $form->field($model, 'tax')->textInput(['maxlength' => true]) ?>
+
+            <?= $form->field($model, 'subtotal')->textInput(['maxlength' => true, 'disabled' => true]) ?>
+            <?= $form->field($model, 'total')->textInput(['maxlength' => true, 'disabled' => true]) ?>
+            <?= $form->field($model, 'refund')->textInput(['maxlength' => true]) ?>
             <?php endif;?>
 
         </div>

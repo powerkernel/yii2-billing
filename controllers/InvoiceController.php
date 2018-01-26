@@ -103,7 +103,8 @@ class InvoiceController extends MainController
     public function actionView($id)
     {
         $model = $this->findModel($id);
-        $info = $model->loadInfo();
+        $info['billing'] = $model->loadInfo();
+        $info['shipping'] = $model->loadShippingInfo();
         //$info=empty($model->info)?BillingInfo::getInfo($model->id_account):json_decode($model->info, true);
 
         /* metaData */
