@@ -166,6 +166,11 @@ class Address extends AddressBase
         }
     }
 
+    /**
+     * get user shipping addresses
+     * @param $id_account
+     * @return array
+     */
     public static function getAddressDataList($id_account){
         $addresses=self::find()->where(['id_account'=>$id_account])->all();
         $data=[];

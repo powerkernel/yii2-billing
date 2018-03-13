@@ -196,7 +196,7 @@ class InvoiceController extends MainController
                 Yii::$app->session->setFlash('warning', Yii::$app->getModule('billing')->t('Payment cancelled.'));
             }
             $info['billing'] = $model->loadInfo();
-            $info['shipping'] = $model->loadShippingInfo();
+            //$info['shipping'] = $model->loadShippingInfo();
             //$info=empty($model->info)?BillingInfo::getInfo($model->id_account):json_decode($model->info, true);
 
             /* metaData */

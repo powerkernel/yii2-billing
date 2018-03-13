@@ -15,13 +15,13 @@ $menu=[
     'title'=>Yii::$app->getModule('billing')->t('Billing'),
     'icon'=> 'shopping-bag',
     'items'=>[
-        ['icon' => 'money', 'label' => Yii::$app->getModule('billing')->t('Invoices'), 'url' => ['billing/invoice/index'], 'active' => Core::checkMCA('billing', 'invoice', '*')],
+        ['icon' => 'money-bill-alt', 'label' => Yii::$app->getModule('billing')->t('Invoices'), 'url' => ['billing/invoice/index'], 'active' => Core::checkMCA('billing', 'invoice', '*')],
         ['icon' => 'users', 'label' => Yii::$app->getModule('billing')->t('Customers'), 'url' => ['billing/info/index'], 'active' => Core::checkMCA('billing', 'info', '*')],
         ['icon' => 'address-book', 'label' => Yii::$app->getModule('billing')->t('Addresses'), 'url' => ['/billing/address/index'], 'active' => Core::checkMCA('billing', 'address', '*')],
         ['icon' => 'gift', 'label' => Yii::$app->getModule('billing')->t('Coupons'), 'url' => ['billing/coupon/index'], 'active' => Core::checkMCA('billing', 'coupon', '*')],
         ['icon' => 'university', 'label' => Yii::$app->getModule('billing')->t('Banks'), 'url' => ['billing/bank/index'], 'active' => Core::checkMCA('billing', 'bank', '*')],
-        ['icon' => 'btc', 'label' => Yii::$app->getModule('billing')->t('Bitcoin'), 'url' => ['billing/bitcoin/index'], 'active' => Core::checkMCA('billing', 'bitcoin', '*')],
-        ['icon' => 'gears', 'label' => Yii::$app->getModule('billing')->t('Settings'), 'url' => ['billing/setting/index'], 'active' => Core::checkMCA('billing', 'setting', 'index')],
+        ['icon' => 'btc fab', 'label' => Yii::$app->getModule('billing')->t('Bitcoin'), 'url' => ['billing/bitcoin/index'], 'active' => Core::checkMCA('billing', 'bitcoin', '*')],
+        ['icon' => 'cogs', 'label' => Yii::$app->getModule('billing')->t('Settings'), 'url' => ['billing/setting/index'], 'active' => Core::checkMCA('billing', 'setting', 'index')],
     ],
 ];
 $menu['active']=SideMenu::isActive($menu['items']);

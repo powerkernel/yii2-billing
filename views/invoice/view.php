@@ -64,8 +64,8 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
             <div class="col-sm-4 invoice-col">
                 <em><?= Yii::$app->getModule('billing')->t('To') ?></em>
                 <address>
-                    <?php //echo $this->render('_billing_address', ['info'=>$info['billing']]) ?>
-                    <?php echo $this->render('_shipping_address', ['info'=>$info['shipping']]) ?>
+                    <?php echo $this->render('_billing_address', ['info'=>$info['billing']]) ?>
+                    <?php //echo $this->render('_shipping_address', ['info'=>$info['shipping']]) ?>
                 </address>
             </div>
             <!-- /.col -->
@@ -212,11 +212,11 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
                                 'dropdown' => [
                                     'items' => [
                                         [
-                                            'label' => Icon::widget(['icon' => 'btc text-yellow']) .' Bitcoin',
+                                            'label' => Icon::widget(['name' => 'btc', 'prefix'=>'fab', 'options'=>['class'=>'text-yellow']]) .' Bitcoin',
                                             'url' => Yii::$app->urlManager->createUrl(['billing/invoice/pay', 'id' => (string)$model->id, 'method' => 'bitcoin'])
                                         ],
                                         [
-                                            'label' => Icon::widget(['icon' => 'paypal text-primary']) .' Paypal/Credit Cards',
+                                            'label' => Icon::widget(['name' => 'paypal', 'prefix'=>'fab', 'options'=>['class'=>'text-primary']]) .' Paypal/Credit Cards',
                                             'url' => Yii::$app->urlManager->createUrl(['billing/invoice/pay', 'id' => (string)$model->id, 'method' => 'paypal'])
                                         ],
                                     ],
@@ -235,12 +235,12 @@ $generator = new \Picqer\Barcode\BarcodeGeneratorSVG();
 
 
                         <div style="font-size: 2.5em" class="text-muted text-center">
-                            <?= Icon::widget(['icon' => 'cc-paypal']) ?>
-                            <?= Icon::widget(['icon' => 'cc-visa']) ?>
-                            <?= Icon::widget(['icon' => 'cc-mastercard']) ?>
-                            <?= Icon::widget(['icon' => 'cc-amex']) ?>
-                            <?= Icon::widget(['icon' => 'cc-discover']) ?>
-                            <?= Icon::widget(['icon' => 'btc']) ?>
+                            <?= Icon::widget(['prefix'=>'fab', 'name' => 'cc-paypal']) ?>
+                            <?= Icon::widget(['prefix'=>'fab', 'name' => 'cc-visa']) ?>
+                            <?= Icon::widget(['prefix'=>'fab', 'name' => 'cc-mastercard']) ?>
+                            <?= Icon::widget(['prefix'=>'fab', 'name' => 'cc-amex']) ?>
+                            <?= Icon::widget(['prefix'=>'fab', 'name' => 'cc-discover']) ?>
+                            <?= Icon::widget(['prefix'=>'fab', 'name' => 'btc']) ?>
                         </div>
                     <?php endif; ?>
                 </div>
