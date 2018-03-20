@@ -37,7 +37,7 @@ use yii\widgets\ActiveForm;
                 //$form->field($model, 'payment_date')->hiddenInput()->label(false)
             ?>
             <?php
-//            $form->field($model, 'payment_date_picker')->widget(DatePicker::classname(), [
+//            $form->field($model, 'payment_date_picker')->widget(DatePicker::class, [
 //                'options' => ['class' => 'form-control'],
 //                'clientOptions' => [
 //                    'altField' => '#invoice-payment_date',

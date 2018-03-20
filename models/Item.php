@@ -72,7 +72,7 @@ class Item extends ItemBase
             [['details'], 'string'],
             [['id_invoice'], 'string', 'max' => 23],
             [['name', 'status'], 'string', 'max' => 255],
-            [['id_invoice'], 'exist', 'skipOnError' => true, 'targetClass' => Invoice::className(), 'targetAttribute' => ['id_invoice' => 'id_invoice']],
+            [['id_invoice'], 'exist', 'skipOnError' => true, 'targetClass' => Invoice::class, 'targetAttribute' => ['id_invoice' => 'id_invoice']],
         ];
     }
 
@@ -97,7 +97,7 @@ class Item extends ItemBase
      */
     public function getInvoice()
     {
-        return $this->hasOne(Invoice::className(), ['id_invoice' => 'id_invoice']);
+        return $this->hasOne(Invoice::class, ['id_invoice' => 'id_invoice']);
     }
 
     /**

@@ -161,7 +161,7 @@ class BitcoinAddress extends BitcoinAddressBase
      */
     public function getInvoice()
     {
-        return $this->hasOne(Invoice::className(), ['id_invoice' => 'id_invoice']);
+        return $this->hasOne(Invoice::class, ['id_invoice' => 'id_invoice']);
     }
 
     /**

@@ -31,20 +31,20 @@ class AddressController extends MainController
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
             ],
             'backend' => [
-                'class' => BackendFilter::className(),
+                'class' => BackendFilter::class,
                 'actions' => [
                     'index', 'view'
                 ],
             ],
 
             'access' => [
-                'class' => AccessControl::className(),
+                'class' => AccessControl::class,
                 'rules' => [
                     [
                         'roles' => ['admin'],

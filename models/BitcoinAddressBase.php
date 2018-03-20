@@ -67,7 +67,7 @@ if (Yii::$app->getModule('billing')->params['db'] === 'mongodb') {
         public function behaviors()
         {
             return [
-                UTCDateTimeBehavior::className(),
+                UTCDateTimeBehavior::class,
             ];
         }
 
@@ -108,7 +108,7 @@ if (Yii::$app->getModule('billing')->params['db'] === 'mongodb') {
         public function behaviors()
         {
             return [
-                TimestampBehavior::className(),
+                TimestampBehavior::class,
             ];
         }
 

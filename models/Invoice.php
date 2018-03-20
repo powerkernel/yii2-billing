@@ -116,7 +116,7 @@ class Invoice extends InvoiceBase
             [['info', 'shipping_info', 'note'], 'string'],
 
             [['id_account'], 'safe'],
-            [['id_account'], 'exist', 'skipOnError' => true, 'targetClass' => Account::className(), 'targetAttribute' => ['id_account' => Yii::$app->params['mongodb']['account'] ? '_id' : 'id']],
+            [['id_account'], 'exist', 'skipOnError' => true, 'targetClass' => Account::class, 'targetAttribute' => ['id_account' => Yii::$app->params['mongodb']['account'] ? '_id' : 'id']],
 
             //['payment_date_picker', 'string']
         ];
@@ -159,9 +159,9 @@ class Invoice extends InvoiceBase
     public function getAccount()
     {
         if (Yii::$app->params['mongodb']['account']) {
-            return $this->hasOne(Account::className(), ['_id' => 'id_account']);
+            return $this->hasOne(Account::class, ['_id' => 'id_account']);
         } else {
-            return $this->hasOne(Account::className(), ['id' => 'id_account']);
+            return $this->hasOne(Account::class, ['id' => 'id_account']);
         }
     }
 
@@ -170,7 +170,7 @@ class Invoice extends InvoiceBase
      */
     public function getItems()
     {
-        return $this->hasMany(Item::className(), ['id_invoice' => 'id_invoice']);
+        return $this->hasMany(Item::class, ['id_invoice' => 'id_invoice']);
     }
 
 

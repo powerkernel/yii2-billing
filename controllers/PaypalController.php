@@ -46,7 +46,7 @@ class PaypalController extends MainController
     {
         return [
             'access' => [
-                'class' => AccessControl::className(),
+                'class' => AccessControl::class,
                 'rules' => [
                     [
                         'roles' => ['@'],

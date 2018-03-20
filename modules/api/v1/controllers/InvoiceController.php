@@ -29,7 +29,7 @@ class InvoiceController extends \yii\rest\Controller
     {
         $behaviors = parent::behaviors();
         $behaviors['verbs'] = [
-            'class' => VerbFilter::className(),
+            'class' => VerbFilter::class,
             'actions' => [
                 'vcb-sms-check' => ['POST'],
             ],
@@ -37,11 +37,11 @@ class InvoiceController extends \yii\rest\Controller
 
 
         $behaviors['authenticator'] = [
-            'class' => HttpBasicAuth::className(),
+            'class' => HttpBasicAuth::class,
         ];
         $behaviors['access'] =
             [
-                'class' => AccessControl::className(),
+                'class' => AccessControl::class,
                 'rules' => [
                     [
                         'roles' => ['admin'],

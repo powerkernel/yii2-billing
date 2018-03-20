@@ -28,13 +28,13 @@ class BankController extends MainController
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
             ],
             'access' => [
-                'class' => AccessControl::className(),
+                'class' => AccessControl::class,
                 'rules' => [
                     [
                         'roles' => ['admin'],
@@ -43,7 +43,7 @@ class BankController extends MainController
                 ],
             ],
             'backend' => [
-                'class' => BackendFilter::className(),
+                'class' => BackendFilter::class,
                 'actions' => [
                     'index',
                     'view',

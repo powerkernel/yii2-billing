@@ -19,7 +19,7 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'country')->widget(Select2Widget::className(), [
+    <?= $form->field($model, 'country')->widget(Select2Widget::class, [
         'bootstrap' => false,
         'items' => Core::getCountryList(),
         'options' => ['prompt' => Yii::$app->getModule('billing')->t('Select Country')]
@@ -29,7 +29,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'info')->textarea(['rows' => 6]) ?>
 
-    <?= $form->field($model, 'currency')->widget(Select2Widget::className(), [
+    <?= $form->field($model, 'currency')->widget(Select2Widget::class, [
         'bootstrap' => false,
         'items' => Core::getCurrencyList(),
         'options' => ['prompt' => Yii::$app->getModule('billing')->t('Select Country')]

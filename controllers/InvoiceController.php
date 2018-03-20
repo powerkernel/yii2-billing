@@ -36,7 +36,7 @@ class InvoiceController extends MainController
     {
         return [
             'access' => [
-                'class' => AccessControl::className(),
+                'class' => AccessControl::class,
                 'rules' => [
                     [
                         'roles' => ['admin'],
@@ -50,7 +50,7 @@ class InvoiceController extends MainController
                 ],
             ],
             'backend' => [
-                'class' => BackendFilter::className(),
+                'class' => BackendFilter::class,
                 'actions' => [
                     'index',
                     'view',

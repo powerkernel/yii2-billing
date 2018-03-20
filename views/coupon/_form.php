@@ -25,7 +25,7 @@ use yii\widgets\ActiveForm;
             <?= $form->field($model, 'code')->textInput(['maxlength' => true]) ?>
         </div>
         <div class="col-sm-6">
-            <?= $form->field($model, 'currency')->widget(Select2Widget::className(), [
+            <?= $form->field($model, 'currency')->widget(Select2Widget::class, [
                 'bootstrap' => false,
                 'items' => Core::getCurrencyList(),
                 'options' => ['prompt' => Yii::$app->getModule('billing')->t('Select Currency')]
@@ -44,7 +44,7 @@ use yii\widgets\ActiveForm;
 
     <div class="row">
         <div class="col-sm-6">
-            <?= $form->field($model, 'begin_date_picker')->widget(DatePicker::classname(), [
+            <?= $form->field($model, 'begin_date_picker')->widget(DatePicker::class, [
                 'options'=>['class'=>'form-control'],
                 'clientOptions'=>[
                     'altField'=>'#coupon-begin_at',
@@ -59,7 +59,7 @@ use yii\widgets\ActiveForm;
 
         </div>
         <div class="col-sm-6">
-            <?= $form->field($model, 'end_date_picker')->widget(DatePicker::classname(), [
+            <?= $form->field($model, 'end_date_picker')->widget(DatePicker::class, [
                 'options'=>['class'=>'form-control'],
                 'clientOptions'=>[
                     'altField'=>'#coupon-end_at',

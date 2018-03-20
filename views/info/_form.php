@@ -43,7 +43,7 @@ use yii\helpers\Html;
 
             <?= $form->field($model, 'zip')->textInput(['maxlength' => true]) ?>
 
-            <?= $form->field($model, 'country')->widget(Select2Widget::className(), [
+            <?= $form->field($model, 'country')->widget(Select2Widget::class, [
                 'bootstrap' => false,
                 'items' => Core::getCountryList(),
                 'options' => ['prompt' => Yii::$app->getModule('billing')->t('Select Country')]
