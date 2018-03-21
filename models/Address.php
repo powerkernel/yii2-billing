@@ -201,11 +201,7 @@ class Address extends \yii\mongodb\ActiveRecord
      */
     public function getAccount()
     {
-        if (Yii::$app->params['mongodb']['account']) {
-            return $this->hasOne(Account::class, ['_id' => 'id_account']);
-        } else {
-            return $this->hasOne(Account::class, ['id' => 'id_account']);
-        }
+        return $this->hasOne(Account::class, ['_id' => 'id_account']);
     }
 
     /**
