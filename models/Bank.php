@@ -7,25 +7,86 @@
 
 namespace powerkernel\billing\models;
 
+use common\behaviors\UTCDateTimeBehavior;
 use Yii;
 
 /**
  * This is the model class for Bank.
  *
- * @property integer|\MongoDB\BSON\ObjectID|string $id
+ * @property \MongoDB\BSON\ObjectID|string $id
  * @property string $country
  * @property string $title
  * @property string $info
  * @property string $currency
  * @property string $status
- * @property integer|\MongoDB\BSON\UTCDateTime $created_at
- * @property integer|\MongoDB\BSON\UTCDateTime $updated_at
+ * @property \MongoDB\BSON\UTCDateTime $created_at
+ * @property \MongoDB\BSON\UTCDateTime $updated_at
  */
-class Bank extends BankBase
+class Bank extends \yii\mongodb\ActiveRecord
 {
 
     const STATUS_ACTIVE = 'STATUS_ACTIVE'; //10
     const STATUS_INACTIVE = 'STATUS_INACTIVE'; //20
+
+    /**
+     * @inheritdoc
+     */
+    public static function collectionName()
+    {
+        return 'billing_bank';
+    }
+
+    /**
+     * @return array
+     */
+    public function attributes()
+    {
+        return [
+            '_id',
+            'country',
+            'title',
+            'info',
+            'currency',
+            'status',
+            'created_at',
+            'updated_at',
+        ];
+    }
+
+    /**
+     * get id
+     * @return \MongoDB\BSON\ObjectID|string
+     */
+    public function getId()
+    {
+        return $this->_id;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            UTCDateTimeBehavior::class,
+        ];
+    }
+
+    /**
+     * @return int timestamp
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updated_at->toDateTime()->format('U');
+    }
+
+    /**
+     * @return int timestamp
+     */
+    public function getCreatedAt()
+    {
+        return $this->created_at->toDateTime()->format('U');
+    }
 
     /**
      * get status list
@@ -81,25 +142,14 @@ class Bank extends BankBase
      */
     public function rules()
     {
-        if (is_a($this, '\yii\mongodb\ActiveRecord')) {
-            $date = [
-                [['created_at', 'updated_at'], 'yii\mongodb\validators\MongoDateValidator']
-            ];
-        } else {
-            $date = [
-                [['created_at', 'updated_at'], 'integer']
-            ];
-        }
-
-        $default = [
+        return [
             [['country', 'title', 'info', 'currency'], 'required'],
             [['info', 'status'], 'string'],
             [['country'], 'string', 'max' => 2],
             [['title'], 'string', 'max' => 255],
             [['currency'], 'string', 'max' => 3],
+            [['created_at', 'updated_at'], 'yii\mongodb\validators\MongoDateValidator']
         ];
-
-        return array_merge($default, $date);
     }
 
     /**

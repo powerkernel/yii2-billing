@@ -16,8 +16,45 @@ use Yii;
  * @property string $rules
  * @property integer $key_order
  */
-class Setting extends SettingBase
+class Setting extends \yii\mongodb\ActiveRecord
 {
+
+    /**
+     * @inheritdoc
+     */
+    public static function collectionName()
+    {
+        return 'billing_settings';
+    }
+
+    /**
+     * @return array
+     */
+    public function attributes()
+    {
+        return [
+            '_id',
+            'key',
+            'value',
+            'title',
+            'group',
+            'type',
+            'default',
+            'data',
+            'rules',
+            'key_order'
+        ];
+    }
+
+    /**
+     * get id
+     * @return \MongoDB\BSON\ObjectID|string
+     */
+    public function getId()
+    {
+        return $this->_id;
+    }
+
     /**
      * @inheritdoc
      */
@@ -51,12 +88,12 @@ class Setting extends SettingBase
      * load as array
      * @return array
      */
-    public static function loadAsArray(){
-        $settings=self::find()->all();
-        $a=[];
-        foreach($settings as $setting)
-        {
-            $a[$setting->key]=$setting->value;
+    public static function loadAsArray()
+    {
+        $settings = self::find()->all();
+        $a = [];
+        foreach ($settings as $setting) {
+            $a[$setting->key] = $setting->value;
         }
         return $a;
     }
@@ -65,9 +102,10 @@ class Setting extends SettingBase
      * @param $key
      * @return mixed|null
      */
-    public static function findTitle($key){
-        $model=self::find()->where(['key'=>$key])->one();
-        if($model){
+    public static function findTitle($key)
+    {
+        $model = self::find()->where(['key' => $key])->one();
+        if ($model) {
             return $model->title;
         }
         return null;
@@ -78,9 +116,10 @@ class Setting extends SettingBase
      * @param $key
      * @return mixed|null
      */
-    public static function getValue($key){
-        $model=self::find()->where(['key'=>$key])->one();
-        if($model){
+    public static function getValue($key)
+    {
+        $model = self::find()->where(['key' => $key])->one();
+        if ($model) {
             return $model->value;
         }
         return null;

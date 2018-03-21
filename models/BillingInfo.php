@@ -7,14 +7,15 @@
 
 namespace powerkernel\billing\models;
 
+use common\behaviors\UTCDateTimeBehavior;
 use common\models\Account;
 use Yii;
 
 /**
  * This is the model class for BillingInfo.
  *
- * @property integer|\MongoDB\BSON\ObjectID|string $id
- * @property integer|string $id_account
+ * @property \MongoDB\BSON\ObjectID|string $id
+ * @property string $id_account
  * @property string $company
  * @property string $tax_id
  * @property string $f_name
@@ -27,16 +28,84 @@ use Yii;
  * @property string $country
  * @property string $phone
  * @property string $status
- * @property integer|\MongoDB\BSON\UTCDateTime $created_at
- * @property integer|\MongoDB\BSON\UTCDateTime $updated_at
+ * @property \MongoDB\BSON\UTCDateTime $created_at
+ * @property \MongoDB\BSON\UTCDateTime $updated_at
  */
-class BillingInfo extends BillingInfoBase
+class BillingInfo extends \yii\mongodb\ActiveRecord
 {
 
 
     const STATUS_ACTIVE = 'STATUS_ACTIVE'; // 10
     const STATUS_INACTIVE = 'STATUS_INACTIVE'; // 20
 
+
+    /**
+     * @inheritdoc
+     */
+    public static function collectionName()
+    {
+        return 'billing_info';
+    }
+
+    /**
+     * @return array
+     */
+    public function attributes()
+    {
+        return [
+            '_id',
+            'id_account',
+            'company',
+            'tax_id',
+            'f_name',
+            'l_name',
+            'address',
+            'address2',
+            'city',
+            'state',
+            'zip',
+            'country',
+            'phone',
+            'status',
+            'created_at',
+            'updated_at',
+        ];
+    }
+
+    /**
+     * get id
+     * @return \MongoDB\BSON\ObjectID|string
+     */
+    public function getId()
+    {
+        return $this->_id;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            UTCDateTimeBehavior::class,
+        ];
+    }
+
+    /**
+     * @return int timestamp
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updated_at->toDateTime()->format('U');
+    }
+
+    /**
+     * @return int timestamp
+     */
+    public function getCreatedAt()
+    {
+        return $this->created_at->toDateTime()->format('U');
+    }
 
     /**
      * get status list
@@ -90,37 +159,16 @@ class BillingInfo extends BillingInfoBase
      */
     public function rules()
     {
-        if (is_a($this, '\yii\mongodb\ActiveRecord')) {
-            $date = [
-                [['created_at', 'updated_at'], 'yii\mongodb\validators\MongoDateValidator'],
-            ];
-
-        } else {
-            $date = [
-                [['created_at', 'updated_at'], 'integer'],
-            ];
-        }
-
-        if (Yii::$app->params['mongodb']['account']) {
-            $account = [
-                [['id_account'], 'string'],
-            ];
-        } else {
-            $account = [
-                [['id_account'], 'integer'],
-            ];
-        }
-
-        $default = [
+        return [
             [['f_name', 'l_name', 'address', 'city', 'country', 'phone'], 'required'],
 
             [['company', 'tax_id', 'f_name', 'l_name', 'address', 'address2', 'city', 'state', 'zip', 'country', 'status'], 'string', 'max' => 255],
 
             [['phone'], 'string', 'max' => 14],
             [['phone'], 'match', 'pattern' => '/^\+[1-9][0-9]{9,12}$/'],
+            [['created_at', 'updated_at'], 'yii\mongodb\validators\MongoDateValidator'],
+            [['id_account'], 'string'],
         ];
-
-        return array_merge($default, $date, $account);
     }
 
     /**
@@ -170,19 +218,19 @@ class BillingInfo extends BillingInfoBase
     public function afterSave($insert, $changedAttributes)
     {
         /* copy if no shipping address */
-        if($insert){
-            $count=Address::find()->where(['id_account'=>Yii::$app->user->id])->count();
-            if($count==0){
-                $addr=new Address();
-                $addr->contact_name=$this->f_name.' '.$this->l_name;
-                $addr->street_address_1=$this->address;
-                $addr->street_address_2=$this->address2;
-                $addr->city=$this->city;
-                $addr->state=$this->state;
-                $addr->country=$this->country;
-                $addr->zip_code=$this->zip;
-                $addr->phone=$this->phone;
-                $addr->id_account=Yii::$app->user->id;
+        if ($insert) {
+            $count = Address::find()->where(['id_account' => Yii::$app->user->id])->count();
+            if ($count == 0) {
+                $addr = new Address();
+                $addr->contact_name = $this->f_name . ' ' . $this->l_name;
+                $addr->street_address_1 = $this->address;
+                $addr->street_address_2 = $this->address2;
+                $addr->city = $this->city;
+                $addr->state = $this->state;
+                $addr->country = $this->country;
+                $addr->zip_code = $this->zip;
+                $addr->phone = $this->phone;
+                $addr->id_account = Yii::$app->user->id;
                 $addr->save();
             }
         }

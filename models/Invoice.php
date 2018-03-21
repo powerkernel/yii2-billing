@@ -7,6 +7,7 @@
 
 namespace powerkernel\billing\models;
 
+use common\behaviors\UTCDateTimeBehavior;
 use common\components\CurrencyFraction;
 use common\models\Account;
 use powerkernel\billing\components\CurrencyLayer;
@@ -16,9 +17,9 @@ use Yii;
 /**
  * This is the model class for Invoice
  *
- * @property integer|\MongoDB\BSON\ObjectID|string $id
+ * @property \MongoDB\BSON\ObjectID|string $id
  * @property string $id_invoice
- * @property integer|string $id_account
+ * @property string $id_account
  * @property string $coupon
  * @property double $subtotal
  * @property double $shipping
@@ -27,19 +28,19 @@ use Yii;
  * @property double $refund
  * @property string $currency
  * @property string $payment_method
- * @property integer|\MongoDB\BSON\UTCDateTime $payment_date
+ * @property \MongoDB\BSON\UTCDateTime $payment_date
  * @property string $transaction
  * @property string $info
  * @property string $shipping_info
  * @property string $note
  * @property string $status
- * @property integer|\MongoDB\BSON\UTCDateTime $created_at
- * @property integer|\MongoDB\BSON\UTCDateTime $updated_at
+ * @property \MongoDB\BSON\UTCDateTime $created_at
+ * @property \MongoDB\BSON\UTCDateTime $updated_at
  *
  * @property Account $account
  * @property Item[] $items
  */
-class Invoice extends InvoiceBase
+class Invoice extends \yii\mongodb\ActiveRecord
 {
     const STATUS_PENDING = 'STATUS_PENDING'; //10;
     const STATUS_PAID = 'STATUS_PAID'; //20;
@@ -50,6 +51,85 @@ class Invoice extends InvoiceBase
     const STATUS_PAID_UNCONFIRMED = 'STATUS_PAID_UNCONFIRMED'; //50;
 
     public $payment_date_picker;
+
+    /**
+     * @inheritdoc
+     */
+    public static function collectionName()
+    {
+        return 'billing_invoice';
+    }
+
+    /**
+     * @return array
+     */
+    public function attributes()
+    {
+        return [
+            '_id',
+            'id_invoice',
+            'id_account',
+            'coupon',
+            'subtotal',
+            'shipping',
+            'tax',
+            'total',
+            'refund',
+            'currency',
+            'payment_method',
+            'payment_date',
+            'transaction',
+            'info',
+            'shipping_info',
+            'note',
+            'status',
+            'created_at',
+            'updated_at',
+        ];
+    }
+
+    /**
+     * get id
+     * @return \MongoDB\BSON\ObjectID|string
+     */
+    public function getId()
+    {
+        return $this->_id;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            UTCDateTimeBehavior::class,
+        ];
+    }
+
+    /**
+     * @return int timestamp
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updated_at->toDateTime()->format('U');
+    }
+
+    /**
+     * @return int timestamp
+     */
+    public function getCreatedAt()
+    {
+        return $this->created_at->toDateTime()->format('U');
+    }
+
+    /**
+     * @return int timestamp
+     */
+    public function getPaymentDate()
+    {
+        return empty($this->payment_date) ? null : $this->payment_date->toDateTime()->format('U');
+    }
 
     /**
      * get status list
@@ -92,22 +172,10 @@ class Invoice extends InvoiceBase
      */
     public function rules()
     {
-        /* date */
-        if (is_a($this, 'yii\mongodb\ActiveRecord')) {
-            $date = [
-                [['created_at', 'updated_at', 'payment_date'], 'yii\mongodb\validators\MongoDateValidator'],
-                //[['payment_date'], 'yii\mongodb\validators\MongoDateValidator', 'format' => 'MM/dd/yyyy', 'mongoDateAttribute'=>'payment_date'],
-            ];
-        } else {
-            $date = [
-                [['payment_date', 'created_at', 'updated_at'], 'integer'],
-            ];
-        }
-
-        $default = [
+        return [
             [['shipping', 'tax'], 'default', 'value' => 0],
             [['status'], 'default', 'value' => self::STATUS_PENDING],
-            [['currency'], 'default', 'value'=>'USD'],
+            [['currency'], 'default', 'value' => 'USD'],
 
             [['subtotal', 'shipping', 'tax', 'total', 'refund'], 'number', 'min' => 0],
             [['id_invoice'], 'string', 'max' => 23],
@@ -117,11 +185,11 @@ class Invoice extends InvoiceBase
 
             [['id_account'], 'safe'],
             [['id_account'], 'exist', 'skipOnError' => true, 'targetClass' => Account::class, 'targetAttribute' => ['id_account' => Yii::$app->params['mongodb']['account'] ? '_id' : 'id']],
+            [['created_at', 'updated_at', 'payment_date'], 'yii\mongodb\validators\MongoDateValidator'],
 
             //['payment_date_picker', 'string']
         ];
 
-        return array_merge($default, $date);
     }
 
     /**
@@ -144,7 +212,7 @@ class Invoice extends InvoiceBase
             'payment_date_picker' => Yii::$app->getModule('billing')->t('Payment Date'),
             'transaction' => Yii::$app->getModule('billing')->t('Transaction'),
             'info' => Yii::$app->getModule('billing')->t('Billing Information'),
-            'shipping_info'=> Yii::$app->getModule('billing')->t('Shipping Information'),
+            'shipping_info' => Yii::$app->getModule('billing')->t('Shipping Information'),
             'note' => Yii::$app->getModule('billing')->t('Note'),
             'status' => Yii::$app->getModule('billing')->t('Status'),
             'created_at' => Yii::$app->getModule('billing')->t('Date'),
@@ -278,7 +346,7 @@ class Invoice extends InvoiceBase
      */
     public function loadShippingInfo()
     {
-        $info=[];
+        $info = [];
         if (!empty($this->shipping_info)) {
             $info = json_decode($this->shipping_info, true);
         }
@@ -451,7 +519,7 @@ class Invoice extends InvoiceBase
                 $bankInfo[] = [
                     'info' => $bank->info,
                     'currency' => $bank->currency,
-                    'total' => $bank->currency!=$this->currency?(new CurrencyLayer())->convert($this->currency, $bank->currency, $this->total):$this->total
+                    'total' => $bank->currency != $this->currency ? (new CurrencyLayer())->convert($this->currency, $bank->currency, $this->total) : $this->total
                 ];
             }
         }

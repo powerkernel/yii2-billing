@@ -9,16 +9,17 @@ namespace powerkernel\billing\models;
 
 use BitWasp\Bitcoin\Bitcoin;
 use BitWasp\Bitcoin\Key\Deterministic\HierarchicalKeyFactory;
+use common\behaviors\UTCDateTimeBehavior;
 use Yii;
 use yii\httpclient\Client;
 
 /**
  * This is the model class for BitcoinAddress
  *
- * @property integer|\MongoDB\BSON\ObjectID|string $id
+ * @property \MongoDB\BSON\ObjectID|string $id
  * @property string $address
  * @property string $id_invoice
- * @property integer|\MongoDB\BSON\ObjectID|string $id_account
+ * @property \MongoDB\BSON\ObjectID|string $id_account
  * @property string $request_balance
  * @property string $total_received
  * @property string $final_balance
@@ -26,13 +27,13 @@ use yii\httpclient\Client;
  * @property integer $tx_date
  * @property integer $tx_confirmed
  * @property integer $tx_check_date
- * @property integer $status
- * @property integer|\MongoDB\BSON\UTCDateTime $created_at
- * @property integer|\MongoDB\BSON\UTCDateTime $updated_at
+ * @property string $status
+ * @property \MongoDB\BSON\UTCDateTime $created_at
+ * @property \MongoDB\BSON\UTCDateTime $updated_at
  *
  * @property Invoice $invoice
  */
-class BitcoinAddress extends BitcoinAddressBase
+class BitcoinAddress extends \yii\mongodb\ActiveRecord
 {
 
 
@@ -41,6 +42,71 @@ class BitcoinAddress extends BitcoinAddressBase
     const STATUS_DONE = 'STATUS_DONE'; //30
     const STATUS_UNCONFIRMED = 'STATUS_UNCONFIRMED'; //40
 
+    /**
+     * @inheritdoc
+     */
+    public static function collectionName()
+    {
+        return 'billing_bitcoin_payments';
+    }
+
+    /**
+     * @return array
+     */
+    public function attributes()
+    {
+        return [
+            '_id',
+            'address',
+            'id_invoice',
+            'id_account',
+            'request_balance',
+            'total_received',
+            'final_balance',
+            'tx_id',
+            'tx_date',
+            'tx_confirmed',
+            'tx_check_date',
+            'status',
+            'created_at',
+            'updated_at',
+        ];
+    }
+
+    /**
+     * get id
+     * @return \MongoDB\BSON\ObjectID|string
+     */
+    public function getId()
+    {
+        return $this->_id;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            UTCDateTimeBehavior::class,
+        ];
+    }
+
+    /**
+     * @return int timestamp
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updated_at->toDateTime()->format('U');
+    }
+
+    /**
+     * @return int timestamp
+     */
+    public function getCreatedAt()
+    {
+        return $this->created_at->toDateTime()->format('U');
+    }
 
     /**
      * get status list
@@ -110,16 +176,7 @@ class BitcoinAddress extends BitcoinAddressBase
      */
     public function rules()
     {
-        if (is_a($this, '\yii\mongodb\ActiveRecord')) {
-            $date = [
-                [['created_at', 'updated_at'], 'yii\mongodb\validators\MongoDateValidator']
-            ];
-        } else {
-            $date = [
-                [['created_at', 'updated_at'], 'integer']
-            ];
-        }
-        $default = [
+        return [
             [['request_balance', 'total_received', 'final_balance'], 'default', 'value' => 0.0],
             [['status'], 'default', 'value' => self::STATUS_NEW],
 
@@ -128,8 +185,8 @@ class BitcoinAddress extends BitcoinAddressBase
             [['address'], 'string', 'max' => 35],
             [['id_invoice'], 'string', 'max' => 32],
             [['tx_id'], 'string', 'max' => 64],
+            [['created_at', 'updated_at'], 'yii\mongodb\validators\MongoDateValidator']
         ];
-        return array_merge($default, $date);
     }
 
     /**
@@ -222,13 +279,14 @@ class BitcoinAddress extends BitcoinAddressBase
      * @param $hash string
      * @return bool|[]
      */
-    public function verifyTx($hash){
+    public function verifyTx($hash)
+    {
         $client = new Client(['baseUrl' => 'https://blockchain.info']);
         $response = $client->get('rawtx/' . $hash)->send();
         if ($response->statusCode == '200') {
             $json = $response->getContent();
             $tx = json_decode($json, true);
-            if($tx['double_spend']==false){
+            if ($tx['double_spend'] == false) {
                 return $tx;
             }
             return false;
@@ -262,20 +320,20 @@ class BitcoinAddress extends BitcoinAddressBase
      */
     public function checkPayment()
     {
-        $tx=$this->getTx();
-        if(is_array($tx)){ // found tx with no double spend
+        $tx = $this->getTx();
+        if (is_array($tx)) { // found tx with no double spend
             /* check balance */
             $client = new Client(['baseUrl' => 'https://blockchain.info']);
             $response = $client->get('rawaddr/' . $this->address)->send();
             if ($response->statusCode == '200') {
                 $json = $response->getContent();
-                $info=json_decode($json, true);
+                $info = json_decode($json, true);
                 $this->total_received = $info['total_received'] == 0 ? 0 : $info['total_received'] / 100000000;
                 $this->final_balance = $info['final_balance'] == 0 ? 0 : $info['final_balance'] / 100000000;
             }
 
             /* update addr info */
-            $confirmations=$this->getTxConfirmation($tx);
+            $confirmations = $this->getTxConfirmation($tx);
             $this->tx_id = $tx['hash'];
             $this->touch('tx_check_date');
             $this->tx_date = $tx['time'];

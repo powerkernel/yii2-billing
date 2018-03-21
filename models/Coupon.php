@@ -7,25 +7,26 @@
 
 namespace powerkernel\billing\models;
 
+use common\behaviors\UTCDateTimeBehavior;
 use Yii;
 
 /**
  * This is the model class for Coupon.
  *
- * @property integer|\MongoDB\BSON\ObjectID|string $id
+ * @property \MongoDB\BSON\ObjectID|string $id
  * @property string $code
  * @property string $currency
  * @property float $discount
  * @property string $discount_type
- * @property integer|\MongoDB\BSON\UTCDateTime $begin_at
- * @property integer|\MongoDB\BSON\UTCDateTime $end_at
+ * @property \MongoDB\BSON\UTCDateTime $begin_at
+ * @property \MongoDB\BSON\UTCDateTime $end_at
  * @property integer $quantity
  * @property integer $reuse
  * @property string $status
- * @property integer|\MongoDB\BSON\UTCDateTime $created_at
- * @property integer|\MongoDB\BSON\UTCDateTime $updated_at
+ * @property \MongoDB\BSON\UTCDateTime $created_at
+ * @property \MongoDB\BSON\UTCDateTime $updated_at
  */
-class Coupon extends CouponBase
+class Coupon extends \yii\mongodb\ActiveRecord
 {
     const STATUS_ACTIVE = 'STATUS_ACTIVE'; // 10;
     const STATUS_INACTIVE = 'STATUS_INACTIVE'; // 20;
@@ -36,6 +37,85 @@ class Coupon extends CouponBase
     public $begin_date_picker;
     public $end_date_picker;
 
+    /**
+     * @inheritdoc
+     */
+    public static function collectionName()
+    {
+        return 'billing_coupon';
+    }
+
+    /**
+     * @return array
+     */
+    public function attributes()
+    {
+        return [
+            '_id',
+            'code',
+            'currency',
+            'discount',
+            'discount_type',
+            'begin_at',
+            'end_at',
+            'quantity',
+            'reuse',
+            'status',
+            'created_at',
+            'updated_at',
+        ];
+    }
+
+    /**
+     * get id
+     * @return \MongoDB\BSON\ObjectID|string
+     */
+    public function getId()
+    {
+        return $this->_id;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            UTCDateTimeBehavior::class,
+        ];
+    }
+
+    /**
+     * @return int timestamp
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updated_at->toDateTime()->format('U');
+    }
+
+    /**
+     * @return int timestamp
+     */
+    public function getCreatedAt()
+    {
+        return $this->created_at->toDateTime()->format('U');
+    }
+
+    /**
+     * @return int timestamp
+     */
+    public function getBeginAt()
+    {
+        return $this->begin_at->toDateTime()->format('U');
+    }
+
+    /**
+     * @return int timestamp
+     */
+    public function getEndAt()
+    {
+        return $this->end_at->toDateTime()->format('U');
+    }
 
     /**
      * get discount options
@@ -128,29 +208,18 @@ class Coupon extends CouponBase
      */
     public function rules()
     {
-        if (is_a($this, '\yii\mongodb\ActiveRecord')) {
-            $date = [
-                [['created_at', 'updated_at'], 'yii\mongodb\validators\MongoDateValidator'],
-                [['begin_at'], 'yii\mongodb\validators\MongoDateValidator', 'format' => 'MM/dd/yyyy', 'mongoDateAttribute'=>'begin_at'],
-                [['end_at'], 'yii\mongodb\validators\MongoDateValidator', 'format' => 'MM/dd/yyyy', 'mongoDateAttribute'=>'end_at']
-            ];
-        }
-        else {
-            $date = [
-                [['created_at', 'updated_at'], 'integer'],
-                [['begin_at', 'end_at'], 'date', 'format' => 'MM/dd/yyyy']
-            ];
-        }
-        $default = [
+        return [
             [['code', 'currency', 'discount', 'discount_type', 'begin_at', 'end_at', 'quantity', 'reuse', 'status'], 'required'],
             [['code'], 'unique'],
             //[['discount'], 'number'],
             [['quantity', 'reuse'], 'integer'],
             [['code'], 'string', 'max' => 50],
             [['begin_date_picker', 'end_date_picker'], 'required', 'on' => ['create']],
-            [['end_at'], 'compare', 'compareAttribute' => 'begin_at', 'operator' => '>=']
+            [['end_at'], 'compare', 'compareAttribute' => 'begin_at', 'operator' => '>='],
+            [['created_at', 'updated_at'], 'yii\mongodb\validators\MongoDateValidator'],
+            [['begin_at'], 'yii\mongodb\validators\MongoDateValidator', 'format' => 'MM/dd/yyyy', 'mongoDateAttribute' => 'begin_at'],
+            [['end_at'], 'yii\mongodb\validators\MongoDateValidator', 'format' => 'MM/dd/yyyy', 'mongoDateAttribute' => 'end_at']
         ];
-        return array_merge($default, $date);
     }
 
     /**
@@ -182,13 +251,9 @@ class Coupon extends CouponBase
      */
     public function beforeSave($insert)
     {
-        if(is_a($this, '\yii\db\ActiveRecord')){
-            $this->begin_at=strtotime($this->begin_at);
-            $this->end_at=strtotime($this->end_at);
-        }
-        $this->discount=(float)$this->discount;
-        $this->quantity=(int)$this->quantity;
-        $this->reuse=(int)$this->reuse;
+        $this->discount = (float)$this->discount;
+        $this->quantity = (int)$this->quantity;
+        $this->reuse = (int)$this->reuse;
         return parent::beforeSave($insert); // TODO: Change the autogenerated stub
     }
 

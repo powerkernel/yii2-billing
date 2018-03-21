@@ -12,7 +12,7 @@ use Yii;
 /**
  * This is the model class for Item.
  *
- * @property integer|\MongoDB\BSON\ObjectID|string $id
+ * @property \MongoDB\BSON\ObjectID|string $id
  * @property string $id_invoice
  * @property string $name
  * @property integer $quantity
@@ -20,12 +20,46 @@ use Yii;
  * @property string $details
  * @property string $status
  */
-class Item extends ItemBase
+class Item extends \yii\mongodb\ActiveRecord
 {
 
     const STATUS_NOT_SHIPPED = 'STATUS_NOT_SHIPPED'; //10;
     const STATUS_SHIPPED = 'STATUS_SHIPPED'; //10;
     const STATUS_RETURNED = 'STATUS_RETURNED'; //20;
+
+    /**
+     * @inheritdoc
+     */
+    public static function collectionName()
+    {
+        return 'billing_item';
+    }
+
+    /**
+     * @return array
+     */
+    public function attributes()
+    {
+        return [
+            '_id',
+            'id_invoice',
+            'name',
+            'quantity',
+            'price',
+            'details',
+            'status'
+        ];
+    }
+
+    /**
+     * get id
+     * @return \MongoDB\BSON\ObjectID|string
+     */
+    public function getId()
+    {
+        return $this->_id;
+    }
+
 
     /**
      * get status list
