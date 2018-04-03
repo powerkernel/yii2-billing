@@ -47,16 +47,12 @@ class CouponForm extends Model
             'status' => Coupon::STATUS_ACTIVE,
         ]);
         /* exist */
-        if (Yii::$app->getModule('billing')->params['db'] === 'mongodb') {
-            $code = $query->andFilterWhere([
-                'begin_at' => ['$lte' => new UTCDateTime()],
-                'end_at' => ['$gte' => new UTCDateTime()]
-            ])
-                ->one();
-        } else {
-            $code = $query->andWhere(':now>=`begin_at` AND :now<=`end_at`', [':now' => time()])
-                ->one();
-        }
+
+        $code = $query->andFilterWhere([
+            'begin_at' => ['$lte' => new UTCDateTime()],
+            'end_at' => ['$gte' => new UTCDateTime()]
+        ])
+            ->one();
 
 
         if (!$code) {

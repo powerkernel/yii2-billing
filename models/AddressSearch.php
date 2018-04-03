@@ -48,9 +48,9 @@ class AddressSearch extends Address
     public function search($params)
     {
         $query = Address::find();
-        $pageSize=20;
-        if(Core::checkMCA('billing', 'address', 'manage')){
-            $pageSize=9;
+        $pageSize = 20;
+        if (Core::checkMCA('billing', 'address', 'manage')) {
+            $pageSize = 9;
         }
 
         // add conditions that should always apply here
@@ -59,13 +59,13 @@ class AddressSearch extends Address
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             //'sort'=> ['defaultOrder' => ['id'=>SORT_DESC]],
-            'pagination'=>['pageSize'=>$pageSize],
+            'pagination' => ['pageSize' => $pageSize],
         ]);
 
         $this->load($params);
 
         /* manage action */
-        if(Core::checkMCA('billing', 'address', 'manage')){
+        if (Core::checkMCA('billing', 'address', 'manage')) {
             $query->andFilterWhere(['like', 'id_account', Yii::$app->user->id]);
         }
 
@@ -76,25 +76,15 @@ class AddressSearch extends Address
         }
 
         // account
-        if(!in_array($this->id_account, ['', null], true)) {
-            if(Yii::$app->params['mongodb']['account']){
-                $key='_id';
-            }
-            else {
-                $key='id';
-            }
+        if (!in_array($this->id_account, ['', null], true)) {
+            $key = '_id';
             $ids = [];
-            $owners=Account::find()->select([$key])->where(['like', 'fullname', $this->id_account])->asArray()->all();
+            $owners = Account::find()->select([$key])->where(['like', 'fullname', $this->id_account])->asArray()->all();
             foreach ($owners as $owner) {
-                if(Yii::$app->params['mongodb']['account']){
-                    $ids[] = (string)$owner[$key];
-                }
-                else {
-                    $ids[] = (int)$owner[$key];
-                }
+                $ids[] = (string)$owner[$key];
             }
-            if(empty($ids)){
-                $ids[]='0';
+            if (empty($ids)) {
+                $ids[] = '0';
             }
             $query->andFilterWhere(['id_account' => $ids]);
         }

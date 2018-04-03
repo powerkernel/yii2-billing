@@ -82,48 +82,31 @@ class InvoiceSearch extends Invoice
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'total' => in_array($this->total, ['', null], true)?null:(float)$this->total,
+            'total' => in_array($this->total, ['', null], true) ? null : (float)$this->total,
             'status' => $this->status,
         ]);
         $query->andFilterWhere(['like', 'id_invoice', $this->id_invoice]);
 
         /* account */
-        if(!empty($this->id_account)) {
-            if(Yii::$app->params['mongodb']['account']){
-                $key='_id';
-            }
-            else {
-                $key='id';
-            }
+        if (!empty($this->id_account)) {
+            $key = '_id';
             $ids = [];
-            $owners=Account::find()->select([$key])->where(['like', 'fullname', $this->id_account])->asArray()->all();
+            $owners = Account::find()->select([$key])->where(['like', 'fullname', $this->id_account])->asArray()->all();
             foreach ($owners as $owner) {
-                if(Yii::$app->params['mongodb']['account']){
-                    $ids[] = (string)$owner[$key];
-                }
-                else {
-                    $ids[] = (int)$owner[$key];
-                }
+                $ids[] = (string)$owner[$key];
             }
-            $query->andFilterWhere(['id_account' => empty($ids)?'0':$ids]);
+            $query->andFilterWhere(['id_account' => empty($ids) ? '0' : $ids]);
         }
 
         /* created_at */
-        if(!empty($this->created_at)) {
-            if (is_a($this, '\yii\mongodb\ActiveRecord')) {
-                $query->andFilterWhere([
-                    'updated_at' => ['$gte'=>new UTCDateTime(strtotime($this->created_at)*1000)],
-                ])->andFilterWhere([
-                    'updated_at' => ['$lt'=>new UTCDateTime((strtotime($this->created_at)+86400)*1000)],
-                ]);
-            } else {
-                $query->andFilterWhere([
-                    'DATE(CONVERT_TZ(FROM_UNIXTIME({{%billing_invoice}}.created_at), :UTC, :ATZ))' => $this->created_at,
-                ])->params([
-                    ':UTC' => '+00:00',
-                    ':ATZ' => date('P')
-                ]);
-            }
+        if (!empty($this->created_at)) {
+
+            $query->andFilterWhere([
+                'updated_at' => ['$gte' => new UTCDateTime(strtotime($this->created_at) * 1000)],
+            ])->andFilterWhere([
+                'updated_at' => ['$lt' => new UTCDateTime((strtotime($this->created_at) + 86400) * 1000)],
+            ]);
+
         }
 
         return $dataProvider;

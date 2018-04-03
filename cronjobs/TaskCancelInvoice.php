@@ -17,18 +17,12 @@ $schedule->call(function (\yii\console\Application $app) {
     $point = $now - $days;
 
 
-    if (Yii::$app->getModule('billing')->params['db'] === 'mongodb') {
-        $invoices = Invoice::find()
-            ->where([
-                'status' => Invoice::STATUS_PENDING,
-                'updated_at' => ['$lte' => new \MongoDB\BSON\UTCDateTime($point*1000)]
-            ])->all();
-    } else {
-        $invoices = Invoice::find()->where('status=:status AND updated_at<=:point', [
-            ':status' => Invoice::STATUS_PENDING,
-            ':point' => $point
+    $invoices = Invoice::find()
+        ->where([
+            'status' => Invoice::STATUS_PENDING,
+            'updated_at' => ['$lte' => new \MongoDB\BSON\UTCDateTime($point * 1000)]
         ])->all();
-    }
+
 
     if ($invoices) {
         $obj = [];
@@ -51,18 +45,11 @@ $schedule->call(function (\yii\console\Application $app) {
     /* delete old logs never bad */
     $period = 30 * 24 * 60 * 60; // 30 days
     $point = time() - $period;
-    if(Yii::$app->params['mongodb']['taskLog']){
-        \common\models\TaskLog::deleteAll([
-            'task'=>basename(__FILE__, '.php'),
-            'created_at'=>['$lte', new \MongoDB\BSON\UTCDateTime($point*1000)]
-        ]);
-    }
-    else {
-        \common\models\TaskLog::deleteAll('task=:task AND created_at<=:point', [
-            ':task' => basename(__FILE__, '.php'),
-            ':point' => $point
-        ]);
-    }
+    \common\models\TaskLog::deleteAll([
+        'task' => basename(__FILE__, '.php'),
+        'created_at' => ['$lte', new \MongoDB\BSON\UTCDateTime($point * 1000)]
+    ]);
+
 
     unset($app);
 

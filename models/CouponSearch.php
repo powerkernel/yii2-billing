@@ -67,27 +67,27 @@ class CouponSearch extends Coupon
         // grid filtering conditions
         $query->andFilterWhere(['like', 'code', $this->code]);
         $query->andFilterWhere([
-            'discount' => in_array($this->discount, ['', null], true)?null:(float)$this->discount,
-            'quantity' => in_array($this->quantity, ['', null], true)?null:(float)$this->quantity,
+            'discount' => in_array($this->discount, ['', null], true) ? null : (float)$this->discount,
+            'quantity' => in_array($this->quantity, ['', null], true) ? null : (float)$this->quantity,
             'status' => $this->status,
         ]);
         if (!empty($this->begin_at)) {
-            if (is_a($this, '\yii\mongodb\ActiveRecord')) {
-                $query->andFilterWhere([
-                    'begin_at' => ['$gte' => new \MongoDB\BSON\UTCDateTime(strtotime($this->begin_at) * 1000)],
-                ])->andFilterWhere([
-                    'begin_at' => ['$lt' => new \MongoDB\BSON\UTCDateTime((strtotime($this->begin_at) + 86400) * 1000)],
-                ]);
-            }
+
+            $query->andFilterWhere([
+                'begin_at' => ['$gte' => new \MongoDB\BSON\UTCDateTime(strtotime($this->begin_at) * 1000)],
+            ])->andFilterWhere([
+                'begin_at' => ['$lt' => new \MongoDB\BSON\UTCDateTime((strtotime($this->begin_at) + 86400) * 1000)],
+            ]);
+
         }
         if (!empty($this->end_at)) {
-            if (is_a($this, '\yii\mongodb\ActiveRecord')) {
-                $query->andFilterWhere([
-                    'end_at' => ['$gte' => new \MongoDB\BSON\UTCDateTime(strtotime($this->end_at) * 1000)],
-                ])->andFilterWhere([
-                    'end_at' => ['$lt' => new \MongoDB\BSON\UTCDateTime((strtotime($this->end_at) + 86400) * 1000)],
-                ]);
-            }
+
+            $query->andFilterWhere([
+                'end_at' => ['$gte' => new \MongoDB\BSON\UTCDateTime(strtotime($this->end_at) * 1000)],
+            ])->andFilterWhere([
+                'end_at' => ['$lt' => new \MongoDB\BSON\UTCDateTime((strtotime($this->end_at) + 86400) * 1000)],
+            ]);
+
         }
 
 //        if(!empty($this->begin_at)){

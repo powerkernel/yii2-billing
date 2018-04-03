@@ -184,7 +184,7 @@ class Invoice extends \yii\mongodb\ActiveRecord
             [['info', 'shipping_info', 'note'], 'string'],
 
             [['id_account'], 'safe'],
-            [['id_account'], 'exist', 'skipOnError' => true, 'targetClass' => Account::class, 'targetAttribute' => ['id_account' => Yii::$app->params['mongodb']['account'] ? '_id' : 'id']],
+            [['id_account'], 'exist', 'skipOnError' => true, 'targetClass' => Account::class, 'targetAttribute' => ['id_account' => '_id']],
             [['created_at', 'updated_at', 'payment_date'], 'yii\mongodb\validators\MongoDateValidator'],
 
             //['payment_date_picker', 'string']
