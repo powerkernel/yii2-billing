@@ -35,6 +35,7 @@ class CurrencyLayer
 
     /**
      * @param $access_key
+     * @throws \yii\base\InvalidConfigException
      */
     protected function init($access_key){
         $cache='currency-layer';

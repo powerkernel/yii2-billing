@@ -22,10 +22,5 @@ or add
 to the require section of your `composer.json` file, then run
 
 ```
-php yii migrate --migrationPath=@vendor/powerkernel/yii2-billing/migrations/ --migrationTable={{%billing_migration}}
-```
-MongoDB
------
-```
-php yii mongodb-migrate --migrationPath=@vendor/powerkernel/yii2-billing/migrations/mongodb/ --migrationCollection=billing_migration
+php yii mongodb-migrate --migrationPath=@vendor/powerkernel/yii2-billing/migrations/ --migrationCollection=billing_migration
 ```
